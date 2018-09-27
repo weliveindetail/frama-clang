@@ -1,0 +1,99 @@
+\documentclass[web]{frama-c-book}
+
+\usepackage{graphicx}
+\usepackage{calc}
+\usepackage{datetime}
+\newdateformat{ddMyyyydate}{\THEDAY~\monthname[\THEMONTH]~\THEYEAR}
+
+
+
+\include{macros}
+\newcommand{\fclang}{\textsc{Frama-Clang}\xspace}
+\newcommand{\acslpp}{\textsc{ACSL++}\xspace}
+\newcommand{\acslb}{\acsl/acslpp\xspace}
+\include{fclangversion}
+
+
+\makeindex
+
+\begin{document}
+
+\coverpage{\fclang User Manual}
+
+\begin{titlepage}
+\begin{flushleft}
+\includegraphics[height=14mm]{cealistlogo.jpg}
+\end{flushleft}
+\vfill
+\title{\fclang Plug-in}{Release \fclangversion
+%% \ifthenelse{\equal{\eacslversion}{\fcversion}}{}{%
+%%   \\[1em] compatible with \framac \fcversion}
+}
+\author{David R. Cok}
+\begin{center}
+CEA LIST\\ Software Reliability \& Security Laboratory
+\end{center}
+\begin{center}
+	Last modified \ddMyyyydate\today
+\end{center}
+\vfill
+\begin{flushleft}
+  \textcopyright 2013-2018 CEA LIST
+%%
+  %% This work has been supported by the VESSEDIA project).
+\end{flushleft}
+\end{titlepage}
+
+\tableofcontents
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\chapter*{Foreword}
+\markright{}
+\addcontentsline{toc}{chapter}{Foreword}
+
+This is the user manual of the \framac plug-in
+\fclang\footnote{\url{https://frama-c.com/frama-clang.html}}. The contents of this
+document correspond to its version \fclangversion compatible with
+\fcversion version of \framac~\cite{userman,fac15}.  The development of
+the \fclang plug-in is still ongoing.  Features described by this document may
+evolve in the future.
+
+\section*{Acknowledgements}
+
+We gratefully thank the people who contributed to this document:
+David R. Cok, Virgile Prevosto, Armand Pucetti, Franck Verdrine.
+
+TBD-VESSEDIA
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\include{introduction}
+\include{description}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\appendix
+
+\include{changes}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\cleardoublepage
+\addcontentsline{toc}{chapter}{\bibname}
+\bibliographystyle{plain}
+\bibliography{./biblio}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%% \cleardoublepage
+%% \addcontentsline{toc}{chapter}{\listfigurename}
+%% \listoffigures
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\cleardoublepage
+\addcontentsline{toc}{chapter}{\indexname}
+\printindex
+
+\end{document}
