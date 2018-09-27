@@ -1,4 +1,4 @@
-The \fclang plug-in intends to provide a full translation of C++ and ACSL++ into the \framac internal representation, and from there be able to be analyzed by other \framac plug-ins. This is a work in progress. The following sections describe the  limitations of the current implementation.
+The \fclang plug-in intends to provide a full translation of C++ and \acslpp into the \framac internal representation, and from there be able to be analyzed by other \framac plug-ins. This is a work in progress. The following sections describe the  limitations of the current implementation.
 \begin{itemize}
 	\item The plug-in aims for the TBD version of C++
 	\item \acslpp is described in the companion \acslpp reference manual, also a part of the \framac release.
@@ -65,7 +65,7 @@ Note that not all preprocessor tokens are valid C/C++ parser tokens. Tokens in t
 		\item[] $<-->$ (bit-wise equality)
 		\item[] TBD any more?
 	\end{itemize}
-	These ACSL/ACSL++ tokens need to be assembled from multiple CPP tokens (and those CPP tokens must not be separated by white space)
+	These \acslb tokens need to be assembled from multiple CPP tokens (and those CPP tokens must not be separated by white space)
 	\item A CPP numeric token that contains .. will not be a legal C/C++ number, but may be multiple legal \acslb tokens with the .. representing the range operator.  For example, the single CPP token \texttt{0..last} is retokenized for \acslb as if it were written \texttt{0 .. last} .
 	\item \acslb allows certain built-in non-ASCII symbols, namely
 	\begin{itemize}
@@ -103,9 +103,9 @@ The preprocessing language contains a fixed set of preprocessing directive ident
 \end{itemize}
 In addition, identifiers that have been defined (by a \#define directive) as macros are expanded according to the macro expansion rules (not described here).
 
-Now ACSL/ACSL++ annotations are contained in C/C++ comments. 
+Now \acslb annotations are contained in C/C++ comments. 
 Consequently, any directives contained in the annotation are not seen when the source file is processed simply as a C/C++ source file. However, the effect of some directives lasts until the end of the source file. 
-Accordingly, ACSL++ imposes constrains on the directives that may be present within annotations:
+Accordingly, \acslpp imposes constraints on the directives that may be present within annotations:
 \begin{itemize}
 	\item \texttt{define} and \texttt{undef} are not permitted in an annotation
 	\item \texttt{if}, \texttt{ifdef}, \texttt{ifndef}, \texttt{elif}, \texttt{else}, \texttt{endif} are permitted but must be completely nested within the annotation in which they appear (an \#endif and its corresponding \#if/\#ifdef/\#ifndef must be in the same annotation comment.)
@@ -117,7 +117,9 @@ Accordingly, ACSL++ imposes constrains on the directives that may be present wit
 
 
 
-\section{ACSL++ constructs}
+\section{\acslpp constructs}
+
+\textit{This section is not yet written}
 
 %This chapter is the core of this manual and describes how to use the \fclang
 %plug-in.
