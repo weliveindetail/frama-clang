@@ -13,7 +13,6 @@ FCLANG_VERSION= $(shell cat $(VERSION_FILE))
 
 DEPS_MODERN=fclangversion.tex biblio.bib macros.tex \
 	introduction.tex \
-	provides.tex \
 	limitations.tex \
 	changes.tex \
 	$(C_CODE) \
