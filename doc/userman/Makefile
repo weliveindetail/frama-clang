@@ -4,7 +4,7 @@ C_CODE=$(wildcard examples/*.[ci])
 VERSION_FILE=../../../../../VERSION
 ifeq ("$(wildcard $(VERSION_FILE))", "")
 VERSION_FILE=../../VERSION
-FC_VERSION+=Chlorine+
+FC_VERSION+=Potassium+
 else
 #internal mode
 FC_VERSION=$(shell cat $(VERSION_FILE))
@@ -13,6 +13,7 @@ FCLANG_VERSION= $(shell cat $(VERSION_FILE))
 
 DEPS_MODERN=fclangversion.tex biblio.bib macros.tex \
 	introduction.tex \
+    description.tex \
 	limitations.tex \
 	changes.tex \
 	$(C_CODE) \
@@ -68,7 +69,7 @@ fclangversion.tex: Makefile
 %.ml: %.mll
 	ocamllex $<
 
-%.pdf: %.tex
+%.pdf: %.tex Makefile $(DEPS_MODERN)
 	pdflatex $*
 	makeindex $*
 	bibtex $*
