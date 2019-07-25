@@ -1,3 +1,16 @@
+The \fclang plug-in intends to provide a full translation of C++ and \acslpp into the \framac internal representation, and from there be able to be analyzed by other \framac plug-ins. This is a work in progress. The following sections describe the  limitations of the current implementation.
+\begin{itemize}
+	\item The plug-in aims for the TBD version of C++
+	\item \acslpp is described in the companion \acslpp reference manual, also a part of the \framac release.
+\end{itemize}
+
+
+Notes
+\begin{itemize}
+	\item Which version of Clang?
+	\item Clang (8) support C++98 (except exported templates, later removed) and C++11 and current draft standard for C++1y 
+	\item see https://clang.llvm.org/docs/UsersManual.html\#cxx for supported features in clang C++
+\end{itemize}
 
 \chapter{Installation}
 
@@ -114,4 +127,6 @@ In particular, a debug value of 1 shows the command-line that invokes
 	
 \end{itemize}
 
+
+TBD - including command-line options
 
