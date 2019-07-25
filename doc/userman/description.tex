@@ -1,16 +1,4 @@
-The \fclang plug-in intends to provide a full translation of C++ and \acslpp into the \framac internal representation, and from there be able to be analyzed by other \framac plug-ins. This is a work in progress. The following sections describe the  limitations of the current implementation.
-\begin{itemize}
-	\item The plug-in aims for the TBD version of C++
-	\item \acslpp is described in the companion \acslpp reference manual, also a part of the \framac release.
-\end{itemize}
 
-
-Notes
-\begin{itemize}
-	\item Which version of Clang?
-	\item Clang (8) support C++98 (except exported templates, later removed) and C++11 and current draft standard for C++1y 
-	\item see https://clang.llvm.org/docs/UsersManual.html\#cxx for supported features in clang C++
-\end{itemize}
 
 \chapter{Installation}
 
@@ -19,10 +7,10 @@ TBD - installation instructions
 \chapter{Running the plug-in}
 
 \section{C++ files}
-Once installed the plugin is run automatically by Frama-C on any C++ files listed on the command-line. C++ files are identified by the filename suffix. The default C++ suffixes are these:
+Once installed the plugin is run automatically by Frama-C on any C++ files listed on the command-line. C++ files are identified by their filename suffixes. The default suffixes recognized as C++ are these:
  .cpp, .C, .cxx, .ii, .ixx, .ipp, .i++, .inl, .h, .hh
 
-Currently this set of suffixes is compiled in the plugin (in file frama\_Clang\_register.ml) and can only be changed by recompiling and
+Currently this set of suffixes is compiled in the plugin (in file \texttt{frama\_Clang\_register.ml}) and can only be changed by recompiling and
 reinstalling the plugin.
 
 \section{Frama-clang executable}
@@ -38,13 +26,13 @@ option and is \irg by default. The path may be absolute; if it is a relative pat
 \section{Frama-clang options}
 
 The options known to the \fcl plugin are processed by the \fc kernel when listed on the \fc command-line. 
-The use of the frama-c command-line is described in the core frama-c 
+The use of the \fc command-line is described in the core \fc 
 user guide.
-There are many kernel options that affect all plugins and many options specific to frama-clang.
+There are many kernel options that affect all plugins and many options specific to \fclang.
 The command \\
-\lstinline|frama-c -kernel-h| \\
+\centerline{\lstinline|frama-c -kernel-h|} \\
 shows all kernel options; the command\\
-\lstinline|frama-c -fclang-h| \\
+\centerline{\lstinline|frama-c -fclang-h|} \\
 shows all \fcl-specific options.
 
 The most important of the options are these:
@@ -94,8 +82,8 @@ You can see a list of options by running
 
 The most significant options for  \irg are these:
 \begin{itemize}
-	\item \option{-I} -- adds a directory to the include file search path
-	\item \option{-o <file>} -- specifies the location of the output file (in this case, the file to contain the generated AST)
+	\item \option{-I <dir>} -- adds a directory to the include file search path. Using absolute paths is recommended; relative paths are relative to TODO.
+	\item \option{-o <file>} -- specifies the location of the output file (in this case, the file to contain the generated AST). Using absolute paths is recommended; relative paths are relative to TODO.
 	\item \option{-std=...} -- the input programming language (default is \lstinline|-std=c++11|)
 	\item \option{-w} -- suppress warnings
 	\item \option{-{-}version} -- print version information

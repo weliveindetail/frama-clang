@@ -2,7 +2,7 @@
 
 As a refresher, the C/C++ preprocessor (CPP) (cf. \url{https://gcc.gnu.org/onlinedocs/cpp/}) conceptually implements the following operations on a C++ source file:
 \begin{itemize}
-	\item The input is read and broken it into a sequence of physical lines according to the line terminators (ASCII character sequences \\r, \\n, or \\r\\n).
+	\item The input is read and broken it into a sequence of physical lines according to the line terminators (ASCII character sequences \texttt{\\r}, \texttt{\\n}, or \texttt{\\r\\n}).
 	\item Each C trigraph is replaced by its corresponding character.
 	\item Any backslash-whitespace-line-terminator sequence is removed and the line that it ends is combined with the following line.
 	\item Comments are replaced by single spaces. This requires tokenizing the input to avoid recognizing comment markers within strings as indicating a comment. Note that this allows block comments to hide line terminations.
@@ -31,7 +31,7 @@ Note that not all preprocessor tokens are valid C/C++ parser tokens. Tokens in t
 
 \acsl and \acslpp have slightly different tokens than the above, so the preprocessor tokens need to be re-tokenized in some cases:
 \begin{itemize}
-	\item The \@ token is a whitespace character in \acslb.
+	\item The \texttt{\at} token is a whitespace character in \acslb.
 	\item There are some \acslb multi-character punctuator tokens that are not
 	preprocessor tokens:
 	\begin{itemize}
@@ -39,7 +39,9 @@ Note that not all preprocessor tokens are valid C/C++ parser tokens. Tokens in t
 		\item[] $-->$ (bit-wise implies)
 		\item[] $<==>$ (logical equality)
 		\item[] $<-->$ (bit-wise equality)
-		\item[] TBD any more?
+		\item[] TODO (logical inequality)
+		\item[] TODO (list repetition)
+		\item[] TBD any more? [| |]
 	\end{itemize}
 	These \acslb tokens need to be assembled from multiple CPP tokens (and those CPP tokens must not be separated by white space)
 	\item A CPP numeric token that contains .. will not be a legal C/C++ number, but may be multiple legal \acslb tokens with the .. representing the range operator.  For example, the single CPP token \texttt{0..last} is retokenized for \acslb as if it were written \texttt{0 .. last} .
@@ -84,7 +86,7 @@ Consequently, any directives contained in the annotation are not seen when the s
 Accordingly, \acslpp imposes constraints on the directives that may be present within annotations:
 \begin{itemize}
 	\item \texttt{define} and \texttt{undef} are not permitted in an annotation
-	\item \texttt{if}, \texttt{ifdef}, \texttt{ifndef}, \texttt{elif}, \texttt{else}, \texttt{endif} are permitted but must be completely nested within the annotation in which they appear (an \#endif and its corresponding \#if/\#ifdef/\#ifndef must be in the same annotation comment.)
+	\item \texttt{if}, \texttt{ifdef}, \texttt{ifndef}, \texttt{elif}, \texttt{else}, \texttt{endif} are permitted but must be completely nested within the annotation in which they appear (an \texttt{\#endif} and its corresponding i\texttt{\#if/\#ifdef/\#ifndef} must be in the same annotation comment.)
 	\item \texttt{warning} and \texttt{error} are permitted
 	\item \texttt{include} is permitted, but will cause errors if it contains, as is almost always the case, either \texttt{define} or \texttt{pragma} directives
 	\item \texttt{line} - TBD

@@ -6,14 +6,14 @@ language~\cite{acsl}. This manual documents the \fclang plug-in of \framac,
 version \fclangversion. 
 The \fclang plug-in supports the \acslpp extension of \acsl for C++ programs and specifications; 
 it is built on the Clang\footnote{https://clang.llvm.org/} compiler infrastructure and uses Clang for 
-parsing C++.
+parsing C++. The plug-in extends clang to parse \acslpp, translating it into an intermediate language for C and \acsl.
 
-The \fclang plug-in intends to provide a full translation of C++ and \acslpp into the \framac internal representation, and from there be able to be analyzed by other \framac plug-ins. 
-This is a work in progress. 
-The following sections describe the  limitations of the current implementation.
+The \fclang plug-in intends to provide a full translation of C++ and \acslpp into the \framac internal representation, and from there to allow C++ progems and \acslpp specifications to be analyzed by other \framac plug-ins. 
+\textit{This is a work in progress.}
+The following sections describe the current status and limitations of the current implementation.
 \begin{itemize}
 	\item The plug-in aims for the C++11 version of C++
-	\item \acslpp is described in the companion \acslpp reference manual, also a part of the \framac release.
+	\item \acslpp is described in the companion \acslpp reference manual \cite[TODO], also a part of the \framac release.
 \end{itemize}
 
 
