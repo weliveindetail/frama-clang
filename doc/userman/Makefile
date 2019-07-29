@@ -1,43 +1,33 @@
 MAIN=main
 
 C_CODE=$(wildcard examples/*.[ci])
-VERSION_FILE=../../../../../VERSION
-ifeq ("$(wildcard $(VERSION_FILE))", "")
-VERSION_FILE=../../VERSION
 FC_VERSION+=Potassium+
-else
-#internal mode
-FC_VERSION=$(shell cat $(VERSION_FILE))
-endif
-FCLANG_VERSION= $(shell cat $(VERSION_FILE))
 
-DEPS_MODERN=fclangversion.tex biblio.bib macros.tex \
-	introduction.tex \
-    description.tex \
-	limitations.tex \
+DEPS_MODERN=biblio.bib \
 	changes.tex \
+    description.tex \
+	grammar.tex \
+	introduction.tex \
+	limitations.tex \
+	macros.tex \
+	preprocessing.tex \
+	fclangversion.tex \
 	$(C_CODE) \
-	$(VERSION_FILE)
+	Makefile
 
 default: main.pdf
 
-main.pdf: $(DEPS_MODERN)
+main.pdf: main.tex $(DEPS_MODERN)
 
-EACSL_DIR=../..
+FCLANG_DIR=../..
 DISTRIB_DIR=$(HOME)/frama-c/doc/www/distrib
 install:
-	mkdir -p $(EACSL_DIR)/doc/manuals/
-	cp -f main.pdf $(EACSL_DIR)/doc/manuals/e-acsl-manual.pdf
-#	cp -f main.pdf \
-	  $(DISTRIB_DIR)/download/e-acsl/e-acsl-manual-$(EACSL_VERSION).pdf
+	mkdir -p $(FCLANG_DIR)/doc/manuals/
+	cp -f main.pdf $(FCLANG_DIR)/doc/manuals/fclang-manual.pdf
 
-include $(EACSL_DIR)/doc/support/MakeLaTeXModern
+include $(FCLANG_DIR)/doc/support/MakeLaTeXModern
 
-fclangversion.tex: Makefile
-	rm -f $@
-	printf '\\newcommand{\\fclangversion}{$(FCLANG_VERSION)\\xspace}\n' > $@
-	printf '\\newcommand{\\fcversion}{$(FC_VERSION)\\xspace}\n' >> $@
-	chmod a-w $@
+version.tex: Makefile
 
 %.1: %.mp
 	mpost -interaction=batchmode $<
@@ -69,7 +59,7 @@ fclangversion.tex: Makefile
 %.ml: %.mll
 	ocamllex $<
 
-%.pdf: %.tex Makefile $(DEPS_MODERN)
+%.pdf: %.tex
 	pdflatex $*
 	makeindex $*
 	bibtex $*
@@ -94,4 +84,3 @@ clean:
 		*.haux  *.hbbl *.htoc \
                 *.cb* *.cm? *.bbl *.blg *.idx *.ind *.ilg \
 		transf trans.ml pp.ml pp
-	rm -f fclangversion.tex

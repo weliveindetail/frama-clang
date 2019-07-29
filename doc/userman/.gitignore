@@ -1,1 +1,9 @@
 main.pdf
+*.aux
+*.bbl
+*.blg
+*.ilg
+*.ind
+*.log
+*.out
+*.toc
