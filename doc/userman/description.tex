@@ -4,7 +4,7 @@
 
 \fclang is currently still experimental and not part of regular \framac releases. It must be built from source and added to a \framac installation.
 The instructions for doing so are provided at 
-\url{https://frama-c/colm/frama-clang.html}.
+\url{https://frama-c.com/frama-clang.html}.
 
 \fclang depends on two software packages:
 \begin{itemize}
@@ -16,11 +16,11 @@ which itself is available from \url{http://releases.llvm.org}.
 Building and installing \fclang has two effects:
 \begin{itemize}
 \item The \fclang executable files are installed within the \framac installation
-\item The include files containing \acslpp specifications of C++ library functions
+\item Include files containing \acslpp specifications of C++ library functions
 are copied to \verb|$FRAMAC_SHARE/libc| and 
 \verb|$FRAMAC_SHARE/libc++|, where \verb|$FRAMAC_SHARE| is the path
 given by the command \lstinline|frama-c-config -print-share-path|.
-\end{itemize}.
+\end{itemize}
 These include files are replacements for the standard system include files.
 They should have the same definitions of C and C++ functions and classes, but
 with \acslpp annotations giving their specifications.
@@ -51,7 +51,7 @@ The options controlling \fclang are of two sorts:
 \begin{itemize}
 \item options known to \framac are interpreted and passed on to \fclang when
 \irg is invoked, perhaps with a different option name
-\item options known to \fclang directoy (and not ot \framac) must be 
+\item options known to \fclang directly (and not to \framac) must be 
 included in the internal command that invokes \irg using the \option{-cpp-extra-args} option. These options are described in \S\ref{sec:standalone}.
 \end{itemize}
 
@@ -104,9 +104,9 @@ TODO
 
 In normal use within \framac, the \irg executable is
 invoked automatically. However, it can also be run standalone.
-In this mode it accepts command-line options and a single file;
+In this mode it accepts command-line options and a single input file;
 it produces a C AST representing the translated C++, in a text format 
-of the CIL (C Intermediate language).
+of the Cil (C Intermediate language).
 
 \section{Clang options}
 
@@ -128,23 +128,52 @@ The most significant options for  \irg are these:
 	\item \option{-{-}version} -- print version information
 \end{itemize}
 
+\section{Custom ASTs}
+
+In standard mode, \framac invokes \irg on a file, producing an AST in intermediate format, and the reads that intermediate file into \framac to complete the processing.
+If some manipulation of the AST intermediate is needed, those two steps can be performed separately as follows:
+\begin{itemize}
+\item Produce an intermediate AST \lstinline|f.ast| for a given input file \lstinline|f.cpp| using the command \\
+\centerline{\normalsize{framaCIRGen <options> -o f.ast f.cpp}}
+\item Manipulate \lstinline|f.ast| as desired.
+\item Run \framac on the AST using the command \\
+\centerline{\normalsize{frama-c <options> -cpp-command "cat f.ast" f.cpp}}
+\end{itemize}
+
+If you have multiple files, do the following:
+\begin{itemize}
+\item Create the ast files for a group of files in \$files:\\
+\centerline{\bf \texttt{ for f in \$files; do framaCIRGen <options> -o \${f\%.*}.ast \$f ; done }}
+\item Manipulate the resulting .ast files as needed
+\item Execute a command like \\
+\centerline{\bf \texttt{frama-c -cpp-command "`pwd`/ct" \$files}}
+\end{itemize}
+where \lstinline|ct| is an executable similar to\\
+\centerline{\bf \texttt{do f in \$@ ; cat \$\{f.\%*\}.ast ; done}}
+
 \section{Frama-Clang specific options}
 
 There are also options that are specific to \fcl.
 These are listed below:
 \begin{itemize}
 	\item \option{-{-}info=<n>} -- sets the level of informational messages to \textbf{n}; 0 is completely quiet; increasing values are
-	more verbose. \option{-{-}info} sets the level to 1; 
-	\option{-{-}no-info} sets the level to 0. The \lstinline|frama-c| option \option{-fclang-msg-key=parse} is equivalent to setting a value of 1.
+	more verbose. \\
+	\option{-{-}info} sets the level to 1 \\
+	\option{-{-}no-info} sets the level to 0\\
+	 The \lstinline|frama-c| option \option{-fclang-msg-key=parse} is equivalent to setting a value of 1.
+	
 	\item \option{-{-}warn=<n>} -- sets the level of parser warning messages to \textbf{n}; 0 is completely quiet; increasing values are
-more verbose. \option{-{-}warn} sets the level to 1; 
-\option{-{-}no-warn} sets the level to 0. The \lstinline|frama-c| option \option{-fclang-warn-key=parse} is equivalent to setting a value of 1.
+more verbose. \option{-{-}warn} sets the level to 1\\
+\option{-{-}no-warn} sets the level to 0\\
+The \lstinline|frama-c| option \option{-fclang-warn-key=parse} is equivalent to setting a value of 1.
 
 	\item \option{-{-}debug=<n>} -- sets the level of parser debug messages to \textbf{n}; 0 is completely quiet; increasing values are
-more verbose. \option{-{-}debug} sets the level to 1; 
-\option{-{-}no-debug} sets the level to 0. 
+more verbose\\
+ \option{-{-}debug} sets the level to 1\\
+\option{-{-}no-debug} sets the level to 0\\
 The \lstinline|frama-c| option \option{-fclang-debug=<n>} is equivalent to setting a value of \textbf{n}.
 In particular, a debug value of 1 shows the command-line that invokes \irg.
+
 	\item \option{-{-}stop-annot-error} -- if set, then parsing stops on the first error; default is off
 	\item \option{-{-}gen-impl-method} -- TODO
 	\item \option{-{-}exit-code} -- if set, then the exit code of \irg is 1 if errors occur; this is not the default because then \lstinline|frama-c| would terminate upon

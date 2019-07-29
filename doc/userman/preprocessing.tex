@@ -1,20 +1,21 @@
 \chapter{Preprocessing}
+\label{sec:preprocessing}
 
 This section describes the implementation of the C++ preprocessor for \acslpp
-annotations. Recall that thte C++ preprocessor replaces comments (including
+annotations. Recall that the C++ preprocessor replaces comments (including
 \acslpp comments) by white space, without operations such as handling
 preprocessor directives. Accordingly, \fclang must handle standard
 preprocessing within \acslpp annotations itself.
 
 As a refresher, the C/C++ preprocessor (CPP) (cf. \url{https://gcc.gnu.org/onlinedocs/cpp/}) conceptually implements the following operations on a C++ source file:
 \begin{itemize}
-	\item The input is read and broken it into a sequence of physical lines according to the line terminators (ASCII character sequences \texttt{\\r}, \texttt{\\n}, or \texttt{\\r\\n}).
+	\item The input is read and broken it into a sequence of physical lines according to the line terminators (ASCII character sequences \verb|\\r|, \verb|\\n|, or \verb|\\r\\n|).
 	\item Each C trigraph is replaced by its corresponding character.
 	\item Any backslash-whitespace-line-terminator sequence is removed and the line that it ends is combined with the following line.
 	\item Comments are replaced by single spaces. This requires tokenizing the input to avoid recognizing comment markers within strings as indicating a comment. Note that this allows block comments to hide line terminations.
 	\item The input text is divided into preprocessing tokens grouped in logical lines. Each preprocessor token becomes a compiler token (except where \#\# concatenation occurs). However, \acslb tokens are slightly different, as described below.
 	\item The source text is transformed according to any preprocessing directives contained within it. Each preprocessing directive must be contained within one logical line
-    \item adjacent string literals (separatedonly by white-space or line-endings) are concatenated into a single string literal.
+    \item adjacent string literals (separated only by white-space or line-endings) are concatenated into a single string literal.
 	
 \end{itemize}
 The result is a sequence of preprocessing tokens that is passed on to the 
@@ -43,7 +44,7 @@ Preprocessor tokens (per CPP) belong to one of five categories. White space (spa
 	\item other tokens: \verb|@|, \verb|#|, \verb|`| and all non-ASCII single characters.
 \end{itemize}
 The above token definitions imply that arbitrary text can always be broken into
-legitimate tokens, with the exception of a few characters and of badly formed unicode sequences.
+legitimate preprocessor tokens, with the exception of a few characters and of badly formed unicode sequences.
 
 TODO - unicode characters
 
@@ -57,13 +58,13 @@ Note that not all preprocessor tokens are valid C/C++ parser tokens. Tokens in t
 	\begin{itemize}
         \item[] all \acslb keywords that begin with a backslash, such as
          \verb|\result|.
-		\item[] $==>$ (logical implies)
-		\item[] $-->$ (bit-wise implies)
-		\item[] $<==>$ (logical equality)
-		\item[] $<-->$ (bit-wise equality)
-		\item[] \verb|^^| (logical inequality)
-		\item[] \verb|^*| (list repetition)
-		\item[] \verb:[|: and \verb:|]: (list creation)
+		\item \verb|==>| (logical implies)
+		\item \verb|-->| (bit-wise implies)
+		\item \verb|<==>| (logical equality)
+		\item \verb|<-->| (bit-wise equality)
+		\item \verb|^^| (logical inequality)
+		\item \verb|^*| (list repetition)
+		\item \verb:[|: and \verb:|]: (list creation)
 	\end{itemize}
 	These \acslb tokens need to be assembled from multiple CPP tokens (and those CPP tokens must not be separated by white space)
 	\item A CPP numeric token that contains .. will not be a legal C/C++ number, but may be a sequence of
@@ -76,7 +77,7 @@ Note that not all preprocessor tokens are valid C/C++ parser tokens. Tokens in t
 \end{itemize}
 
 \subsection{Preprocessor directives}
-A preprocessing directive consists of a single logical line (after the previous preprocessing phases have been completed) that begins with optional white space, the '\#' character, additional optional white space, and a preprocessor directive identifier.
+A preprocessing directive consists of a single logical line (after the previous preprocessing phases have been completed) that begins with optional white space, the \verb|#| character, additional optional white space, and a preprocessor directive identifier.
 The preprocessing language contains a fixed set of preprocessing directive identifiers:
 \begin{itemize}
 	\item \texttt{define}, \texttt{undef}
@@ -93,7 +94,7 @@ Consequently, any directives contained in the annotation are not seen when the s
 Accordingly, \acslpp imposes constraints on the directives that may be present within annotations:
 \begin{itemize}
 	\item \texttt{define} and \texttt{undef} are not permitted in an annotation
-	\item \texttt{if}, \texttt{ifdef}, \texttt{ifndef}, \texttt{elif}, \texttt{else}, \texttt{endif} are permitted but must be completely nested within the annotation in which they appear (an \texttt{endif} and its corresponding \texttt{if/ifdef/ifndef} must be in the same annotation comment.)
+	\item \texttt{if}, \texttt{ifdef}, \texttt{ifndef}, \texttt{elif}, \texttt{else}, \texttt{endif} are permitted but must be completely nested within the annotation in which they appear (an \texttt{endif} and its corresponding \texttt{if}, \texttt{ifdef}, or \texttt{ifndef} directive must be in the same annotation comment.)
 	\item \texttt{warning} and \texttt{error} are permitted
 	\item \texttt{include} is permitted, but will cause errors if it contains, as is almost always the case, either \texttt{define} or \texttt{pragma} directives
 	\item \texttt{line} - TBD
