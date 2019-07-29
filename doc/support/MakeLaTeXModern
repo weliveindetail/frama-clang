@@ -1,0 +1,25 @@
+FRAMAC_MODERN=frama-c-book.cls frama-c-cover.pdf frama-c-left.pdf frama-c-right.pdf
+
+frama-c-book.cls: ../frama-c-book.cls
+	@rm -f $@
+	@cp $< .
+	@chmod a-w $@
+	@echo "import $<"
+
+frama-c-cover.pdf: ../frama-c-cover.pdf
+	@rm -f $@
+	@cp $< .
+	@chmod a-w $@
+	@echo "import $<"
+
+frama-c-right.pdf: ../frama-c-right.pdf
+	@rm -f $@
+	@cp $< .
+	@chmod a-w $@
+	@echo "import $<"
+
+frama-c-left.pdf: ../frama-c-left.pdf
+	@rm -f $@
+	@cp $< .
+	@chmod a-w $@
+	@echo "import $<"
