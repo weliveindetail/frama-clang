@@ -1,3 +1,24 @@
 \chapter{Known Limitations}
 
-The development of the \fclang plug-in is still ongoing. 
+The development of the \fclang plug-in is still ongoing.
+\fclang does not implement all of current C++ nor all of 
+\acslpp as defined in its language definition.\cite{acslpp}
+The mosty important such limitations are described in this section.
+
+\section{Implementation of C++}
+
+The following are not implemented in \acslpp.
+\begin{itemize}
+\item \acslpp definitions within template declarations
+\item digraphs within \acslpp annotations
+\item preprocessing is restricted within \acslpp annotations (cf. \S\ref{sec:preprocessing})
+\end{itemize}
+
+\section{Implementation of \acslpp}
+
+\begin{itemize}
+
+\item ghost declarations
+\item model declarations
+\item set comprehensions
+\end{itemize}

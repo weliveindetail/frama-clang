@@ -1,7 +1,7 @@
 \chapter{Introduction}
 
 \framac~\cite{userman,fac15} is a modular analysis framework for the C
-programming language which supports the \acsl specification
+programming language that supports the \acsl specification
 language~\cite{acsl}. This manual documents the \fclang plug-in of \framac,
 version \fclangversion. 
 The \fclang plug-in supports the \acslpp extension of \acsl for C++ programs and specifications; 
@@ -13,30 +13,10 @@ The \fclang plug-in intends to provide a full translation of C++ and \acslpp int
 The following sections describe the current status and limitations of the current implementation.
 \begin{itemize}
 	\item The plug-in aims for the C++11 version of C++
-	\item \acslpp is described in the companion \acslpp reference manual \cite[TODO], also a part of the \framac release.
+	\item \acslpp is described in the companion \acslpp reference manual \cite[acslpp], also a part of the \framac release.
+    \item The plug-in is compatible with version 8 of Clang. 
+    This version of Clang supports C++ versions through C++17 
+    (cf. \url{https://clang.llvm.prg/cxx_status.;html}. 
+    However, \fclang may not support all of the features of C++ within annotations.
 \end{itemize}
 
-
-Notes
-\begin{itemize}
-	\item Which version of Clang?
-	\item Clang (8) support C++98 (except exported templates, later removed) and C++11 and current draft standard for C++1y 
-	\item see https://clang.llvm.org/docs/UsersManual.html\#cxx for supported features in clang C++
-\end{itemize}
-
-%The \fclang version you are using is indicated by the
-%command \texttt{frama-c -e-acsl-version}\optionidx{-}{e-acsl-version}. \fclang
-%automatically translates an annotated C program into another program that fails
-%at runtime if an annotation is violated. If no annotation is violated, the
-%behavior of the new program is exactly the same as the one of the original
-%program.
-
-
-%This manual does \emph{not} explain how to install the \eacsl plug-in.  For
-%installation instructions please refer to the \texttt{INSTALL} file in the
-%\eacsl distribution. \index{Installation} Furthermore, even though this manual
-%provides examples, it is \emph{not} a full comprehensive tutorial on
-%\framac or \eacsl.
-
-% You can still refer to any external
-% tutorial~\cite{rv13tutorial} for additional examples.

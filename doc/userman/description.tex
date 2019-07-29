@@ -2,7 +2,28 @@
 
 \chapter{Installation}
 
-TBD - installation instructions
+\fclang is currently still experimental and not part of regular \framac releases. It must be built from source and added to a \framac installation.
+The instructions for doing so are provided at 
+\url{https://frama-c/colm/frama-clang.html}.
+
+\fclang depends on two software packages:
+\begin{itemize}
+\item A current version of \framac itself
+\item An installation of Clang, which is available as part of LLVM,
+which itself is available from \url{http://releases.llvm.org}.
+\end{itemize}
+
+Building and installing \fclang has two effects:
+\begin{itemize}
+\item The \fclang executable files are installed within the \framac installation
+\item The include files containing \acslpp specifications of C++ library functions
+are copied to \verb|$FRAMAC_SHARE/libc| and 
+\verb|$FRAMAC_SHARE/libc++|, where \verb|$FRAMAC_SHARE| is the path
+given by the command \lstinline|frama-c-config -print-share-path|.
+\end{itemize}.
+These include files are replacements for the standard system include files.
+They should have the same definitions of C and C++ functions and classes, but
+with \acslpp annotations giving their specifications.
 
 \chapter{Running the plug-in}
 
@@ -16,7 +37,8 @@ reinstalling the plugin.
 \section{Frama-clang executable}
 The plug-in operates by invoking the executable \irg
 on each file identified as C++, in turn. 
-For each file it produces a temporary output file containing the C AST, which is then given as input to frama-c. This executable is a single-file-at-a-time command-line executable only. 
+For each file it produces a temporary output file containing the C AST, which is then given as input to \framac. 
+This executable is a single-file-at-a-time command-line executable only. 
 Various options control its behavior.
 
 The file-system path identifying the executable is provided by the \textbf{-cxx-clang-command <cmd>}
@@ -24,6 +46,14 @@ option and is \irg by default. The path may be absolute; if it is a relative pat
 
 
 \section{Frama-clang options}
+
+The options controlling \fclang are of two sorts:
+\begin{itemize}
+\item options known to \framac are interpreted and passed on to \fclang when
+\irg is invoked, perhaps with a different option name
+\item options known to \fclang directoy (and not ot \framac) must be 
+included in the internal command that invokes \irg using the \option{-cpp-extra-args} option. These options are described in \S\ref{sec:standalone}.
+\end{itemize}
 
 The options known to the \fcl plugin are processed by the \fc kernel when listed on the \fc command-line. 
 The use of the \fc command-line is described in the core \fc 
@@ -61,13 +91,22 @@ TODO
 TODO
 
 
-\chapter{Running the frama-clang front-end standalone}
+\section{Controlling output}
 
-In normal use within \fc, the \irg executable is
+TODO
+
+- make warnings errors
+- stop om first error
+- supplying an exisintg IRG file to frama-c
+
+\chapter{Running the \fclang front-end standalone}
+\label{sec:standalone}
+
+In normal use within \framac, the \irg executable is
 invoked automatically. However, it can also be run standalone.
 In this mode it accepts command-line options and a single file;
 it produces a C AST representing the translated C++, in a text format 
-of the CIL (C Intermediate language). [TODO - or is it CABS]
+of the CIL (C Intermediate language).
 
 \section{Clang options}
 
@@ -83,7 +122,7 @@ You can see a list of options by running
 The most significant options for  \irg are these:
 \begin{itemize}
 	\item \option{-I <dir>} -- adds a directory to the include file search path. Using absolute paths is recommended; relative paths are relative to TODO.
-	\item \option{-o <file>} -- specifies the location of the output file (in this case, the file to contain the generated AST). Using absolute paths is recommended; relative paths are relative to TODO.
+	\item \option{-o <file>} -- specifies the location of the output file (that is, the file to contain the generated AST). The output path may be absolute or relative to the current working directory.
 	\item \option{-std=...} -- the input programming language (default is \lstinline|-std=c++11|)
 	\item \option{-w} -- suppress warnings
 	\item \option{-{-}version} -- print version information
@@ -94,23 +133,24 @@ The most significant options for  \irg are these:
 There are also options that are specific to \fcl.
 These are listed below:
 \begin{itemize}
-	\item \option{-{-}stop-annot-error} -- if set, then parsing stops on the first error; default is off
-	\item \option{-{-}gen-impl-method} -- TODO
-	\item \option{-{-}exit-code} -- if set, then the exit code of \irg is 1 if errors occur; this is not the default because then \lstinline|frama-c| would terminate upon
-	any error in \lstinline|framaCIRGen|
-	\item \option{-{-}no-exit-code} -- disables \option{-{-}exit-code}
 	\item \option{-{-}info=<n>} -- sets the level of informational messages to \textbf{n}; 0 is completely quiet; increasing values are
 	more verbose. \option{-{-}info} sets the level to 1; 
 	\option{-{-}no-info} sets the level to 0. The \lstinline|frama-c| option \option{-fclang-msg-key=parse} is equivalent to setting a value of 1.
 	\item \option{-{-}warn=<n>} -- sets the level of parser warning messages to \textbf{n}; 0 is completely quiet; increasing values are
 more verbose. \option{-{-}warn} sets the level to 1; 
-\option{-{-}no-warnyyp} sets the level to 0. The \lstinline|frama-c| option \option{-fclang-warn-key=parse} is equivalent to setting a value of 1.
+\option{-{-}no-warn} sets the level to 0. The \lstinline|frama-c| option \option{-fclang-warn-key=parse} is equivalent to setting a value of 1.
 
 	\item \option{-{-}debug=<n>} -- sets the level of parser debug messages to \textbf{n}; 0 is completely quiet; increasing values are
 more verbose. \option{-{-}debug} sets the level to 1; 
-\option{-{-}no-debug} sets the level to 0. The \lstinline|frama-c| option \option{-fclang-debug=<n>} is equivalent to setting a value of \textbf{n}.
-In particular, a debug value of 1 shows the command-line that invokes
-\irg.
+\option{-{-}no-debug} sets the level to 0. 
+The \lstinline|frama-c| option \option{-fclang-debug=<n>} is equivalent to setting a value of \textbf{n}.
+In particular, a debug value of 1 shows the command-line that invokes \irg.
+	\item \option{-{-}stop-annot-error} -- if set, then parsing stops on the first error; default is off
+	\item \option{-{-}gen-impl-method} -- TODO
+	\item \option{-{-}exit-code} -- if set, then the exit code of \irg is 1 if errors occur; this is not the default because then \lstinline|frama-c| would terminate upon
+	any error in \lstinline|framaCIRGen|
+	\item \option{-{-}no-exit-code} -- disables \option{-{-}exit-code}, so that the exit code is always 0.
+
 \item TODO: -b -x -o -v
 	
 \end{itemize}
