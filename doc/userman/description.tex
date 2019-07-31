@@ -91,19 +91,20 @@ shows all \fcl-specific options.
 
 The most important of the options are these:
 \begin{itemize}
+    \item \option{-kernel-h}, \option{-fclang-h} -- help information about \fc, the \fc kernel and the \fcl plug-in
+ption{-help}, 
 	\item \option{-cpp-extra-args <string>} -- the single string argument to this option is \textit{prepended} to the command-line when 
 	\lstinline|frama-clang| is invoked internally. It is particularly 
 	important for adding include directories (\lstinline|-I|) and
 	other options to be passed on to the clang compiler or the \irg executable. 
 	Multiple instances of this option have a cumulative effect, in order (rather
 	than later instances replacing earlier ones).
+    \item \option{-print} -- prints out the input file seen by \fc; when \fcl is being used this is the input file after pre-processing and translation from C++ to C. Thus this output can be useful to see (and debug) what the \fcl plug-in ahs done.
 	\item \option{-machdep <arg>} -- sets the target machine architecture, cf. \S\ref{sec:bit}
-	\item \option{-arg <arg>} -- TODO
 	\item \option{-fclang-msg-key <categories>} -- sets the amount of informational messages
 	\item \option{-fclang-warn-key <categories>} -- sets the amount and behavior of warnings
 	\item \option{-fclang-verbose <n>} -- sets the amount of information from the \fclang plug-in
 	\item \option{-fclang-debug <n>} -- sets the amount of debug information from the \fclang plug-in
-		\item TODO
 \end{itemize}
 
 \section{Include directories}
