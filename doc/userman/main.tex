@@ -75,6 +75,40 @@ which received funding from the European Union's 2020
 Research and Innovation Program under grant agreement
 No. 731453.
 
+\section*{TODO}
+
+These items are not yet addressed
+\begin{itemize}
+\item (Introduction) Verify the version of Clang supported
+\item The custom build instructions with a prefix to a temp directory fail
+\item Sort out the interactions among the options -verbose -debug -quiet -fclang-debug -fclang-verbose -fclang-msg-key -fclang-warn-key
+\item Sort out and describe interactions among -annot -pp-annot and frama-clang
+\item frama-clang info/warn/error messages are not yet properly categorized and integrated with -fclang-log, -fclang-msg-key, fclang-warn-key. In particular, clang messages are completely independent
+\item Add comments about using system header files
+\item Remove \$FRAMAC\_SHARE from the default command-line, and builtin.h from \$FRAMAC\_SHARE
+\item Comment on the demangling options
+\item Comment on printing out the preprocessed file
+\item \irg options are not included in -fclang-h
+\item -print option to \irg
+\item Review the clang and \irg options
+\item Fix how to do custom ASTs
+\item decribe the framaCIRGen options: -x -b -v --gen-impl-meth
+\item Comment on handling of unicode in the preprocessor
+\item Review the preprocessor tokens
+\end{itemize}
+
+Bugs
+\begin{itemize}
+\item framaCIRGen -help expects an argument
+\item non-clang options not included in framaCIRGen -help
+\item The -o option is required
+\item What is the -w option
+\item framaCIRGen -o prints help summary twice
+\item it appears that trigraph processing cannot be turned off, is on by default for framaCIRGen but off by default for clang++; not sure why
+\item it does not seem that clang options are passed through, e.g. -fdollars-in-identifiers; framaCIRGen defaults are different than clang
+\item preprocessor does not concatenate string literals
+\end{itemize}
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -82,7 +116,7 @@ No. 731453.
 \include{description}
 \include{limitations}
 
-\include{preprocessing}http://web.ift.uib.no/Teori/KURS/WRK/TeX/symALL.html
+\include{preprocessing}
 \include{grammar}
 
 

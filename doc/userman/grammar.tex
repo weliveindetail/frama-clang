@@ -1,23 +1,62 @@
-\newcommand{\lang}{C++}
+\newcommand{\lang}{C++\xspace}
 \chapter{Grammar and parser for \acslpp}
 \label{sec:grammar}
 
-This section summarizes some of the technical implementation considerations in writing a parser for \acslpp within \fclang. This material may be useful for developers and maintainers of \fclang; it is not needed by users of \fclang.
+This section summarizes some of the technical implementation considerations in writing a parser for \acslpp within \fclang. 
+This material may be useful for developers and maintainers of \fclang; it is not needed by users of \fclang.
 
-Recall that \fclang uses clang to parse \lang and a custom parser to parse \acslpp annotations, jointly producing a representation of the \lang+\acslpp source input in the Frama-C intermediate language. The first version of the \acslpp custom parser, swritten during the STANCE project, used a hand-written bison-like parser, but with function pointers to record state and actions rather than using a tool-generated table to drive the parsing. This design proved to be too brittle and difficult to efficiently change as new features were added to \acslpp. Consequently during the VESSEDIA project, the scanner and parser were completely rewritten, largely retaining the previous design's connections to clang, token definitions, and name lookup and type resolution.
+Recall that \fclang uses clang to parse \lang and a custom parser to parse \acslpp annotations, jointly producing a representation of the \lang and \acslpp source input in the Frama-C intermediate language. 
+The first version of the \acslpp custom parser, written during the STANCE project, used a hand-written bison-like parser, but with function pointers to record state and actions rather than using a tool-generated table to drive the parsing. 
+This design proved to be too brittle and difficult to efficiently evolve as new features were added to \acslpp. 
+Consequently during the VESSEDIA project, the scanner and parser were completely rewritten, largely retaining the previous design's connections to clang, token definitions, and name lookup and type resolution.
 
-The new parser uses a recursive descent design inn which the names of functions doing the parsing can match the names of non-terminals in the grammar. Consequently the implementation of the parser is much more readable, human checkable, and modifiable as the \acslpp language evolves. The drawback of this design is that \acslpp is not LL(1); it is not even LL(k) for fixed k. Thus some amount of backtracking is required. The offending features are mostly inherited from \lang. The next few subsections describe the problematic aspects of \acslpp and how they are addressed.
+The new parser uses a recursive descent design in which the names of functions doing the parsing can match the names of non-terminals in the grammar. 
+Consequently the implementation of the parser is much more readable, human checkable, and modifiable as the \acslpp language evolves. 
+The drawback of this design is that \acslpp is not LL(1); it is not even LL(k) for fixed k. 
+Thus some amount of backtracking is required. The offending features are mostly inherited from \lang. 
+The next few subsections describe the problematic aspects of \acslpp and how they are addressed.
 
-The principal goal of an LL(k) forumulation of a grammar is to be able to predict which grammar production is being seen in the input stream from a small amount of look-ahead.
-Most \acslpp constructs start with a unique keyword (e.g., clauses begin with \lstinline|requires|, \lstinline|ensures| etc.) which serves this purpopse. But the constructs inherited from \lang pose some challenges.
+The principal goal of an LL(k) formulation of a grammar is to be able to predict which grammar production is being seen in the input stream from a small amount of look-ahead.
+Most \acslpp constructs start with a unique keyword (e.g., clauses begin with \lstinline|requires|, \lstinline|ensures| etc.) which serves this purpopse. 
+But the constructs inherited from \lang pose some challenges.
 
 \begin{itemize}
-\item \textbf{Left recursion}. Expression grammars are typically left recursive. However, it is well-known how to factor out left recursion. The precedence order of operators is largely hard-coded into the grammar implementation; the usual left recursion poses no particular challenge.
-\item {terms vs. predicates}. \acslpp distinguishes terms and predicates, following the distinction between propositional and predicate logic. However, terms and predicates have very similar grammars. Furthermore, \acslpp allows boolean-value terms to be implicitly converted to predicates and allows predicates to be used within terms (such as for the conditional sub-expression in a ternary expression). This makes it not possible to distinguish terms and predicates inn top-down parsing. However, Frama-C has different AST nodes for the two, so it would require a very significant refactoring of Frama-C and all its plugins to unify terms and predicates (as other specification languages have done). Note that this problem is a challenge for any parser design. The previous and current parser designs adopted the same solution; maintain two parallel parses of expressions --- one as a term and one as a predicate. Error messages are emitted only when both parses fail or when a particular grammar production call for a particular type (term or predicate) and that one is not available.
-\item{terms vs. tsets}. TODO
-\item \textbf{cast vs. parenthesized expression} To determine whether an input like \lstinline|(T)+x| is (a) the sum of the parenthesized expression \lstinline|(T)| and \lstinline|x| or (b) a cast of \lstinline|x| to the type \lstinline|T|, one must know whether \lstinline|T| is a variable or type. This is a classic problem in parsing \lang; it requires that identifiers be known to be either type names or variable names in the scanner. In addition, \lstinline|T| here can be an arbitrary type expression. For example, in \lang, a type expression can contain pointer operators that can look, at least initially like multiplications and they can contain template instantiations that look initially like comparisons. \fclang handles this situation by allowing a backtrackable parse. When a left parenthesis is parsed in an expression context, the parser proceeds by attempting a parse of a cast expression. If the contents of the parenthesis pair is successfully parsed as a type expression, it is assumed to be a cast expression. If such a parse fails, no error messages are emitted; rather the parse is rewound and proceeds again assuming the token sequence to be a parenthesized expression.
-\item \textbf{set comprehension}. The set comprehension expression follows traditional mathematics: \lstinline: { $expr$ | $binders$ ; $predicate$ }:. This structure poses two difficulties for parsers. First, the expression may contain bitwise-or operators, so it is not known to the parser whether an occurence of \verb:|: is the beginning of the binders or is just a bitwise-or operator. Second, the expression will use the variables declared in the binders section. However, the binders are not seen until after the expression is scanned. Note that these problems are not unique to a recursive descent design; they would challenge a LALR parser just as much. \textit{This particular feature is not yet implemented in \fclang, nor in Frama-C and so is not yet resolved in the parser implementation.}
-\item \textbf{labeled expressions}. \acslpp allows expressions to have labels, designated by a \lstinline|id : | prefix. Thus the parser cannot know whether an initial \lstinline|id| is a variable or just a label until the colon is parsed. Thus this situation requires a lookahead of 2 tokens.
+\item \textbf{Left recursion}. Expression grammars are typically left recursive, which is problematic for recursive descent parsers. 
+However, it is well-known how to factor out left recursion. 
+The precedence order of operators is largely hard-coded into the grammar implementation; the usual left recursion poses no particular challenge.
+
+\item \textbf{terms vs. predicates}. \acslpp distinguishes terms and predicates, following the distinction between propositional and predicate logic. 
+However, terms and predicates have very similar grammars. 
+Furthermore, \acslpp allows boolean-value terms to be implicitly converted to predicates and allows predicates to be used within terms (such as for the conditional sub-expression in a ternary expression). 
+This makes it not possible to distinguish terms and predicates in top-down parsing. 
+However, Frama-C has different AST nodes for the two, so it would require a very significant refactoring of Frama-C and all its plugins to unify terms and predicates (as other specification languages have done). 
+Note that this problem is a challenge for any parser design. 
+The previous and current parser designs adopted the same solution: maintain two parallel parses of expressions --- one as a term and one as a predicate. 
+Error messages are emitted only when both parses fail or when a particular grammar production calls for a particular type (term or predicate) and that one is not available.
+
+\item \textbf{terms vs. tsets}. Similarly, the ACSL++ language definition defines tsets (sets of locations) with grammar productions separately from terms. 
+However, the grammars for the two are very similar. 
+It is much easier to parse and to implement if tsets are seen as terms with a specific type, namely sets. 
+Many operations on a data type are also simply element-by-element operations on sets of such data types.
+Also, errors found during type-checking can be associated with more readable error messages than those found during parsing.
+
+\item \textbf{cast vs. parenthesized expression} To determine whether an input like \lstinline|(T)-x| is (a) the difference of the parenthesized expression \lstinline|(T)| and \lstinline|x| or (b) a cast of \lstinline|-x| to the type \lstinline|T|, one must know whether \lstinline|T| is a variable or type. 
+This is a classic problem in parsing \lang; it requires that identifiers be known to be either type names or variable names in the scanner. 
+In addition, \lstinline|T| here can be an arbitrary type expression. 
+For example, in \lang, a type expression can contain pointer operators that can look, at least initially like multiplications and they can contain template instantiations that look initially like comparisons. 
+\fclang handles this situation by allowing a backtrackable parse. 
+When a left parenthesis is parsed in an expression context, the parser proceeds by attempting a parse of a cast expression. If the contents of the parenthesis pair is successfully parsed as a type expression, it is assumed to be a cast expression. 
+
+If such a parse fails, no error messages are emitted; rather the parse is rewound and proceeds again assuming the token sequence to be a parenthesized expression.
+
+\item \textbf{set comprehension}. The syntax of the set comprehension expression follows traditional mathematics: \lstinline: { $expr$ | $binders$ ; $predicate$ }:. This structure poses two difficulties for parsers. First, the expression may contain bitwise-or operators, so it is not known to the parser whether an occurence of \verb:|: is the beginning of the binders or is just a bitwise-or operator. Second, the expression will use the variables declared in the binders section. However, the binders are not seen until after the expression is scanned. Note that these problems are not unique to a recursive descent design; they would challenge a LR parser just as much. \textit{This particular feature is not yet implemented in \fclang, nor in Frama-C and so is not yet resolved in the parser implementation.}
+
+\item \textbf{labeled expressions}. \acslpp allows expressions to have labels, designated by a \lstinline|id : | prefix. 
+So the parser cannot know whether an initial \lstinline|id| is a variable or just a label until the colon is parsed. 
+Thus this situation requires a lookahead of 2 tokens.
+
+Ambiguity arises with the use of a colon for the else part of a conditional expression. So in an expression such as 
+\lstinline| a ? b ? c : d : e : f|, it is not know whether \lstinline|c| or \lstinline|d| or \lstinline|e| is a label. Parenthesizing must be used to solve this problem. \fcl presumes that if the then part of a conditional expression is being parsed, a following colon is always the colon introducing the else part. That is, the binding to a conditional expression has tighter precedence than to a naming expression.
 
 \end{itemize}
 

@@ -9,13 +9,13 @@ preprocessing within \acslpp annotations itself.
 
 As a refresher, the C/C++ preprocessor (CPP) (cf. \url{https://gcc.gnu.org/onlinedocs/cpp/}) conceptually implements the following operations on a C++ source file:
 \begin{itemize}
-	\item The input is read and broken it into a sequence of physical lines according to the line terminators (ASCII character sequences \verb|\\r|, \verb|\\n|, or \verb|\\r\\n|).
-	\item Each C trigraph is replaced by its corresponding character.
+	\item The input is read and broken into a sequence of physical lines according to the line terminators (ASCII character sequences \verb|\r|, \verb|\n|, or \verb|\r\n|).
+	\item Each C trigraph is replaced by its corresponding character (if trigraph processing is enabled).
 	\item Any backslash-whitespace-line-terminator sequence is removed and the line that it ends is combined with the following line.
 	\item Comments are replaced by single spaces. This requires tokenizing the input to avoid recognizing comment markers within strings as indicating a comment. Note that this allows block comments to hide line terminations.
 	\item The input text is divided into preprocessing tokens grouped in logical lines. Each preprocessor token becomes a compiler token (except where \#\# concatenation occurs). However, \acslb tokens are slightly different, as described below.
-	\item The source text is transformed according to any preprocessing directives contained within it. Each preprocessing directive must be contained within one logical line
-    \item adjacent string literals (separated only by white-space or line-endings) are concatenated into a single string literal.
+	\item The source text is transformed according to any preprocessing directives contained within it. Each preprocessing directive must be contained within one logical line. The result has no preprocessing directives remaining.
+    \item Adjacent string literals (separated only by white-space or line-endings) are concatenated into a single string literal.
 	
 \end{itemize}
 The result is a sequence of preprocessing tokens that is passed on to the 
@@ -23,22 +23,22 @@ remaining compiler phases.
 
 \subsection{Trigraphs}
 
-TBD - are these supported by clang?
+Trigraphs are defined for C++ but will currently be removed in C++17. Since trigraph processing by clang occurs before any recognition of comments, trigraphs in \acslpp annotations are translated. As they will be removed from C++, they are not recommended for use in \acslpp annotations.
 
 \subsection{Digraphs}
-Digraphs are alternate spellings of preprocessort tokens, in particular, of
-punctuation character sequences. No digraphs are defined in \acslpp for use
-in \acslpp annotations.
+Digraphs are alternate spellings of preprocessor tokens, in particular, of
+punctuation character sequences. Digraphs in \acslpp annotations are translated just as they are in C++ (by clang).
 
 \subsection{Preprocessor tokens}
 Preprocessor tokens (per CPP) belong to one of five categories. White space (space, tab) serves only to separate tokens; it is not needed between tokens whose concatenation is not a single token. Line terminators also separate tokens and also delineate certain features: preprocessing directives and string literals do not extend over more than one (logical) line.
 \begin{itemize}
 	\item identifiers: character sequences that match the regular expression \\
-\centerline{\texttt{[a-zA-Z\_][a-zA-Z\_0-9]*}} .\\ Dollar signs are allowed as non-digit identifier characters if the clang option \texttt{-fdollars-in-identifiers} is used. (TBD - on by default?)
+\centerline{\texttt{[a-zA-Z\_][a-zA-Z\_0-9]*}} \\ Dollar signs are allowed as non-digit identifier characters if the clang option \texttt{-fdollars-in-identifiers} is enabled. 
+Enable with \texttt{-fdollars-in-identifiers} ; disable with \texttt{-fno-dollars-in-identifiers} ; enabled by default.
 	\item number: character sequences that match the regular expression  \\
-\centerline{\texttt{[.]?[0-9]([0-9a-zA-Z.]|[eEpP][+-]))*}} . \\
-(TBD - dollar signs also allowed?)
-	\item string literals: character sequence enclosed in " " or ' ' or < >, with \textbackslash " for " in a double-quoted literal (that is not a header file name) and \' for ' in a single-quoted literal.
+\centerline{\texttt{[.]?[0-9]([0-9a-zA-Z.]|[eEpP][+-]))*}}  \\
+
+	\item string literals: character sequence enclosed in " " or ' ' or < >, with \textbackslash " for " in a double-quoted literal (that is not a header file name) and \' for ' in a single-quoted literal. After all other preprocessor phases are complete, the preprocessort concatenates adjacent string literals.
 	\item punctuator: all single non-alphanumeric printable characters except 
 \verb|@|, \verb|#| and \verb|`|, and all multi-punctuation sequences that meaningful to C/C++ (e.g. > and >{>}= ), but not an arbitrary multi-punctuation character sequence.
 	\item other tokens: \verb|@|, \verb|#|, \verb|`| and all non-ASCII single characters.
@@ -46,18 +46,16 @@ Preprocessor tokens (per CPP) belong to one of five categories. White space (spa
 The above token definitions imply that arbitrary text can always be broken into
 legitimate preprocessor tokens, with the exception of a few characters and of badly formed unicode sequences.
 
-TODO - unicode characters
 
 Note that not all preprocessor tokens are valid C/C++ parser tokens. Tokens in the other category have no meaning to C/C++ and the \texttt{number} category allows many sequences that are not legal C/C++ numeric tokens. These tokens will generally provoke compiler errors. For example in C/C++, 0..2 is one token and is not interpreted as two consecutive numeric tokens.
 
 \acsl and \acslpp have slightly different tokens than the above, so the preprocessor tokens need to be re-tokenized in some cases:
 \begin{itemize}
-	\item The \verb|@| token is a whitespace character in \acslb.
+	\item The \verb|@| token is a whitespace character in the interior of a \acslb annotation.
 	\item There are some \acslb multi-character punctuator tokens that are not
 	single preprocessor tokens:
 	\begin{itemize}
-        \item[] all \acslb keywords that begin with a backslash, such as
-         \verb|\result|.
+        \item[] all \acslb keywords that begin with a backslash, such as \verb|\result|.
 		\item \verb|==>| (logical implies)
 		\item \verb|-->| (bit-wise implies)
 		\item \verb|<==>| (logical equality)
@@ -89,15 +87,15 @@ The preprocessing language contains a fixed set of preprocessing directive ident
 \end{itemize}
 In addition, identifiers that have been defined (by a \#define directive) as macros are expanded according to the macro expansion rules (not described here).
 
-Now \acslb annotations are contained in C/C++ comments. 
-Consequently, any directives contained in the annotation are not seen when the source file is processed simply as a C/C++ source file. However, the effect of some directives lasts until the end of the source file. 
+Because \acslb annotations are contained in C/C++ comments,
+any directives contained in the annotation are not seen when the source file is processed simply as a C/C++ source file. However, the effect of some directives lasts until the end of the source file. 
 Accordingly, \acslpp imposes constraints on the directives that may be present within annotations:
 \begin{itemize}
 	\item \texttt{define} and \texttt{undef} are not permitted in an annotation
 	\item \texttt{if}, \texttt{ifdef}, \texttt{ifndef}, \texttt{elif}, \texttt{else}, \texttt{endif} are permitted but must be completely nested within the annotation in which they appear (an \texttt{endif} and its corresponding \texttt{if}, \texttt{ifdef}, or \texttt{ifndef} directive must be in the same annotation comment.)
 	\item \texttt{warning} and \texttt{error} are permitted
 	\item \texttt{include} is permitted, but will cause errors if it contains, as is almost always the case, either \texttt{define} or \texttt{pragma} directives
-	\item \texttt{line} - TBD
+	\item \texttt{line} is not permitted
 	\item \texttt{pragma} is not permitted
 \end{itemize}
 
