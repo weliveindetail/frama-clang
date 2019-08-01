@@ -8,22 +8,26 @@ The instructions for doing so are provided at
 
 \fclang depends on two software packages:
 \begin{itemize}
-\item A current version of \framac itself. It is highly recommended to install \framac using \lstinline|opam|, as described in the installation procedures for \framac (\url{https://frama-c.com/download.html})
+\item A current version of \framac itself. It is highly recommended to install \framac using \lstinline|opam|, as described in the installation procedures for \framac (\url{https://frama-c.com/download.html}). 
+Version \fclangversion of \fclang is compatible with version \fcversion of \framac.
 \item An installation of Clang, which is available as part of LLVM,
 which itself is available from \url{http://releases.llvm.org}.
+Version \fclangversion of \fclang is compatible with version \clangversion of \clang.
 \end{itemize}
 
 Building and installing \fclang has two effects:
 \begin{itemize}
-\item The \fclang executable files are installed within the \framac installation. In particular, if \framac has been installed using \lstinline|opam|, then \irg will be installed in the 
-\lstinline|opam| \lstinline|bin| directory. You must be sure that this directory is on your system \verb|$PATH| (try \lstinline|which framaCIRGen| after installation to be sure).
-\item Include files containing \acslpp specifications of C++ library functions
+\item The \fclang executable files are installed within the \framac installation. 
+In particular, if \framac has been installed using \lstinline|opam|, then the principal executable  \irg will be installed in the 
+\lstinline|opam| \lstinline|bin| directory. 
+You must be sure that this directory is on your system \verb|$PATH| (try \lstinline|which framaCIRGen| after installation to be sure).
+\item Include files containing \acslpp specifications of \cpp library functions
 are copied to \verb|$FRAMAC_SHARE/libc| and 
 \verb|$FRAMAC_SHARE/frama-clang/libc++|, where \verb|$FRAMAC_SHARE| is the path
 given by the command \lstinline|frama-c-config -print-share-path|.
 \end{itemize}
 These include files are replacements for the standard system include files.
-They should have the same definitions of C and C++ functions and classes, but
+They should have the same definitions of \C and \cpp functions and classes, but
 with \acslpp annotations giving their specifications.
 
 The plugin can be built by hand from source using the following commands. Create a new directory to which you download and unpack the source distribution. Then \lstinline|cd| into the source directory itself (one level down) and execute:
@@ -34,52 +38,53 @@ autoconf -f
 make
 make install
 \end{listing-nonumber}
-\lstinline|<opamroot>| should be the absolute path of the root of the opam installation, e.g. something like \lstinline|~/.opam/4.05.0| or \lstinline|~/.opam/system|. If \framac has been installed independently of \lstinline|opam|, then set \lstinline|<opamroot>| above so that the location of the \framac executable (that is, the result of executing \lstinline|which frama-c|) is 
+\lstinline|<opamroot>| should be the absolute path of the root of the opam installation, e.g., something like \lstinline|~/.opam/4.05.0| or \lstinline|~/.opam/system|. If \framac has been installed independently of \lstinline|opam|, then set \lstinline|<opamroot>| above so that the location of the \framac executable (that is, the result of executing \lstinline|which frama-c|) is 
 \lstinline|<opamroot>/bin/frama-c|.
 
 \chapter{Running the plug-in}
 
-\section{C++ files}
-Once installed the plugin is run automatically by Frama-C on any C++ files listed on the command-line. C++ files are identified by their filename suffixes. The default suffixes recognized as C++ are these:
+\section{\cpp files}
+Once installed the plugin is run automatically by \framac on any \cpp files listed on the command-line. \cpp files are identified by their filename suffixes. The default suffixes recognized as \cpp are these:
 \lstinline| .cpp, .C, .cxx, .ii, .ixx, .ipp, .i++, .inl, .h, .hh|
 
 Currently this set of suffixes is compiled in the plugin (in file \texttt{frama\_Clang\_register.ml}) and can only be changed by recompiling and
 reinstalling the plugin.
 
 \section{Frama-clang executable}
-The plug-in operates by invoking the executable \irg (which must be on the system \verb|\$PATH|)
-on each file identified as C++, in turn. 
-For each file it produces a temporary output file containing the C AST, which is then given as input to \framac. 
+The plug-in operates by invoking the executable \irg (which must be on the system \verb|$PATH|)
+on each file identified as \cpp, in turn. 
+For each file it produces a temporary output file containing the \C AST, which is then given as input to \framac. 
 This executable is a single-file-at-a-time command-line executable only. 
 Various options control its behavior.
 
 The file-system path identifying the executable is provided by the \textbf{-cxx-clang-command <cmd>}
-option and is \irg by default. The path may be absolute; if it is a relative path, it is found by searching the system \verb|\$PATH|.
+option and is \irg by default. The path may be absolute; if it is a relative path, it is found by searching the system \verb|$PATH|.
 
-The launching of \irg by \framac includes the following options by default:
+The launching of \irg by \framac includes the following options by default. The \fc option \lstinline|-fclang-msg-key=clang| will show (among other information) the internal command-line being invoked.
 \begin{itemize}
 \item \verb|-target <target>| with the target being set according to the \lstinline|-machdep| and \lstinline|-target| options given to \framac (cf. \S\ref{sec:bit})
 \item \verb|-D__FC_MACHDEP_86_32| -- also set according to the chosen architecture
 \item \verb|-std=c++11| -- target C++11 features
 \item \verb|-nostdinc| -- use \fcl and \framac system header files, and not the compiler's own header files
-\item \verb|-I$FRAMAC_SHARE/frama-clangs/libc++ -I$FRAMAC_SHARE/libc| -- include the \fclang and \framac header files, which contain system library definitions with \acslpp annotations
+\item \verb|-I$FRAMAC_SHARE/frama-clangs/libc++ -I$FRAMAC_SHARE/libc| -- include the \fclang and \framac header files, which contain system library definitions with \acslpp annotations (the paths used are controlled by the \fc options \lstinline|-cxx-c++stdlib-path| annd \lstinline|-cxx-cstdlib-path|).
 \item \verb|-stop-annot-error| if the corresponding option (\lstinline|-fclang-warn-key=annot-error=abort|) is given to \framac
-\item options to set the level of info messages and warning messages
+\item options to set the level of info messages and warning messages, based on options on the \fc command-line
 \end{itemize}
 
 The PARSING section of the output of \lstinline|frama-c -kernel-h| lists some options for controlling the behavior described above. Also see the options listed by \lstinline|frama-c -fclang-h| such as \lstinline|-cxx-stdlib-path|, \lstinline|-cxx-cstdlib-path|, \lstinline|-cxx-nostdinc|, \lstinline|-cxx-stdinc|.
 
 \section{Frama-clang options}
 
-The options controlling \fclang are of three sorts:
+The options controlling \fclang are of four sorts:
 \begin{itemize}
 \item options known to the \framac kernel 
 \item options  \fcl plug-in has registered with the \fc kernel. These also are recognized by the \fc command-line.
 \item options known to \irg directly (and not to \fc) must be 
 included in the internal command that invokes \irg using the \option{-cpp-extra-args} option. These options are described in \S\ref{sec:standalone}.
+\item \clang options, which must be supplied using the \option{-cpp-extra-args} option, and are passed through \irg to \cl. See \S\ref{sec:standalone}.
 \end{itemize}
 
-The options known to the \fcl plugin are processed by the \fc kernel when listed on the \fc command-line. 
+The options in the first two categories are processed by the \fc kernel when listed on the \fc command-line. 
 The use of the \fc command-line is described in the core \fc 
 user guide.
 There are many kernel options that affect all plugins and many options specific to \fclang.
@@ -91,15 +96,15 @@ shows all \fcl-specific options.
 
 The most important of the options are these:
 \begin{itemize}
+\item \option{-help} -- introduction to \framac help
     \item \option{-kernel-h}, \option{-fclang-h} -- help information about \fc, the \fc kernel and the \fcl plug-in
-ption{-help}, 
 	\item \option{-cpp-extra-args <string>} -- the single string argument to this option is \textit{prepended} to the command-line when 
 	\lstinline|frama-clang| is invoked internally. It is particularly 
 	important for adding include directories (\lstinline|-I|) and
 	other options to be passed on to the clang compiler or the \irg executable. 
 	Multiple instances of this option have a cumulative effect, in order (rather
 	than later instances replacing earlier ones).
-    \item \option{-print} -- prints out the input file seen by \fc; when \fcl is being used this is the input file after pre-processing and translation from C++ to C. Thus this output can be useful to see (and debug) what the \fcl plug-in ahs done.
+    \item \option{-print} -- prints out the input file seen by \fc; when \fcl is being used this is the input file after pre-processing and translation from \cpp to \C. Thus this output can be useful to see (and debug) the results of \fcl's transformations.
 	\item \option{-machdep <arg>} -- sets the target machine architecture, cf. \S\ref{sec:bit}
 	\item \option{-fclang-msg-key <categories>} -- sets the amount of informational messages
 	\item \option{-fclang-warn-key <categories>} -- sets the amount and behavior of warnings
@@ -109,36 +114,41 @@ ption{-help},
 
 \section{Include directories}
 
-By default \irg is given the paths to the two directories containing the \fcl and \fc header files, which include \acslpp specifications for the C++ library functions. The default paths to these directories are set by the \lstinline|-cxx-c++stdlib-path| and \lstinline|-cxx-cstdlib-path| options.
+By default \irg is given the paths to the two directories containing the \fcl and \fc header files, which include \acslpp specifications for the \cpp library functions. The default paths to these directories are set by the \lstinline|-cxx-c++stdlib-path| and \lstinline|-cxx-cstdlib-path| options.
 
 Users typically have additional header files for their own projects. These are supplied to the \fcl preprocessor using the option \lstinline|-cpp-extra-args|.
 
-You can use \lstinline|-fclang-cpp-extra-args| instead of \lstinline|cpp-extra-args|; multiple such options also have a cumulative effect. the \fcl option only affects the \fcl plugin, whereas 
-\lstinline|cpp-extra-args| may be seen by other plugins as well, if such plugins do their own preprocessing. Also note that the presence of any instance of \lstinline|-fclang-cpp-extra-args| will cause uses of \lstinline|cpp-extra-args| to be ignored. 
+You can use \lstinline|-fclang-cpp-extra-args| instead of \lstinline|cpp-extra-args|; multiple such options also have a cumulative effect. 
+The \fcl option only affects the \fcl plugin, whereas 
+\lstinline|-cpp-extra-args| may be seen by other plugins as well, if such plugins do their own preprocessing. Also note that the presence of any instance of \lstinline|-fclang-cpp-extra-args| will cause uses of \lstinline|-cpp-extra-args| to be ignored. 
 
-The system header files supplied by \fcl may not include all C++ system files. Omissions should be reported to the \fc team.
+The system header files supplied by \fcl may not include all \cpp system files. Omissions should be reported to the \fc team.
 
-
+As an example, to perform wp checking of files \lstinline|a.cpp| and \lstinline|inc/a.h|, one might use the command-line \\
+\centerline{\lstinline|frama-c -cpp-extra-args="-Iinc" -wp a.cpp|}
 
 \section{32 and 64-bit targets}
 \label{sec:bit}
 
-\acslpp is for the most part machine-independent. There are some features of C++ that can be environment-dependent, such as the sizes of fundamental datatypes. Consequently, \framac has some options that allow the user to state what machine target is intended. The \fcl options are discussed in \S\ref{sec:fcloptions}.
+\acslpp is for the most part machine-independent. There are some features of \cpp that can be environment-dependent, such as the sizes of fundamental datatypes. Consequently, \framac has some options that allow the user to state what machine target is intended. The \fcl options are discussed in \S\ref{sec:fcloptions}.
 
 \begin{itemize}
-\item The \textbf{-machdep} option to \framac. See the allowed values using teh command \lstinline|frama-c -machdep help|. For example, with a value of x86\_32, \lstinline|sizeof(long)| has a value of 4, whereas with the option \textbf{-machdep x86\_64}, \lstinline|sizeof(long)| has a value of 8.
-\item Alternnately, the value of \textbf{-machdep} can be set instead using an environment variable: \lstinline|MACHDEP|. The variable can be set either in the shell environment or on the command line with \lstinline|-DMACHDEP=...|
+\item The \textbf{-machdep} option to \framac. See the allowed values using the command\\
+\centerline{ \lstinline|frama-c -machdep help|.}
+ For example, with a value of \lstinline|x86\_32|, \lstinline|sizeof(long)| has a value of 4, whereas with the option \textbf{-machdep x86\_64}, \lstinline|sizeof(long)| has a value of 8.
+\item Alternately, the value of \textbf{-machdep} can be set instead using an environment variable: \lstinline|\_\_FC\_MACHDEP|. The variable can be set either in the shell environment or on the command line with \lstinline|-D\_\_FC\_MACHDEP=...|
 
 \end{itemize}
 
 
 \section{Warnings, errors, and informational output}
 
-Output messages arise from multiple places: from the \fcl plugin, from the \irg lexer and parser, from the clang parser, and from the frama-c kernel (as well as from any other plugins that may be invoked, such as wp). They are controlled by a number of options within the \fc kernel and each plugin. Remember that clang and \irg options must be put in the \lstinline|-cpp-extra-args| option.
+Output messages arise from multiple places: from the \fcl plugin, from the \irg lexer and parser, from the \clang parser, and from the \framac kernel (as well as from any other plugins that may be invoked, such as wp). They are controlled by a number of options within the \fc kernel and each plugin. Remember that \cl and \irg options must be put in the \lstinline|-cpp-extra-args| option.
 
 \subsection{Errors}
 
-Error messages are always output. The key question is whether processing stops or continues with each error. Continuing can result in a cascade of unhelpful error messages, but stopping immediately can hide errors that occur later in source files.
+Error messages are always output. The key question is whether processing stops or continues u[on encountering an error. 
+Continuing can result in a cascade of unhelpful error messages, but stopping immediately can hide errors that occur later in source files.
 \begin{itemize}
 \item \lstinline|-Werror| is a clang and \irg option that causes any parser warnings to be treated as errors
 \item \lstinline|--stop-annot-error| is a \irg option that causes prompt termination on errors (default is to continue)
@@ -150,23 +160,23 @@ Error messages are always output. The key question is whether processing stops o
 The various categories of warnings from \fcl can be seen with the command \lstinline|frama-c -fclang-warn-key help|.
 Warning messages are emitted by default.
 
-Warning messages from \irg can be controlled with the \lstinline|-warn| option of ]\irg, or, equivalently, the \lstinline|-fclang-warn-key=parse| option of \fc.
+Warning messages from \irg can be controlled with the \lstinline|-warn| option of \irg, or, equivalently, the \lstinline|-fclang-warn-key=parse| option of \fc.
 
 \begin{itemize}
-\item the \irg option \lstinline|--no-warn| or \lstinline|-warn=0|turns off \irg warning messages
+\item the \irg option \lstinline|--no-warn| or \lstinline|-warn=0| turns off \irg warning messages
 \item the \irg option \lstinline|--warn=<n>|, with $n > 0$ turns on \irg warning messages; the higher the value $n$ the more messages
 \item the \irg option \lstinline|--warn| is the same as \lstinline|--warn=1|
 \item the \fc option \lstinline|-fclang-warn-key=parse=inactive| is the same as the \irg option  \lstinline|--warn=0|
 \item the \fc option \lstinline|-fclang-warn-key=parse=active| is the same as the \irg option  \lstinline|--warn=1|
 \end{itemize}
 
-The clang options are not currently integrated with the \fc warning and error key system.
+\textit{The clang options are not currently integrated with the \fc warning and error key system.}
 
 \subsection{Informational output}
 
 \textit{This section is not yet written}
 
-The clang informational output is not currently integrated with the \fc warning and error key system.
+\textit{The clang informational output is not currently integrated with the \fc warning and error key system.}
 
 \chapter{Running the \fclang front-end standalone}
 \label{sec:standalone}
@@ -174,27 +184,58 @@ The clang informational output is not currently integrated with the \fc warning 
 In normal use within \framac, the \irg executable is
 invoked automatically. However, it can also be run standalone.
 In this mode it accepts command-line options and a single input file;
-it produces a C AST representing the translated C++, in a text format 
-of the Cil (C Intermediate language).
+it produces a C AST representing the translated \cpp, in the Cil (C Intermediate language) text format.
+
+
+\section{\irg specific options}
+\label{sec:fcloptions}
+
+These options that are specific to \irg and must be specified by using \option{-cpp-extra-args}:
+\begin{itemize}
+	\item \option{-o <file>} -- specifies the name and location of the output file (that is, the file to contain the generated AST). The output path may be absolute or relative to the current working directory. \textit{This option is required.}
+	\item \option{-{-}info=<n>} -- sets the level of informational messages to \textbf{n}; 0 is completely quiet; increasing values are
+	more verbose. \\
+	\option{-{-}info} sets the level to 1 \\
+	\option{-{-}no-info} sets the level to 0\\
+	 The \lstinline|frama-c| option \option{-fclang-msg-key=parse} is equivalent to setting a value of 1.
+	
+	\item \option{-{-}warn=<n>} -- sets the level of parser warning messages to \textbf{n}; 0 is completely quiet; increasing values are
+more verbose. \option{-{-}warn} sets the level to 1\\
+\option{-{-}no-warn} sets the level to 0\\
+The \lstinline|frama-c| option \option{-fclang-warn-key=parse} is equivalent to setting a value of 1.
+
+	\item \option{-{-}debug=<n>} -- sets the level of parser debug messages to \textbf{n}; 0 is completely quiet; increasing values are
+more verbose\\
+ \option{-{-}debug} sets the level to 1\\
+\option{-{-}no-debug} sets the level to 0\\
+The \lstinline|frama-c| option \option{-fclang-debug=<n>} is equivalent to setting a value of \textbf{n}.
+In particular, a debug value of 1 shows the command-line that invokes \irg.
+
+	\item \option{-{-}stop-annot-error} -- if set, then parsing stops on the first error; default is off
+	\item \option{-{-}exit-code} -- if set, then the exit code of \irg is 1 if errors occur; this is not the default because then \lstinline|frama-c| would terminate upon
+	any error in \lstinline|framaCIRGen|
+	\item \option{-{-}no-exit-code} -- disables \option{-{-}exit-code}, so that the exit code is always 0.
+	
+\end{itemize}
 
 \section{Clang options}
 
-Frama-Clang is built on the Clang C++ parser. 
+Frama-Clang is built on the \clang \cpp parser. 
 As such, the \irg executable accepts the clang
 compiler options and passes them on to clang. There are many of these.
 Many of these are irrelevant to \fcl as they relate to 
 code generation, whereas \fcl only uses clang for parsing, name
-and type resolution.
+and type resolution, and producing the AST.
 You can see a list of options by running 
 \lstinline|framaCIRGen -help|
 
-The most significant options for  \irg are these:
+The most significant \cl options are these:
 \begin{itemize}
 	\item \option{-I <dir>} -- adds a directory to the include file search path. Using absolute paths is recommended; relative paths are relative to the current working directory.
-	\item \option{-o <file>} -- specifies the name and location of the output file (that is, the file to contain the generated AST). The output path may be absolute or relative to the current working directory. \textit{This option is required.}
-	\item \option{-std=...} -- the input programming language (default is \lstinline|-std=c++11|)
 	\item \option{-{-}version} -- print version information
 \end{itemize}
+
+Although \clang can process languages other than \cpp, \cpp is the only one usable with \fclang.
 
 %\section{Custom ASTs}
 %\lstset{keepspaces=true}
@@ -218,38 +259,4 @@ The most significant options for  \irg are these:
 %\end{itemize}
 %where \lstinline|ct| is an executable similar to\\
 %\centerline{\bf \texttt{for f in \$@ ; do cat \$\{f\%.*\}.ast ; done}}
-
-\section{\irg specific options}
-\label{sec:fcloptions}
-
-There are also options that are specific to \irg.
-These are listed below:
-\begin{itemize}
-	\item \option{-o <file>} -- specifies the given file as the output file for the translated AST (file is overwritten)
-	\item \option{-{-}info=<n>} -- sets the level of informational messages to \textbf{n}; 0 is completely quiet; increasing values are
-	more verbose. \\
-	\option{-{-}info} sets the level to 1 \\
-	\option{-{-}no-info} sets the level to 0\\
-	 The \lstinline|frama-c| option \option{-fclang-msg-key=parse} is equivalent to setting a value of 1.
-	
-	\item \option{-{-}warn=<n>} -- sets the level of parser warning messages to \textbf{n}; 0 is completely quiet; increasing values are
-more verbose. \option{-{-}warn} sets the level to 1\\
-\option{-{-}no-warn} sets the level to 0\\
-The \lstinline|frama-c| option \option{-fclang-warn-key=parse} is equivalent to setting a value of 1.
-
-	\item \option{-{-}debug=<n>} -- sets the level of parser debug messages to \textbf{n}; 0 is completely quiet; increasing values are
-more verbose\\
- \option{-{-}debug} sets the level to 1\\
-\option{-{-}no-debug} sets the level to 0\\
-The \lstinline|frama-c| option \option{-fclang-debug=<n>} is equivalent to setting a value of \textbf{n}.
-In particular, a debug value of 1 shows the command-line that invokes \irg.
-
-	\item \option{-{-}stop-annot-error} -- if set, then parsing stops on the first error; default is off
-	\item \option{-{-}exit-code} -- if set, then the exit code of \irg is 1 if errors occur; this is not the default because then \lstinline|frama-c| would terminate upon
-	any error in \lstinline|framaCIRGen|
-	\item \option{-{-}no-exit-code} -- disables \option{-{-}exit-code}, so that the exit code is always 0.
-	\item \option{-{-}gen-impl-method} -- TODO
-	
-\end{itemize}
-
 

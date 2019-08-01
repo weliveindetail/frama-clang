@@ -2,8 +2,8 @@
 
 The development of the \fclang plug-in is still ongoing.
 \fclang does not implement all of current C++ nor all of 
-\acslpp as defined in its language definition.\cite{acslpp}
-The mosty important such limitations are described in this section.
+\acslpp as defined in its language definition\cite{acslpp}.
+The most important such limitations are listed in this section.
 
 \section{Implementation of C++}
 
@@ -11,16 +11,19 @@ The mosty important such limitations are described in this section.
 
 The following C++ features are not implemented in \acslpp.
 \begin{itemize}
-\item \acslpp definitions within template declarations
-\item digraphs within \acslpp annotations
 \item preprocessing is restricted within \acslpp annotations (cf. \S\ref{sec:preprocessing})
 \end{itemize}
 
 \section{Implementation of \acslpp}
 
+These \acslpp features are not yet implemented
 \begin{itemize}
 
+\item \acslpp definitions within template declarations
+\item \acslpp specification for standard \cpp library functions are still quite limited
 \item ghost declarations
 \item model declarations
 \item set comprehensions
+\item frama-clang info/warn/error messages are not yet properly categorized and integrated with -fclang-log, -fclang-msg-key, fclang-warn-key. In particular, clang messages are completely independent
+
 \end{itemize}
