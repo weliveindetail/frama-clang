@@ -97,7 +97,7 @@ No. 731453.
 
 These items are not yet addressed
 \begin{itemize}
-\item Add/revise list of conntributors/reviewers
+\item Add/revise list of contributors/reviewers
 \item (Introduction) Verify the version of \framac and \clang supported
 \item Sort out the interactions among the options -verbose -debug -quiet -fclang-debug -fclang-verbose -fclang-msg-key -fclang-warn-key
 \item Sort out and describe interactions among -annot -pp-annot and frama-clang options
@@ -108,8 +108,6 @@ These items are not yet addressed
 \item decribe the framaCIRGen options: -x -b -v --gen-impl-meth
 \item Comment on handling of unicode in the preprocessor
 \item Review the preprocessor tokens
-\item Various parts of the tool use stdout and stderr differently
-\item \fclang cannot process annotations that are separate from the source file
 \item must the argument of -cpp-extra-args always be given with an = and quoted string
 \item Interactions between \_\_FC\_MACHDEP and -machdep
 \item Check whether static or dynamic linking is used in building
@@ -117,13 +115,13 @@ These items are not yet addressed
 
 Bugs
 \begin{itemize}
+\item Various parts of the tool use stdout and stderr differently
 \item framaCIRGen -help expects an argument
 \item non-clang options not included in framaCIRGen -help
 \item The -o option is required
 \item What is the -w option
 \item Fix how to do custom ASTs; The custom build instructions with a prefix to a temp directory fail
-\item \irg options are not included in -fclang-h
-
+The only 
 \item framaCIRGen -o prints help summary twice
 \item it appears that trigraph processing cannot be turned off, is on by default for \irg but off by default for clang++; not sure why
 \item it does not seem that clang options are passed through, e.g. -fdollars-in-identifiers; \irg defaults are different than clang
