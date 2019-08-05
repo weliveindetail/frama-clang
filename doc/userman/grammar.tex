@@ -8,13 +8,13 @@ This material may be useful for developers and maintainers of \fclang; it is not
 Recall that \fclang uses clang to parse \lang and a custom parser to parse \acslpp annotations, jointly producing a representation of the \lang and \acslpp source input in the Frama-C intermediate language. 
 The first version of the \acslpp custom parser, written during the STANCE project, used a hand-written bison-like parser, but with function pointers to record state and actions rather than using a tool-generated table to drive the parsing. 
 This design proved to be too brittle and difficult to efficiently evolve as new features were added to \acslpp. 
-Consequently during the VESSEDIA project, the scanner and parser were completely rewritten, largely retaining the previous design's connections to clang, token definitions, name lookup and type resolution, ad AST generation.
+Consequently during the VESSEDIA project, the scanner and parser were completely rewritten, largely retaining the previous design's connections to clang, token definitions, name lookup and type resolution, and AST generation.
 
 The new parser uses a recursive descent design in which the names of functions doing the parsing can match the names of non-terminals in the grammar. 
 Consequently the implementation of the parser is much more readable, human checkable, and modifiable as the \acslpp language evolves. 
 The drawback of this design is that \acslpp is not LL(1); it is not even LL(k) for fixed k. 
 Thus some amount of backtracking is required. 
-The next few subsections describe the problematic aspects of \acslpp and how they are addressed.
+The bulleted paragraphs below describe the problematic aspects of \acslpp and how they are addressed.
 
 The principal goal of an LL(k) formulation of a grammar is to be able to predict which grammar production is being seen in the input stream from a small amount of look-ahead.
 Most \acslpp constructs start with a unique keyword (e.g., clauses begin with \lstinline|requires|, \lstinline|ensures| etc.) which serves this purpopse. 

@@ -66,7 +66,8 @@ The launching of \irg by \framac includes the following options by default. The 
 \item \verb|-D__FC_MACHDEP_86_32| -- also set according to the chosen architecture
 \item \verb|-std=c++11| -- target C++11 features
 \item \verb|-nostdinc| -- use \fcl and \framac system header files, and not the compiler's own header files
-\item \verb|-I$FRAMAC_SHARE/frama-clangs/libc++ -I$FRAMAC_SHARE/libc| -- include the \fclang and \framac header files, which contain system library definitions with \acslpp annotations (the paths used are controlled by the \fc options \lstinline|-cxx-c++stdlib-path| annd \lstinline|-cxx-cstdlib-path|).
+\item \verb|-I$FRAMAC_SHARE/frama-clangs/libc++ -I$FRAMAC_SHARE/libc| -- include the \fclang and \framac header files, which contain system library definitions with \acslpp annotations (the paths used are controlled by the \fc options \lstinline|-cxx-c++stdlib-path| and \lstinline|-cxx-cstdlib-path|).
+\item \verb|--annot| or \verb|--no-annot| according to the \verb|-annot| or \verb|-no-annot| \Framac kernel option
 \item \verb|-stop-annot-error| if the corresponding option (\lstinline|-fclang-warn-key=annot-error=abort|) is given to \framac
 \item options to set the level of info messages and warning messages, based on options on the \fc command-line
 \end{itemize}
@@ -105,13 +106,17 @@ The most important of the options are these:
 	Multiple instances of this option have a cumulative effect, in order (rather
 	than later instances replacing earlier ones).
     \item \option{-print} -- prints out the input file seen by \fc; when \fcl is being used this is the input file after pre-processing and translation from \cpp to \C. Thus this output can be useful to see (and debug) the results of \fcl's transformations.
+    \item \option{-kernel-warn-key=annot-error=<val>} sets the behavior of \framac, including \fclang, when a parsing error is encountered. The default value (set by the kernel) is \texttt{abort}, which terminates processing upon the first error; a more useful alternative is \texttt{active}, which reports errors but continues processing further annotations.
 	\item \option{-machdep <arg>} -- sets the target machine architecture, cf. \S\ref{sec:bit}
 	\item \option{-fclang-msg-key <categories>} -- sets the amount of informational messages
 	\item \option{-fclang-warn-key <categories>} -- sets the amount and behavior of warnings
 	\item \option{-fclang-verbose <n>} -- sets the amount of information from the \fclang plug-in
 	\item \option{-fclang-debug <n>} -- sets the amount of debug information from the \fclang plug-in
+	\item \option{-annot} -- enables processing \NAME annotations (enabled by default)
+	\item \option{-no-annot} -- disables processing \NAME annotations
 \end{itemize}
 
+Note that the \framac option \verb|-no-pp-annot| is ignored by \fclang. Preprocessing is always performed on the source input (unless annotations are ignored entirely using \verb|-no-annot|).
 \section{Include directories}
 
 By default \irg is given the paths to the two directories containing the \fcl and \fc header files, which include \acslpp specifications for the \cpp library functions. The default paths to these directories are set by the \lstinline|-cxx-c++stdlib-path| and \lstinline|-cxx-cstdlib-path| options.
@@ -135,29 +140,33 @@ As an example, to perform wp checking of files \lstinline|a.cpp| and \lstinline|
 \begin{itemize}
 \item The \textbf{-machdep} option to \framac. See the allowed values using the command\\
 \centerline{ \lstinline|frama-c -machdep help|.}
- For example, with a value of \lstinline|x86\_32|, \lstinline|sizeof(long)| has a value of 4, whereas with the option \textbf{-machdep x86\_64}, \lstinline|sizeof(long)| has a value of 8.
-\item Alternately, the value of \textbf{-machdep} can be set instead using an environment variable: \lstinline|\_\_FC\_MACHDEP|. The variable can be set either in the shell environment or on the command line with \lstinline|-D\_\_FC\_MACHDEP=...|
+ For example, with a value of \lstinline|x86_32|, \lstinline|sizeof(long)| has a value of 4, whereas with the option \textbf{-machdep x86\_64}, \lstinline|sizeof(long)| has a value of 8.
+\item Alternately, the value of \textbf{-machdep} can be set instead using an environment variable: \lstinline|__FC_MACHDEP|. The variable can be set either in the shell environment or on the command line with \lstinline|-D__FC_MACHDEP=...|
 
 \end{itemize}
 
 
 \section{Warnings, errors, and informational output}
 
-Output messages arise from multiple places: from the \fcl plugin, from the \irg lexer and parser, from the \clang parser, and from the \framac kernel (as well as from any other plugins that may be invoked, such as wp). They are controlled by a number of options within the \fc kernel and each plugin. Remember that \cl and \irg options must be put in the \lstinline|-cpp-extra-args| option.
+Output messages arise from multiple places: from the \fcl plugin, from the \irg lexer and parser, from the \clang parser, and from the \framac kernel (as well as from any other plugins that may be invoked, such as the \texttt{wp} plug-in). 
+They are controlled by a number of options within the \framac kernel and each plugin. Remember that \cl and \irg options must be put in the \lstinline|-cpp-extra-args| option.
+
+Output messages, including errors, are written to standard out, not to standard error, with the exception of a few fatal errors that cause immediate termination, such as the inabvility to launch \irg. These fatal errors are typically caused by misconfiguration of the installation.
 
 \subsection{Errors}
 
-Error messages are always output. The key question is whether processing stops or continues u[on encountering an error. 
+Error messages are always output. 
+The key question is whether processing stops or continues upon encountering an error. 
 Continuing can result in a cascade of unhelpful error messages, but stopping immediately can hide errors that occur later in source files.
 \begin{itemize}
 \item \lstinline|-Werror| is a clang and \irg option that causes any parser warnings to be treated as errors
-\item \lstinline|--stop-annot-error| is a \irg option that causes prompt termination on errors (default is to continue)
-\item \lstinline|-fclang-warn-key=annot-error=abort| is a \fcl plug-in option that will invoke \irg with \lstinline|--stop-annot-error|.  \lstinline|error| and \lstinline|error_once| (instead of \lstinline|abort|) have the same effect; other values for the key will allow continuing after errors.
+\item \lstinline|--stop-annot-error| is a \irg option that causes prompt termination on errors (the \irg default is to continue)
+\item \lstinline|-fclang-warn-key=annot-error=abort| is a \fcl plug-in option that will invoke \irg with \lstinline|--stop-annot-error|.  \lstinline|error| and \lstinline|error_once| (instead of \lstinline|abort|) have the same effect; other values for the key will allow continuing after errors. The default is \texttt{abort}.
 \end{itemize}
 
 \subsection{Warnings}
 
-The various categories of warnings from \fcl can be seen with the command \lstinline|frama-c -fclang-warn-key help|.
+The various categories of warnings from \fcl can be seen with the command \\ \centerline{\lstinline|frama-c -fclang-warn-key help|}
 Warning messages are emitted by default.
 
 Warning messages from \irg can be controlled with the \lstinline|-warn| option of \irg, or, equivalently, the \lstinline|-fclang-warn-key=parse| option of \fc.
@@ -170,7 +179,7 @@ Warning messages from \irg can be controlled with the \lstinline|-warn| option o
 \item the \fc option \lstinline|-fclang-warn-key=parse=active| is the same as the \irg option  \lstinline|--warn=1|
 \end{itemize}
 
-\textit{The clang options are not currently integrated with the \fc warning and error key system.}
+\textit{The \clang options are not currently integrated with the \fc warning and error key system.}
 
 \subsection{Informational output}
 
@@ -185,6 +194,14 @@ In normal use within \framac, the \irg executable is
 invoked automatically. However, it can also be run standalone.
 In this mode it accepts command-line options and a single input file;
 it produces a C AST representing the translated \cpp, in the Cil (C Intermediate language) text format.
+
+The exit code from \irg (and the \fclang plug-in) is
+\begin{itemize}
+\item 0 if processing is successful, including if only warnings or informational messages are emitted
+\item 0 if there are no-fatal errors but \option{--no-exit-code} is enabled (the default)
+\item 1 if there are non-fatal errors but \option{--exit-code} is enabled
+\item 2 if there are fatal errors
+\end{itemize}
 
 
 \section{\irg specific options}
@@ -215,6 +232,9 @@ In particular, a debug value of 1 shows the command-line that invokes \irg.
 	\item \option{-{-}exit-code} -- if set, then the exit code of \irg is 1 if errors occur; this is not the default because then \lstinline|frama-c| would terminate upon
 	any error in \lstinline|framaCIRGen|
 	\item \option{-{-}no-exit-code} -- disables \option{-{-}exit-code}, so that the exit code is always 0.
+
+	\item \option{-{-}annot} -- enables processing \NAME annotations (enabled by default)
+	\item \option{-{-}no-annot} -- disables processing \NAME annotations
 	
 \end{itemize}
 
@@ -224,7 +244,7 @@ Frama-Clang is built on the \clang \cpp parser.
 As such, the \irg executable accepts the clang
 compiler options and passes them on to clang. There are many of these.
 Many of these are irrelevant to \fcl as they relate to 
-code generation, whereas \fcl only uses clang for parsing, name
+code generation, whereas \fcl only uses \clang for parsing, name
 and type resolution, and producing the AST.
 You can see a list of options by running 
 \lstinline|framaCIRGen -help|

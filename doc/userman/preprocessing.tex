@@ -31,23 +31,23 @@ The \fclang implementation operates as follows, on each \acslpp annotation comme
 
 \section{Trigraphs}
 
-Trigraphs are defined for \cpp but will currently be removed in C++17. Since trigraph processing by clang occurs before any recognition of comments, trigraphs in \acslpp annotations are translated, if enabled in \clang. As they will be removed from \cpp, they are not recommended for use in \acslpp annotations.
+Trigraphs are defined for \cpp but will currently be removed in C++17. Since trigraph processing by clang occurs before any recognition of comments, trigraphs in \acslpp annotations are translated, if enabled in \clang. As they will be removed from \cpp, they are not recommended for use in \acslpp annotations. Preprocessing of trigraphs is enabled by default.
 
 \section{Digraphs}
 Digraphs are alternate spellings of preprocessor tokens, in particular, of
-punctuation character sequences. Digraphs in \acslpp annotations are translated just as they are in \cpp (by clang).
+punctuation character sequences. Digraphs in \acslpp annotations are translated just as they are in \cpp (by \clang).
 
 \section{Preprocessor tokens}
 Preprocessor tokens (per CPP) belong to one of five categories. White space (space, tab) serves only to separate tokens; it is not needed between tokens whose concatenation is not a single token. Line terminators also separate tokens and also delineate certain features: preprocessing directives and string literals do not extend over more than one (logical) line.
 \begin{itemize}
 	\item identifiers: character sequences that match the regular expression \\
 \centerline{\texttt{[a-zA-Z\_][a-zA-Z\_0-9]*}} \\ 
-Dollar signs are also allowed as non-digit identifier characters if the clang option\\ \texttt{-fdollars-in-identifiers} is enabled, which it is by default. 
-Enable with \texttt{-fdollars-in-identifiers} ; disable with \texttt{-fno-dollars-in-identifiers} .
+Dollar signs are also allowed as non-digit identifier characters if the clang option\\ \texttt{-fdollars-in-identifiers} is enabled, which it is by default. \\
+Enable with \texttt{-fdollars-in-identifiers} ; \\disable with \texttt{-fno-dollars-in-identifiers} .
 	\item number: character sequences that match the regular expression  \\
 \centerline{\texttt{[.]?[0-9]([0-9a-zA-Z.]|[eEpP][+-]))*}}  \\
 
-	\item string literals: character sequence enclosed in " " or ' ' or < >, with \textbackslash " for " in a double-quoted literal (that is not a header file name) and \textbackslash ' for ' in a single-quoted literal, and \textbackslash\textbackslash for \textbackslash in either. After all other preprocessor phases are complete, the preprocessor concatenates adjacent string literals.
+	\item string literals: character sequence enclosed in " " or ' ' or < >, with \lstinline|\"| for \lstinline|"| in a double-quoted literal (that is not a header file name) and \lstinline|\'| for \lstinline|'| in a single-quoted literal, and \lstinline|\\| for \lstinline|\| in either. After all other preprocessor phases are complete, the preprocessor concatenates adjacent string literals.
 	\item punctuator: all single non-alphanumeric printable characters except 
 \verb|@|, \verb|#| and \verb|`|, and all multi-punctuation sequences that meaningful to \C/\cpp (e.g. > and >{>}= ), but not an arbitrary multi-punctuation character sequence.
 	\item other tokens: \verb|@|, \verb|#|, \verb|`| and all non-ASCII single characters.
@@ -114,8 +114,9 @@ Accordingly, \acslpp imposes constraints on the directives that may be present w
         \item the standard predefined macro names are permitted:
         \texttt{\_\_cpluscplus} (in \cpp compilers),
         \texttt{\_\_DATE\_\_},
-        \texttt{\_\_LINE\_\_},
     \texttt{\_\_TIME\_\_},
+        \texttt{\_\_FILE\_\_},
+        \texttt{\_\_LINE\_\_},
         \texttt{\_\_STDC\_HOSTED\_\_}
 \end{itemize}
 

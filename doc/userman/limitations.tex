@@ -2,12 +2,12 @@
 
 The development of the \fclang plug-in is still ongoing.
 \fclang does not implement all of current C++ nor all of 
-\acslpp as defined in its language definition\cite{acslpp}.
+\acslpp as defined in its language definition~\cite{acslpp}.
 The most important such limitations are listed in this section.
 
-\section{Implementation of C++}
-
 \textit{These lists are not (nearly) complete}
+
+\section{Implementation of C++}
 
 The following C++ features are not implemented in \acslpp.
 \begin{itemize}
@@ -20,11 +20,38 @@ These \acslpp features are not yet implemented
 \begin{itemize}
 
 \item \fclang cannot process annotations that are separate from the source file
+\item \acslpp specifications for standard \cpp library functions are still quite limited
 \item \acslpp definitions within template declarations
-\item \acslpp specification for standard \cpp library functions are still quite limited
 \item ghost declarations
 \item model declarations
 \item set comprehensions
+\item using (namespace) declarations (parsed but has no effect)
+\item pure functions (parsed but incompletely implemented)
+\item throws clause (parsed but not implemented in Frama-C)
+\item interaction of throws and noexcept
+\item parallel \textbackslash let
 \item frama-clang info/warn/error messages are not yet properly categorized and integrated with -fclang-log, -fclang-msg-key, fclang-warn-key. In particular, clang messages are completely independent
+\item \textbackslash count and \textbackslash data are parsed but not yet implemented in \framac
+\item semantics of multiple inheritance for annotations
+\item formal parameters that are references have pre and post states
 
 \end{itemize}
+
+\section{\acslpp implementation}
+
+\begin{itemize}
+\item parsing routines need work to improve robustness, to improve accuracy of locations, and to guard against leaking memory when parses fail
+\item the term/predicate parsing methods should be refactored to avoid deep call stacks
+
+\end{itemize}
+
+%% Types for ternary, +/-, * etc. , unary & and *
+%% AST for range
+%% location types and AST
+%% place of ext quantifiers in parsing -- should be a kind of primary I think?
+%% method call disambiguation
+%% use of isMethod
+%% Refactor  backtracking to reuse clang tokens instead of ACSL tokens
+
+
+at 4100

@@ -100,32 +100,34 @@ These items are not yet addressed
 \item Add/revise list of contributors/reviewers
 \item (Introduction) Verify the version of \framac and \clang supported
 \item Sort out the interactions among the options -verbose -debug -quiet -fclang-debug -fclang-verbose -fclang-msg-key -fclang-warn-key
-\item Sort out and describe interactions among -annot -pp-annot and frama-clang options
+\item -no-pp-annot is not recognized by \fclang
 \item Add comments about using system header files
-\item Remove \$FRAMAC\_SHARE from the default command-line, and builtin.h from \$FRAMAC\_SHARE
 \item Comment on the demangling options
 \item Review the clang and \irg options
-\item decribe the framaCIRGen options: -x -b -v --gen-impl-meth
+\item describe the framaCIRGen options: -x -b -v --gen-impl-meth
 \item Comment on handling of unicode in the preprocessor
 \item Review the preprocessor tokens
 \item must the argument of -cpp-extra-args always be given with an = and quoted string
 \item Interactions between \_\_FC\_MACHDEP and -machdep
 \item Check whether static or dynamic linking is used in building
+\item check behavior of -stop-annot-error
+\item \lstinline|__FC_MACHDEP| vs. the option
+\item fix where version option is described
+\item Need to test that the various kinds of static_cast actually work as expected.
+\item dynamic casting not yet working
+\item rounding mode; additional builtin functions
 \end{itemize}
 
 Bugs
 \begin{itemize}
 \item Various parts of the tool use stdout and stderr differently
-\item framaCIRGen -help expects an argument
 \item non-clang options not included in framaCIRGen -help
 \item The -o option is required
-\item What is the -w option
 \item Fix how to do custom ASTs; The custom build instructions with a prefix to a temp directory fail
-The only 
-\item framaCIRGen -o prints help summary twice
 \item it appears that trigraph processing cannot be turned off, is on by default for \irg but off by default for clang++; not sure why
 \item it does not seem that clang options are passed through, e.g. -fdollars-in-identifiers; \irg defaults are different than clang
 \item preprocessor implementation does not concatenate string literals
+\item spurious error when running  framaCIRGen -help
 \end{itemize}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
