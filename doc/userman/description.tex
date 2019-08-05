@@ -67,7 +67,7 @@ The launching of \irg by \framac includes the following options by default. The 
 \item \verb|-std=c++11| -- target C++11 features
 \item \verb|-nostdinc| -- use \fcl and \framac system header files, and not the compiler's own header files
 \item \verb|-I$FRAMAC_SHARE/frama-clangs/libc++ -I$FRAMAC_SHARE/libc| -- include the \fclang and \framac header files, which contain system library definitions with \acslpp annotations (the paths used are controlled by the \fc options \lstinline|-cxx-c++stdlib-path| and \lstinline|-cxx-cstdlib-path|).
-\item \verb|--annot| or \verb|--no-annot| according to the \verb|-annot| or \verb|-no-annot| \Framac kernel option
+\item \verb|--annot| or \verb|--no-annot| according to the \verb|-annot| or \verb|-no-annot| \framac kernel option
 \item \verb|-stop-annot-error| if the corresponding option (\lstinline|-fclang-warn-key=annot-error=abort|) is given to \framac
 \item options to set the level of info messages and warning messages, based on options on the \fc command-line
 \end{itemize}
@@ -112,8 +112,8 @@ The most important of the options are these:
 	\item \option{-fclang-warn-key <categories>} -- sets the amount and behavior of warnings
 	\item \option{-fclang-verbose <n>} -- sets the amount of information from the \fclang plug-in
 	\item \option{-fclang-debug <n>} -- sets the amount of debug information from the \fclang plug-in
-	\item \option{-annot} -- enables processing \NAME annotations (enabled by default)
-	\item \option{-no-annot} -- disables processing \NAME annotations
+	\item \option{-annot} -- enables processing \acslpp annotations (enabled by default)
+	\item \option{-no-annot} -- disables processing \acslpp annotations
 \end{itemize}
 
 Note that the \framac option \verb|-no-pp-annot| is ignored by \fclang. Preprocessing is always performed on the source input (unless annotations are ignored entirely using \verb|-no-annot|).
@@ -233,8 +233,8 @@ In particular, a debug value of 1 shows the command-line that invokes \irg.
 	any error in \lstinline|framaCIRGen|
 	\item \option{-{-}no-exit-code} -- disables \option{-{-}exit-code}, so that the exit code is always 0.
 
-	\item \option{-{-}annot} -- enables processing \NAME annotations (enabled by default)
-	\item \option{-{-}no-annot} -- disables processing \NAME annotations
+	\item \option{-{-}annot} -- enables processing \acslpp annotations (enabled by default)
+	\item \option{-{-}no-annot} -- disables processing \acslpp annotations
 	
 \end{itemize}
 
