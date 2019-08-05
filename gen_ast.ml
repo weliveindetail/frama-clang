@@ -151,8 +151,7 @@ let rec print_ocaml_type fmt =
     | Int64 -> Format.fprintf fmt "Int64.t"
     | Location -> Format.fprintf fmt "location"
     | String -> Format.fprintf fmt "string"
-    | Node s ->
-      Format.pp_print_string fmt (String.uncapitalize_ascii s)
+    | Node s -> Format.pp_print_string fmt (String.uncapitalize_ascii s)
     | Option t -> Format.fprintf fmt "(@[%a@])@ option" print_ocaml_type t
     | List t -> Format.fprintf fmt "(@[%a@])@ list" print_ocaml_type t
 
