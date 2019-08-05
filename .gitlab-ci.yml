@@ -1,0 +1,10 @@
+Tests:
+  variables:
+    CURRENT: $CI_COMMIT_REF_NAME
+    DEFAULT: "master"
+    OCAML: "4_05"
+    FRAMA_CI_OPT: "--override frama-clang:$CI_COMMIT_REF_NAME,$CI_COMMIT_SHA"
+  script:
+   - nix/frama-ci.sh build -A frama-clang.tests
+  tags:
+   - nix
