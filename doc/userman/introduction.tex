@@ -6,7 +6,7 @@ language~\cite{acsl}. This manual documents the \fclang plug-in of \framac,
 version \fclangversion. 
 The \fclang plug-in supports the \acslpp extension of \acsl for \cpp programs and specifications; 
 it is built on the \clang\footnote{https://clang.llvm.org/} compiler infrastructure and uses \clang for 
-parsing C++. The plug-in extends \clang to parse \acslpp, translating source files containing \cpp and \acslpp into an intermediate language for \C and \acsl.
+parsing C++. The plug-in extends \clang to parse \acslpp, translating source files containing \cpp and \acslpp into \framac's intermediate language for \C and \acsl.
 
 The \fclang plug-in intends to provide a full translation of \cpp and \acslpp into the \framac internal representation, and from there to allow \cpp programs and \acslpp specifications to be analyzed by other \framac plug-ins. 
 \textit{This is a work in progress.}
@@ -14,12 +14,12 @@ The following sections describe the current status and limitations of the curren
 \begin{itemize}
 	\item The plug-in aims for the C++11 version of \cpp
 	\item \acslpp is described in the companion \acslpp reference manual \cite{acslpp}, also a part of the \framac release.
-    \item The plug-in is compatible with version 8 of \clang. 
+    \item The plug-in is compatible with version \clangversion of \clang. 
     This version of \clang supports \cpp versions through C++17 
     (cf. \url{https://clang.llvm.prg/cxx_status.html}). 
     However, \fclang may not support all of the features of \cpp within annotations.
 \end{itemize}
 
 The source material for this document is in Frama-C's gitlab repository:\\ \centerline{\url{git@git.frama-c.com:frama-c/frama-clang.git},} \\
- in directory \lstinline|doc/userman|.
+ in directory \lstinline|doc/userman| (in branch \lstinline|cok-doc|).
 

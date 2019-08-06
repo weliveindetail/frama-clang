@@ -12,6 +12,8 @@ The most important such limitations are listed in this section.
 The following C++ features are not implemented in \acslpp.
 \begin{itemize}
 \item preprocessing is restricted within \acslpp annotations (cf. \S\ref{sec:preprocessing})
+\item uses of typename
+\item uses of templates are not robust
 \end{itemize}
 
 \section{Implementation of \acslpp}
@@ -22,7 +24,7 @@ These \acslpp features are not yet implemented
 \item \fclang cannot process annotations that are separate from the source file
 \item \acslpp specifications for standard \cpp library functions are still quite limited
 \item \acslpp definitions within template declarations
-\item ghost declarations
+\item ghost code is not yet implemented
 \item model declarations
 \item set comprehensions
 \item using (namespace) declarations (parsed but has no effect)
@@ -32,18 +34,16 @@ These \acslpp features are not yet implemented
 \item parallel \textbackslash let
 \item frama-clang info/warn/error messages are not yet properly categorized and integrated with -fclang-log, -fclang-msg-key, fclang-warn-key. In particular, clang messages are completely independent of the \framac logging framework
 \item \textbackslash count and \textbackslash data are parsed but not yet implemented in \framac
-\item semantics of multiple inheritance for annotations
 \item formal parameters that are references have pre and post states
 \item dynamic casting not yet implemented in \framac
-\item rounding mode; additional builtin functions
+\item rounding mode  and related builtin functions
 \item builtin types list and \textbackslash set and related builtin functions
 \item \textbackslash valid\_function \textbackslash allocable \textbackslash freeable \textbackslash fresh are not yet implemented by \framac
 \item extended quantifiers are not yet implemented by \framac
 \item global invariants are not yet implemented by \framac
-\item generalized invariant is not yet implemented by \framac
+\item generalized invariants are not yet implemented by \framac
 \item assigns with both \textbackslash from and = is not yet implemented
-\item ghost code is not yet implemented
-
+\item \option{-fclang-version} is not implemented
 \end{itemize}
 
 \section{\acslpp implementation}
@@ -51,7 +51,8 @@ These \acslpp features are not yet implemented
 \begin{itemize}
 \item parsing routines need work to improve robustness, to improve accuracy of locations, and to guard against leaking memory when parses fail
 \item the term/predicate parsing methods should be refactored to avoid deep call stacks
-\item resolve question of lookup priority between C variables and logic constants (issue \#690)
+\item resolve issues of tset representations
+\item cannot change the set of C++ suffixes
 \end{itemize}
 
 %% Types for ternary, +/-, * etc. , unary & and *
@@ -63,4 +64,3 @@ These \acslpp features are not yet implemented
 %% Refactor  backtracking to reuse clang tokens instead of ACSL tokens
 
 
-at 4100
