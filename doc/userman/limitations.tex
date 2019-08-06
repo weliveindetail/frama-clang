@@ -27,13 +27,22 @@ These \acslpp features are not yet implemented
 \item set comprehensions
 \item using (namespace) declarations (parsed but has no effect)
 \item pure functions (parsed but incompletely implemented)
-\item throws clause (parsed but not implemented in Frama-C)
+\item throws clause (parsed but not implemented in \framac)
 \item interaction of throws and noexcept
 \item parallel \textbackslash let
-\item frama-clang info/warn/error messages are not yet properly categorized and integrated with -fclang-log, -fclang-msg-key, fclang-warn-key. In particular, clang messages are completely independent
+\item frama-clang info/warn/error messages are not yet properly categorized and integrated with -fclang-log, -fclang-msg-key, fclang-warn-key. In particular, clang messages are completely independent of the \framac logging framework
 \item \textbackslash count and \textbackslash data are parsed but not yet implemented in \framac
 \item semantics of multiple inheritance for annotations
 \item formal parameters that are references have pre and post states
+\item dynamic casting not yet implemented in \framac
+\item rounding mode; additional builtin functions
+\item builtin types list and \textbackslash set and related builtin functions
+\item \textbackslash valid\_function \textbackslash allocable \textbackslash freeable \textbackslash fresh are not yet implemented by \framac
+\item extended quantifiers are not yet implemented by \framac
+\item global invariants are not yet implemented by \framac
+\item generalized invariant is not yet implemented by \framac
+\item assigns with both \textbackslash from and = is not yet implemented
+\item ghost code is not yet implemented
 
 \end{itemize}
 
@@ -42,7 +51,7 @@ These \acslpp features are not yet implemented
 \begin{itemize}
 \item parsing routines need work to improve robustness, to improve accuracy of locations, and to guard against leaking memory when parses fail
 \item the term/predicate parsing methods should be refactored to avoid deep call stacks
-
+\item resolve question of lookup priority between C variables and logic constants (issue \#690)
 \end{itemize}
 
 %% Types for ternary, +/-, * etc. , unary & and *

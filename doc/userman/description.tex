@@ -193,7 +193,7 @@ Warning messages from \irg can be controlled with the \lstinline|-warn| option o
 In normal use within \framac, the \irg executable is
 invoked automatically. However, it can also be run standalone.
 In this mode it accepts command-line options and a single input file;
-it produces a C AST representing the translated \cpp, in the Cil (C Intermediate language) text format.
+it produces a C AST representing the translated \cpp, in a text formati similar to Cabs.
 
 The exit code from \irg (and the \fclang plug-in) is
 \begin{itemize}
@@ -209,6 +209,9 @@ The exit code from \irg (and the \fclang plug-in) is
 
 These options that are specific to \irg and must be specified by using \option{-cpp-extra-args}:
 \begin{itemize}
+	\item \option{-h} -- print help information
+	\item \option{-help} -- print more help information
+	\item \option{-{-}version} -- print version information
 	\item \option{-o <file>} -- specifies the name and location of the output file (that is, the file to contain the generated AST). The output path may be absolute or relative to the current working directory. \textit{This option is required.}
 	\item \option{-{-}info=<n>} -- sets the level of informational messages to \textbf{n}; 0 is completely quiet; increasing values are
 	more verbose. \\
@@ -252,7 +255,6 @@ You can see a list of options by running
 The most significant \cl options are these:
 \begin{itemize}
 	\item \option{-I <dir>} -- adds a directory to the include file search path. Using absolute paths is recommended; relative paths are relative to the current working directory.
-	\item \option{-{-}version} -- print version information
 \end{itemize}
 
 Although \clang can process languages other than \cpp, \cpp is the only one usable with \fclang.
