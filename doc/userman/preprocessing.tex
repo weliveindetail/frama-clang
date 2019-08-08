@@ -39,27 +39,23 @@ punctuation character sequences. Digraphs in \acslpp annotations are translated 
 Using digraphs is not recommended.
 
 \section{Preprocessor tokens}
-Preprocessor tokens (per CPP) belong to one of five categories. White space (space, tab) serves only to separate tokens; it is not needed between tokens whose concatenation is not a single token. Line terminators also separate tokens and also delineate certain features: preprocessing directives and string literals do not extend over more than one (logical) line.
-\begin{itemize}
-	\item identifiers: character sequences that match the regular expression \\
-\centerline{\texttt{[a-zA-Z\_][a-zA-Z\_0-9]*}} \\ 
+Preprocessor tokens (per CPP) belong to one of several categories: identifiers, literals (including numeric, character and string literals), header names,
+operators, punctuation, and single other characters.
+White space (space, tab) serves only to separate tokens; it is not needed between tokens whose concatenation is not a single token. Line terminators also separate tokens and also delineate certain features: preprocessing directives and string literals do not extend over more than one (logical) line.
+
 Dollar signs are also allowed as non-digit identifier characters if the clang option\\ \texttt{-fdollars-in-identifiers} is enabled, which it is by default. \\
 Enable with \texttt{-fdollars-in-identifiers} ; \\disable with \texttt{-fno-dollars-in-identifiers} .
-	\item number: character sequences that match the regular expression  \\
-\centerline{\texttt{[.]?[0-9]([0-9a-zA-Z.]|[eEpP][+-]))*}}  \\
 
-	\item string literals: character sequence enclosed in " " or ' ' or < >, with \lstinline|\"| for \lstinline|"| in a double-quoted literal (that is not a header file name) and \lstinline|\'| for \lstinline|'| in a single-quoted literal, and \lstinline|\\| for \lstinline|\| in either. After all other preprocessor phases are complete, the preprocessor concatenates adjacent string literals.
-	\item punctuator: all single non-alphanumeric printable characters except 
-\verb|@|, \verb|#| and \verb|`|, and all multi-punctuation sequences that meaningful to \C/\cpp (e.g. > and >{>}= ), but not an arbitrary multi-punctuation character sequence.
-	\item other tokens: \verb|@|, \verb|#|, \verb|`| and all non-ASCII single characters.
-\end{itemize}
-The above token definitions imply that arbitrary text can always be broken into
+Numeric literals are more general than a C++ or \acsl number. 
+Nevertheless, aside from token concatenation, each preprocessing token
+becomes a compiler token, which then may be an illegal compiler token.
+
+The token definitions imply that arbitrary text can always be broken into
 legitimate preprocessor tokens, with the exception of a few characters and of badly formed unicode sequences.
-
 
 Note that not all preprocessor tokens are valid \C/\cpp parser tokens. Tokens in the other category have no meaning to \C/\cpp and the \texttt{number} category allows many sequences that are not legal \C/\cpp numeric tokens. These tokens will generally provoke compiler errors. For example in \C/\cpp, 0..2 is one token and is not interpreted as two consecutive numeric tokens.
 
-\acsl and \acslpp have slightly different tokens than the above, so the preprocessor tokens need to be re-tokenized in some cases:
+\acsl and \acslpp have slightly different tokens than the preprocessor, so the preprocessor tokens need to be re-tokenized in some cases:
 \begin{itemize}
 	\item The \verb|@| token is a whitespace character in the interior of a \acslb annotation.
 	\item There are some \acslb multi-character punctuator tokens that are not

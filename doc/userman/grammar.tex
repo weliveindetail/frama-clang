@@ -13,7 +13,7 @@ Consequently during the VESSEDIA project, the scanner and parser were completely
 The new parser uses a recursive descent design in which the names of functions doing the parsing can match the names of non-terminals in the grammar. 
 Consequently the implementation of the parser is much more readable, human checkable, and modifiable as the \acslpp language evolves. 
 The drawback of this design is that \acslpp is not LL(1); it is not even LL(k) for fixed k. 
-Thus some amount of backtracking is required. 
+Thus some amount of lookahead and backtracking is required. 
 The bulleted paragraphs below describe the problematic aspects of \acslpp and how they are addressed.
 
 The principal goal of an LL(k) formulation of a grammar is to be able to predict which grammar production is being seen in the input stream from a small amount of look-ahead.

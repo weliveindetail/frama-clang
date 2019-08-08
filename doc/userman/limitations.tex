@@ -14,6 +14,7 @@ The following C++ features are not implemented in \acslpp.
 \item preprocessing is restricted within \acslpp annotations (cf. \S\ref{sec:preprocessing})
 \item uses of typename
 \item uses of templates are not robust
+\item uses of typeid
 \end{itemize}
 
 \section{Implementation of \acslpp}
@@ -32,7 +33,6 @@ These \acslpp features are not yet implemented
 \item throws clause (parsed but not implemented in \framac)
 \item interaction of throws and noexcept
 \item parallel \textbackslash let
-\item frama-clang info/warn/error messages are not yet properly categorized and integrated with -fclang-log, -fclang-msg-key, fclang-warn-key. In particular, clang messages are completely independent of the \framac logging framework
 \item \textbackslash count and \textbackslash data are parsed but not yet implemented in \framac
 \item formal parameters that are references have pre and post states
 \item dynamic casting not yet implemented in \framac
@@ -43,16 +43,17 @@ These \acslpp features are not yet implemented
 \item global invariants are not yet implemented by \framac
 \item generalized invariants are not yet implemented by \framac
 \item assigns with both \textbackslash from and = is not yet implemented
-\item \option{-fclang-version} is not implemented
 \end{itemize}
 
 \section{\acslpp implementation}
 
 \begin{itemize}
+\item \option{-fclang-version} is not implemented
 \item parsing routines need work to improve robustness, to improve accuracy of locations, and to guard against leaking memory when parses fail
 \item the term/predicate parsing methods should be refactored to avoid deep call stacks
 \item resolve issues of tset representations
 \item cannot change the set of C++ suffixes
+\item frama-clang info/warn/error messages are not yet properly categorized and integrated with -fclang-log, -fclang-msg-key, fclang-warn-key. In particular, clang messages are completely independent of the \framac logging framework
 \end{itemize}
 
 %% Types for ternary, +/-, * etc. , unary & and *
