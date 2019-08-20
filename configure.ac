@@ -75,11 +75,6 @@ if test "$CLANG++" = "no"; then
   plugin_disable(frama_clang,[clang++ not found]);
 fi
 
-if test "$LLVM_CONFIG" != "no"; then
-  AC_CHECK_FILE([$($LLVM_CONFIG --includedir)/clang],[],
-    [plugin_disable(frama_clang,clang dev headers not found.);])
-fi
-
 if test "$ENABLE_FRAMA_CLANG" != "no"; then
 
 LLVM_VERSION=$($LLVM_CONFIG --version)
