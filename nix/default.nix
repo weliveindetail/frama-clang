@@ -7,7 +7,5 @@ plugins.helpers.simple_plugin
      name = "frama-clang";
      deps = [ pkgs.llvmPackages_7.clang-unwrapped pkgs.llvm_7 pkgs.gnused ];
      opamPackages = [ "camlp4" ];
-     postPatch = ''
-     sed -i Makefile.config.in -e "s&@CLANG_INCDIR@&${pkgs.llvmPackages_7.clang-unwrapped}/include&"
-     '';
+     configure_options = "-with-clang-includedir=${pkgs.llvmPackages_7.clang-unwrapped}";
    }
