@@ -32,14 +32,17 @@ with \acslpp annotations giving their specifications.
 
 The plugin can be built by hand from source using the following commands. Create a new directory to which you download and unpack the source distribution. Then \lstinline|cd| into the source directory itself (one level down) and execute:
 \begin{listing-nonumber}
-make distclean
-autoconf -f
-./configure --prefix=<opamroot>
+./configure
 make
 make install
 \end{listing-nonumber}
-\lstinline|<opamroot>| should be the absolute path of the root of the opam installation, e.g., something like \lstinline|~/.opam/4.05.0| or \lstinline|~/.opam/system|. If \framac has been installed independently of \lstinline|opam|, then set \lstinline|<opamroot>| above so that the location of the \framac executable (that is, the result of executing \lstinline|which frama-c|) is 
-\lstinline|<opamroot>/bin/frama-c|.
+
+By default, \fclang will install its files under the same root
+directory as \framac itself. In particular, if \framac has been
+installed from \lstinline|opam|, the installation will be done under
+\verb|$(opam var prefix)| directory. Standard configure options for
+manipulating installation directories are available, notably
+\verb|--prefix|.
 
 %\section{Current status}
 %
@@ -124,10 +127,10 @@ The most important of the options are these:
 	\item \option{-machdep <arg>} -- sets the target machine architecture, cf. \S\ref{sec:bit}
 	\item \option{-kernel-msg-key <categories>} -- sets the amount of informational messages according to different categories of messages.
 See \lstinline|-kernel-msg-key help| for a list of informational categories.
-	\item \option{-kernel-warn-key <categories>} -- sets the amount and behavior of warnings.\\ See \lstinline|-kernel-msg-key help| for a list of warning categories.
+	\item \option{-kernel-warn-key <categories>} -- sets the amount and behavior of warnings.\\ See \lstinline|-kernel-warn-key help| for a list of warning categories.
 	\item \option{-fclang-msg-key <categories>} -- sets the amount of informational messages according to different categories of messages.
 See \lstinline|-fclang-msg-key help| for a list of informational categories.
-	\item \option{-fclang-warn-key <categories>} -- sets the amount and behavior of warnings.\\ See \lstinline|-fclang-msg-key help| for a list of warning categories.
+	\item \option{-fclang-warn-key <categories>} -- sets the amount and behavior of warnings.\\ See \lstinline|-fclang-warn-key help| for a list of warning categories.
 	\item \option{-fclang-verbose <n>} -- sets the amount of information from the \fclang plug-in
 	\item \option{-fclang-debug <n>} -- sets the amount of debug information from the \fclang plug-in
 	\item \option{-annot} -- enables processing \acslpp annotations (enabled by default)
@@ -137,7 +140,9 @@ See \lstinline|-fclang-msg-key help| for a list of informational categories.
 Note that the \framac option \verb|-no-pp-annot| is ignored by \fclang. Preprocessing is always performed on the source input (unless annotations are ignored entirely using \verb|-no-annot|).
 \section{Include directories}
 
-By default \irg is given the paths to the two directories containing the \fcl and \fc header files, which include \acslpp specifications for the \cpp library functions. The default paths to these directories are set by the \lstinline|-cxx-c++stdlib-path| and\\
+By default \irg is given the paths to the two directories containing the \fcl and \fc header files, which include \acslpp specifications for the \cpp library functions. The default paths (\verb|$FRAMAC_SHARE/libc++| and
+\verb|$FRAMAC_SHARE/libc| respectively) to these directories
+can be overriden by the \fcl options \lstinline|-cxx-c++stdlib-path| and\\
  \lstinline|-cxx-cstdlib-path| options.
 
 Users typically have additional header files for their own projects. These are supplied to the \fcl preprocessor using the option \lstinline|-cpp-extra-args|.
@@ -146,7 +151,7 @@ You can use \lstinline|-fclang-cpp-extra-args| instead of \lstinline|cpp-extra-a
 The \fcl option only affects the \fcl plugin, whereas 
 \lstinline|-cpp-extra-args| may be seen by other plugins as well, if such plugins do their own preprocessing. Also note that the presence of any instance of \lstinline|-fclang-cpp-extra-args| will cause uses of \lstinline|-cpp-extra-args| to be ignored. 
 
-The system header files supplied by \fcl may not include all \cpp system files. Omissions should be reported to the \fc team.
+The system header files supplied by \fcl does not include all \cpp system files. Omissions should be reported to the \fc team.
 
 As an example, to perform \lstinline|wp| checking of files \lstinline|a.cpp| and \lstinline|inc/a.h|, one might use the command-line \\
 \centerline{\texttt{frama-c -cpp-extra-args="-Iinc" -wp a.cpp}}
@@ -181,15 +186,17 @@ The key question is whether processing stops or continues upon encountering an e
 Continuing can result in a cascade of unhelpful error messages, but stopping immediately can hide errors that occur later in source files.
 \begin{itemize}
 \item \lstinline|--stop-annot-error| is a \irg option that causes prompt termination on annotations errors (the \irg default is to continue); this does not respond to errors in C++ code
-\item \lstinline|-fclang-warn-key=annot-error=abort| is a \fcl plug-in option that will invoke \irg with \lstinline|--stop-annot-error|.  \lstinline|error| and \lstinline|error_once| (instead of \lstinline|abort|) have the same effect; other values for the key will allow continuing after errors. The default is \texttt{abort}.
+\item \lstinline|-kernel-warn-key=annot-error=abort| is a \fcl plug-in option that will invoke \irg with \lstinline|--stop-annot-error|.  \lstinline|error| and \lstinline|error_once| (instead of \lstinline|abort|) have the same effect; other values for the key will allow continuing after errors. The default is \texttt{abort}.
 \end{itemize}
 
 \subsection{Warnings}
 
-The various categories of warnings from \fcl can be seen with the command \\ \centerline{\lstinline|frama-c -fclang-warn-key help|}
-Warning messages are emitted by default.
+%The various categories of warnings from \fcl can be seen with the command \\ \centerline{\lstinline|frama-c -fclang-warn-key help|}
+%Warning messages are emitted by default.
 
-Warning messages from \irg can be controlled with the \lstinline|-warn| option of \irg, or, equivalently, the \lstinline|-fclang-warn-key=parse| option of \fc.
+Warning messages from \irg can be controlled with the \lstinline|-warn| option of \irg.
+% Note in the current version
+%, or, equivalently, the \lstinline|-fclang-warn-key=parse| option of \fc.
 
 \begin{itemize}
 \item \lstinline|-Werror| is a clang and \irg option that causes any parser warnings to be treated as errors
@@ -197,8 +204,9 @@ Warning messages from \irg can be controlled with the \lstinline|-warn| option o
 \item the \irg option \lstinline|--no-warn| or \lstinline|--warn=0| turns off \irg warning messages
 \item the \irg option \lstinline|--warn=<n>|, with $n > 0$ turns on \irg warning messages; the higher the value $n$ the more messages
 \item the \irg option \lstinline|--warn| is the same as \lstinline|--warn=1|
-\item the \fc option \lstinline|-fclang-warn-key=parse=inactive| is the same as the \irg option  \lstinline|--warn=0|
-\item the \fc option \lstinline|-fclang-warn-key=parse=active| is the same as the \irg option  \lstinline|--warn=1|
+% Cf above.
+%\item the \fc option \lstinline|-fclang-warn-key=parse=inactive| is the same as the \irg option  \lstinline|--warn=0|
+%\item the \fc option \lstinline|-fclang-warn-key=parse=active| is the same as the \irg option  \lstinline|--warn=1|
 \end{itemize}
 
 \textit{The \clang options are not currently integrated with the \fc warning and error key system.}
