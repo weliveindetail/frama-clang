@@ -55,3 +55,4 @@ META.frama-c-frama_clang
 .frama-c/
 tempirgen
 /mine/
+/frama-clang-*.tar.gz
