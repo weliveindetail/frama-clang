@@ -14,7 +14,7 @@
 \RequirePackage{hevea}
 \RequirePackage{ifthen}
 \RequirePackage[T1]{fontenc}
-\RequirePackage[latin1]{inputenc}
+\RequirePackage[utf8]{inputenc}
 \RequirePackage[a4paper,pdftex,pdfstartview=FitH]{hyperref}
 \RequirePackage{amssymb}
 \RequirePackage{xcolor}
