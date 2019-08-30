@@ -60,11 +60,7 @@ version.tex: Makefile
 	ocamllex $<
 
 %.pdf: %.tex
-	pdflatex $*
-	makeindex $*
-	bibtex $*
-	pdflatex $*
-	pdflatex $*
+	latexmk $<
 
 %.cmo: %.ml
 	ocamlc -c $<
