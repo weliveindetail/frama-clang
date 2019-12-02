@@ -841,6 +841,7 @@ type logic_var_kind =
   | LVFormal {} (** formal parameter of a logic function / predicate *)
   | LVQuant {} (** Bound by a quantifier or a Lambda abstraction. *)
   | LVLocal {} (** local \let *)
+  | LVBuiltin {} (** specific identifier, e.g. \\exit_status. *)
 ;;
 
 type logic_var_def =

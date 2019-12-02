@@ -31,7 +31,8 @@ let convert_var env is_extern_c vi =
         let n, tk
           = Convert_env.typedef_normalize env vi.logic_var_lv_name TStandard
         in Mangling.mangle n tk None
-    | LVFormal | LVQuant | LVLocal | LVCLocal-> vi.logic_var_lv_name.decl_name
+    | LVFormal | LVQuant | LVLocal | LVCLocal | LVBuiltin ->
+      vi.logic_var_lv_name.decl_name
 
 let convert_logic_label = function
   | StmtLabel s -> s

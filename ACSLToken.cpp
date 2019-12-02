@@ -637,10 +637,10 @@ KeywordToken::text() const {
     case TSubset: t = "\\subset"; break;
     case TEmpty: t = "\\empty"; break;
     case TValid: t = "\\valid"; break;
-    case TValidRead: t = "\\validread"; break;
-    case TValidIndex: t = "\\validindex"; break;
-    case TValidRange: t = "\\validrange"; break;
-    case TValidFunction: t = "\\validfunction"; break;
+    case TValidRead: t = "\\valid_read"; break;
+    case TValidIndex: t = "\\valid_index"; break;
+    case TValidRange: t = "\\valid_range"; break;
+    case TValidFunction: t = "\\valid_function"; break;
     case TInductive: t = "inductive"; break;
     case TLoop: t = "loop"; break;
     case TVariant: t = "variant"; break;
@@ -650,7 +650,7 @@ KeywordToken::text() const {
     case TBreaks: t = "breaks"; break;
     case TContinues: t = "continues"; break;
     case TReturns: t = "returns"; break;
-    case TExitStatus: t = "\\exitstatus"; break;
+    case TExitStatus: t = "\\exit_status"; break;
     case TFrom: t = "\\from"; break;
     case TGlobal: t = "global"; break;
     case TWeak: t = "\\weak"; break;

@@ -6115,6 +6115,26 @@ TermOrPredicate::readToken(Parser::State& state, Parser::Arguments& arguments) {
                   DefineGotoCase(AfterPrimary)
                 }
                 break;
+              case KeywordToken::TExitStatus:
+                if (excludeTypeAsResult()) {
+                  logic_type lt = logic_type_Linteger();
+                  logic_var status =
+                    logic_var_cons(
+                      qualified_name_cons(NULL, "\\exit_status"), LVBUILTIN);
+                  term tres =
+                    term_cons(
+                      term_node_TLval(
+                        term_lval_cons(
+                          term_lhost_TVar(status),term_offset_TNoOffset())),
+                      arguments.newTokenLocation(),NULL);
+                  predicate_named pres =
+                    convertTermToPredicate(lt,tres,arguments);
+                  pushLastArgument(lt,tres,pres);
+                  arguments.extendLocationWithToken(_loc);
+                  if (_doesStopTypeAmbiguity)
+                    DefineTReduce;
+                  DefineGotoCase(AfterPrimary)
+                }
               case KeywordToken::TAt:
                 if (excludeTypeAsResult()) {
                   _startLocation = arguments.newTokenLocation();

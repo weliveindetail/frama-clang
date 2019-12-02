@@ -813,6 +813,13 @@ void *calloc(size_t nmemb, size_t size);
  */
 void *realloc(void *ptr, size_t size);
 
+/*@ exits status: \exit_status ≢ 0;
+    ensures never_terminates: \false;
+    
+    assigns \exit_status \from \nothing;
+ */
+void abort(void);
+
 /*@ assigns \result;
     assigns \result \from \nothing; */
 int atexit(void (*func)(void));
@@ -820,6 +827,13 @@ int atexit(void (*func)(void));
 /*@ assigns \result;
     assigns \result \from \nothing; */
 int at_quick_exit(void (*func)(void));
+
+/*@ exits status: \exit_status ≡ \old(status);
+    ensures never_terminates: \false;
+    
+    assigns \exit_status \from status;
+ */
+void exit(int status);
 
 /*@ ensures never_terminates: \false;
     assigns \nothing; */
