@@ -60,9 +60,9 @@ AC_SUBST(RUN_TESTS)
 DEFAULT_FC_C_HEADERS=$datarootdir/frama-c/libc
 DEFAULT_FC_CXX_HEADERS=$datarootdir/libc++
 
-AC_CHECK_PROGS([CLANG],[clang clang-5.0 clang-4.0 clang-3.9 clang-3.8],no)
-AC_CHECK_PROGS([CLANGXX],[clang++ clang++-5.0 clang++-4.0 clang++-3.9 clang++-3.8],no)
-AC_CHECK_PROGS([LLVM_CONFIG],[llvm-config llvm-config-6.0 llvm-config-5.0 llvm-config-4.0 llvm-config-3.9 llvm-config-3.8],no)
+AC_CHECK_PROGS([CLANG],[clang clang-9.0 clang-8.0 clang-7.0 clang-6.0],no)
+AC_CHECK_PROGS([CLANGXX],[clang++ clang++-9.0 clang++-8.0 clang++-7.0 clang++6.0],no)
+AC_CHECK_PROGS([LLVM_CONFIG],[llvm-config llvm-config-9.0 llvm-config-8.0 llvm-config-7.0 llvm-config-6.0],no)
 
 if test "$LLVM_CONFIG" = "no"; then
   plugin_disable(frama_clang,[llvm-config not found]);
@@ -93,8 +93,9 @@ case $LLVM_VERSION in
   6.0.*) AC_MSG_RESULT([$LLVM_VERSION: Good]);;
   7.0.*) AC_MSG_RESULT([$LLVM_VERSION: Good]);;
   8.0.*) AC_MSG_RESULT([$LLVM_VERSION: Good]); RUN_TESTS=yes;;
+  9.0.*) AC_MSG_RESULT([$LLVM_VERSION: Good]); RUN_TESTS=yes;;
   *) plugin_disable(frama_clang,
-      [[LLVM Version $LLVM_VERSION is not supported. Please install LLVM 6.0.x, 7.0.x, or 8.0.x]]);;
+      [[LLVM Version $LLVM_VERSION is not supported. Please install LLVM 6.0.x, 7.0.x, 8.0.x, or 9.0.x]]);;
 esac
 
 LLVM_CONFIG="$LLVM_CONFIG $LLVM_STATIC"
