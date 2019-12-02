@@ -1,4 +1,4 @@
 template <typename> class A {
-  struct {};
+  struct { char c; };
   template <typename> struct B {};
 };
