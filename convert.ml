@@ -447,7 +447,7 @@ let add_local_aux_def_init defs def init = (Some def, Some init) :: defs
 
 let add_local_aux_init defs init = (None, Some init) :: defs
 
-let add_temp _env stmts (dec, init) =
+let add_temp env stmts (dec, init) =
   let stmts =
     match init with
       | None -> stmts
@@ -455,8 +455,7 @@ let add_temp _env stmts (dec, init) =
   in
   match dec with
     | None -> stmts
-    | Some dec ->
-      { stmt_ghost = false; stmt_node = DEFINITION dec } :: stmts
+    | Some dec -> (make_stmt env (DEFINITION dec)) :: stmts
 
 let add_temp_update env acc (dec,inits) =
   (* We have three possibilities:
@@ -472,11 +471,10 @@ let add_temp_update env acc (dec,inits) =
       let stmt =
         match inite, inits with
           | SINGLE_INIT e, None ->
-            { stmt_ghost = false;
-              stmt_node =
-                COMPUTATION(
+            make_stmt env
+              (COMPUTATION(
                   mk_expr env (BINARY(ASSIGN, mk_expr env (VARIABLE name), e)),
-                  Convert_env.get_loc env)}
+                  Convert_env.get_loc env))
           | NO_INIT, Some s -> s
           | _ ->
             Convert_env.fatal env "Unexpected initialization for a temporary"
@@ -534,9 +532,7 @@ let mk_compound_init env lv typ init =
   match init_stmts with
   | [] -> assert false (* at least one initialization is supposed to occur. *)
   | [ single_init ] -> single_init
-  | l ->
-    let l = List.rev_map (fun x -> { stmt_ghost = false; stmt_node = x }) l in
-    make_block env l
+  | l -> let l = List.rev_map (make_stmt env) l in make_block env l
 
 let computation_or_nop loc exp =
   match exp.expr_node with
@@ -1524,10 +1520,7 @@ and convert_expr_node ?(drop_temp=false) env aux e does_remove_virtual =
                 convert_constr_expr
                   env is_const aux n kind tm t args does_remove_virtual
               in
-              let stmt =
-                { stmt_ghost = false;
-                  stmt_node = COMPUTATION (def, def.expr_loc) }
-              in
+              let stmt = make_stmt env (COMPUTATION (def, def.expr_loc)) in
               let loc = Convert_env.get_loc env in
               let tmp_decl =
                 DECDEF(None,(typ,[(name,decl JUSTBASE,attrs,loc), NO_INIT]),loc)
@@ -1577,16 +1570,13 @@ and convert_expr_node ?(drop_temp=false) env aux e does_remove_virtual =
         let typ_expr = mk_expr env (TYPE_SIZEOF (typ, decl JUSTBASE)) in
         env, merge_aux aux' aux, CALL (builtin,[e;typ_expr],[])
       | Throw None ->
-        let stmt =
-          { stmt_ghost = false;
-            stmt_node = THROW (None, Convert_env.get_loc env) }
-        in
+        let stmt = make_stmt env (THROW (None, Convert_env.get_loc env)) in
         env, add_local_aux_init aux stmt, NOTHING
       | Throw (Some e) ->
         let loc = Convert_env.get_loc env in
         let env, aux, e = convert_expr env aux e does_remove_virtual in
         let aux = preserved_returned_object aux e in
-        let stmt = { stmt_ghost = false; stmt_node = THROW(Some e, loc) } in
+        let stmt = make_stmt env (THROW(Some e, loc)) in
         env, add_local_aux_init aux stmt, NOTHING
       | GnuBody l ->
         let l, env = convert_stmt_list env l does_remove_virtual in
@@ -1655,9 +1645,8 @@ and convert_expr_node ?(drop_temp=false) env aux e does_remove_virtual =
             il_cons_name TStandard (Some (FKConstructor true, il_cons_sig))
         in
         let init_stmt =
-          { stmt_ghost = Convert_env.is_ghost env;
-            stmt_node =
-              COMPUTATION(
+          make_stmt env
+            (COMPUTATION(
                 mk_expr env (
                   CALL(
                     mk_expr env (VARIABLE mangled_name),
@@ -1666,8 +1655,7 @@ and convert_expr_node ?(drop_temp=false) env aux e does_remove_virtual =
                       mk_expr env (VARIABLE array_name);
                       mk_expr env
                         (CONSTANT (CONST_INT (string_of_int il_size)))
-                    ],[])),loc)
-          }
+                    ],[])),loc))
         in
         let cil_type, cil_decl =
           convert_specifiers env (Cxx_utils.unqual_type il_type) false
@@ -1951,8 +1939,7 @@ and convert_initializer env typ var init_exp does_remove_virtual =
           in
           env,
           aux, NO_INIT,
-          Some ({ stmt_ghost = false;
-                  stmt_node = COMPUTATION (def, def.expr_loc)})
+          Some (make_stmt env (COMPUTATION (def, def.expr_loc)))
         | Assign({ econtent = Variable v}, e) when equal v var ->
           aux_init env typ var (Single_init e)
         | _ ->
@@ -2007,11 +1994,11 @@ and convert_initializer env typ var init_exp does_remove_virtual =
               let env, aux, body =
                 convert_full_expr ~drop_temp:true lenv init does_remove_virtual in
               let stmt_node = computation_or_nop loc body in
-              let body = { stmt_ghost = false; stmt_node } in
+              let body = make_stmt env stmt_node in
               env, aux, NO_INIT,
               Some(
-                { stmt_ghost = false;
-                  stmt_node = FOR([],FC_DECL tmp,end_test,increment,body,loc) })
+                make_stmt env
+                  (FOR([],FC_DECL tmp,end_test,increment,body,loc)))
             | _ ->
               Convert_env.fatal env
                 "Implicit array initialization \
@@ -2145,7 +2132,7 @@ and convert_incr_statement env incr does_remove_virtual =
       match aux with
       | [] -> env, e
       | _ ->
-        let stmt = { stmt_ghost = false; stmt_node } in
+        let stmt = make_stmt env stmt_node in
         let stmts = List.fold_left (add_temp env) [stmt] aux in
         env, mk_expr_l loc (GNU_BODY { blabels=[]; battrs=[]; bstmts = stmts })
 
@@ -2159,14 +2146,14 @@ and convert_statement env st does_remove_virtual =
         match init with
           | None -> stmt
           | Some s ->
-            SEQUENCE(s, { stmt_ghost = false; stmt_node = stmt},loc)
+            SEQUENCE(s, make_stmt env stmt,loc)
       in
       let stmt =
         match def with
           | None -> stmt
           | Some def ->
-            let def = { stmt_ghost = false; stmt_node = DEFINITION def } in
-            let stmt = { stmt_ghost = false; stmt_node = stmt } in
+            let def = make_stmt env (DEFINITION def) in
+            let stmt = make_stmt env stmt in
             SEQUENCE(def,stmt,loc)
       in
       add_temps tl stmt
@@ -2212,10 +2199,12 @@ and convert_statement env st does_remove_virtual =
         let env, aux, e = convert_full_expr env e does_remove_virtual in
         add_temps aux (COMPUTATION(e,cloc)), env
     | Ghost_block(loc,stmts) ->
+      let old_ghost = Convert_env.is_ghost env in
       let env = Convert_env.set_loc env loc in
+      let env = Convert_env.set_ghost env true in
       let cloc = Cil_datatype.Location.of_lexing_loc loc in
       let b, env = convert_block env stmts does_remove_virtual in
-      List.iter (fun s -> s.stmt_ghost <- true) b.bstmts;
+      let env = Convert_env.set_ghost env old_ghost in
       BLOCK(b,cloc,cloc), env
     | Block(loc,stmts) ->
       let env = Convert_env.set_loc env loc in
@@ -2236,7 +2225,7 @@ and convert_statement env st does_remove_virtual =
     | Label(loc,lab) ->
       let env = Convert_env.set_loc env loc in
       let cloc = Cil_datatype.Location.of_lexing_loc loc in
-      let stmt = { stmt_ghost = false; stmt_node = NOP cloc } in
+      let stmt = make_stmt env (NOP cloc) in
       LABEL(lab,stmt,cloc), env
     | Goto(loc,lab) ->
       let env = Convert_env.set_loc env loc in
@@ -2253,9 +2242,7 @@ and convert_statement env st does_remove_virtual =
           (convert_case_statement does_remove_virtual) ([],env) cases
       in
       let cases = { blabels = []; battrs = []; bstmts = List.rev cases } in
-      let cases =
-        { stmt_ghost = false; stmt_node = BLOCK(cases,cases_loc,cases_loc) }
-      in
+      let cases = make_stmt env (BLOCK(cases,cases_loc,cases_loc)) in
       add_temps aux (SWITCH(cond,cases,cloc)), env
     | VarDecl (loc, name, typ, init) ->
       let env = Convert_env.set_loc env loc in
@@ -2287,8 +2274,7 @@ and convert_statement env st does_remove_virtual =
           let def = DEFINITION (decl init) in
           (match e with
             | None -> def
-            | Some stmt ->
-              SEQUENCE ({ stmt_ghost = false; stmt_node = def}, stmt, cloc))
+            | Some stmt -> SEQUENCE (make_stmt env def, stmt, cloc))
         | _ ->
           (* We put all these declarations in a special block, 
              but the initial declaration itself need to stay out of it.
@@ -2302,8 +2288,7 @@ and convert_statement env st does_remove_virtual =
             | Some s -> s.stmt_node
           in
           let block = add_temps aux block in
-          SEQUENCE ({ stmt_ghost = false; stmt_node = def },
-                    { stmt_ghost = false; stmt_node = block }, cloc)
+          SEQUENCE (make_stmt env def, make_stmt env block, cloc)
       in
       stmt, env
     | Break l -> BREAK (Cil_datatype.Location.of_lexing_loc l), env
@@ -2345,11 +2330,9 @@ and convert_statement env st does_remove_virtual =
         match stmts, aux with
           [], [] -> loop
         | [], l -> add_temps l loop
-        | _,[] ->
-          make_block ienv (stmts @ [{stmt_ghost = false; stmt_node = loop}])
+        | _,[] -> make_block ienv (stmts @ [make_stmt env loop])
         | _, l ->
-          let loop = { stmt_ghost = false; stmt_node = loop } in
-          let block = List.fold_left (add_temp env) [loop] l in
+          let block = List.fold_left (add_temp env) [make_stmt env loop] l in
           make_block ienv (stmts @ block)
       in
       stmt, Convert_env.unscope ienv env
@@ -2383,7 +2366,7 @@ and convert_statement env st does_remove_virtual =
       let cloc = Cil_datatype.Location.of_lexing_loc loc in
       ASM(qual, instr, details, cloc), env
   in
-  { stmt_ghost = false; stmt_node = raw }, env
+  make_stmt env raw, env
 
 and convert_catch_clause does_remove_virtual (acc,env) { typed_arg; cbody } =
   let var, env =
@@ -2411,16 +2394,14 @@ and convert_case_statement does_remove_virtual (acc, env) case =
         let action, env =
           convert_stmt_block env action does_remove_virtual
         in
-        { stmt_ghost = false; stmt_node = CASE(value,action,cloc) }::acc,
-        env
+        make_stmt env (CASE(value,action,cloc)) :: acc, env
     | Default(action) ->
         let loc = find_loc_list_stmt action in
         let cloc = Cil_datatype.Location.of_lexing_loc loc in
         let action, env =
           convert_stmt_block env action does_remove_virtual
         in
-        { stmt_ghost = false; stmt_node = DEFAULT(action,cloc) }::acc,
-        env
+        make_stmt env (DEFAULT(action,cloc))::acc, env
 
 and convert_stmt_block env b does_remove_virtual =
   let loc = find_loc_list_stmt b in
@@ -2428,7 +2409,7 @@ and convert_stmt_block env b does_remove_virtual =
   let stmts, env = convert_stmt_list env b does_remove_virtual in
   let stmt =
     match stmts with
-      [] -> { stmt_ghost = false; stmt_node = NOP cloc }
+      [] -> make_stmt env (NOP cloc)
     | [ a ] -> a
     | l -> make_block_stmt env l
   in
@@ -2715,14 +2696,11 @@ let iter_on_array ?(incr=true) env idx length mk_body =
       loc)
   in
   let body, def, env = mk_body env idx_var in
-  { stmt_ghost = false;
-    stmt_node =
-      FOR([],FC_DECL decl,
-          mk_expr env
-            (BINARY(last_test,idx_var,mk_expr env last)),
-          mk_expr env
-            (UNARY(modif,idx_var)),
-          body,loc) }, def, env
+  make_stmt env
+    (FOR([],FC_DECL decl,
+         mk_expr env (BINARY(last_test,idx_var,mk_expr env last)),
+         mk_expr env (UNARY(modif,idx_var)), body,loc)),
+  def, env
 
 let create_stmt_set_vmt env qualification_class inherits =
   let loc = Convert_env.get_loc env in
@@ -2771,9 +2749,8 @@ let create_stmt_set_vmt env qualification_class inherits =
       let src =
         mk_expr env (UNARY(ADDROF, mk_expr env (VARIABLE vmt_name)))
       in
-      { stmt_ghost = false;
-        stmt_node =
-          COMPUTATION(mk_expr env (BINARY(ASSIGN, dst, src)), loc)} :: l,
+      make_stmt env (COMPUTATION(mk_expr env (BINARY(ASSIGN, dst, src)), loc))
+      :: l,
       index
     end
   in
@@ -2785,9 +2762,9 @@ let create_stmt_set_vmt env qualification_class inherits =
   let vmt_header, _ = Convert_env.typedef_normalize env vmt_header TStandard in
   let vmt_name = Mangling.mangle vmt_header TStandard None in
   let src = mk_expr env (UNARY(ADDROF, mk_expr env (VARIABLE vmt_name))) in
-  List.rev ({ stmt_ghost = false;
-    stmt_node = COMPUTATION(mk_expr env (BINARY(ASSIGN, dst, src)), loc)}
-    :: (fst (List.fold_left create_stmt_set_shift_vmt ([], 0) inherits)))
+  List.rev
+    (make_stmt env (COMPUTATION(mk_expr env (BINARY(ASSIGN, dst, src)), loc))
+     :: (fst (List.fold_left create_stmt_set_shift_vmt ([], 0) inherits)))
 
 let rec add_bare_to_qualification qualif = match qualif with
   | [] -> []
@@ -2863,11 +2840,10 @@ let rec implicit_op_call op env most_derived (s, t) dst src =
     op.class_field
       (mk_expr env (UNARY (ADDROF, dst))) (mk_expr env (UNARY (ADDROF, src)))
   in
-  { stmt_ghost = Convert_env.is_ghost env;
-    stmt_node =
-      COMPUTATION(
-        mk_expr env
-          (CALL(mk_expr env (VARIABLE cname),args,[])), loc) }, defs, env
+  make_stmt env
+    (COMPUTATION(
+        mk_expr env (CALL(mk_expr env (VARIABLE cname),args,[])), loc)),
+  defs, env
 
 and create_generic_op op env most_derived class_name =
   let loc = Convert_env.get_clang_loc env in
@@ -3067,7 +3043,7 @@ and create_assign_stmt_type op env typ dst src =
         stmt, defs, Convert_env.unscope lenv env
     | Array { dimension = None} ->
         (* GNU extension. Treat it as a an empty field. *)
-        { stmt_ghost = false; stmt_node = NOP loc }, [], env
+        make_stmt env (NOP loc), [], env
     | Union (s,t) ->
       (* TODO: check whether the union has a user-provided copy constructor.
          Otherwise, the implicit default is to copy the object representation
@@ -3076,21 +3052,21 @@ and create_assign_stmt_type op env typ dst src =
       if op.is_copy then begin
         let s, t = Convert_env.typedef_normalize env s t in
         let ctyp = Tunion (Mangling.mangle s t None,None,[]) in
-        { stmt_ghost = Convert_env.is_ghost env;
-          stmt_node =
-            COMPUTATION
-              (mk_expr env
-                 (CALL(
-                     mk_expr env (VARIABLE "Frama_C_memcpy"),
-                     [mk_expr env (UNARY(ADDROF,dst));
-                      mk_expr env (UNARY(ADDROF,src));
-                      mk_expr env (TYPE_SIZEOF([SpecType ctyp],JUSTBASE))],[])),
-               loc)}, [], env
+        make_stmt env
+          (COMPUTATION
+             (mk_expr env
+                (CALL(
+                    mk_expr env (VARIABLE "Frama_C_memcpy"),
+                    [mk_expr env (UNARY(ADDROF,dst));
+                     mk_expr env (UNARY(ADDROF,src));
+                     mk_expr env (TYPE_SIZEOF([SpecType ctyp],JUSTBASE))],[])),
+              loc)),
+        [], env
       end else
         (* No initialization is performed by default constructor, cf 12.6.2§8.
            No destructor call for variant members, cf 12.4§7.
         *)
-        { stmt_ghost = Convert_env.is_ghost env; stmt_node = NOP loc }, [], env
+        make_stmt env (NOP loc), [], env
     | Struct (s,t) ->
       let class_name = Convert_env.typedef_normalize env s t in
       implicit_op_call op env true class_name dst src
@@ -3124,9 +3100,7 @@ let create_default_constructor env most_derived class_name =
   let class_field dst _ = [ dst ] in
   (* TODO: add in intermediate_format.ast information about initializer
      of corresponding fields. See 12.6.2§8 *)
-  let plain_field _ _ =
-    { stmt_ghost = Convert_env.is_ghost env; stmt_node = NOP loc }
-  in
+  let plain_field _ _ = make_stmt env (NOP loc) in
   let kind most_derived = FKConstructor most_derived in
   let name _ (qname, tkind) =
     Cxx_utils.meth_name qname tkind qname.decl_name
@@ -3135,8 +3109,7 @@ let create_default_constructor env most_derived class_name =
     { result = Cxx_utils.unqual_type Void; parameter = []; variadic = false }
   in
   let return () =
-    { stmt_ghost = Convert_env.is_ghost env;
-      stmt_node = RETURN ({ expr_loc = loc; expr_node = NOTHING}, loc) }
+    make_stmt env (RETURN ({ expr_loc = loc; expr_node = NOTHING}, loc))
   in
   create_generic_op
     { is_copy = false;
@@ -3163,8 +3136,7 @@ let create_copy_constructor env most_derived class_name =
   in
   let class_field dst src = [ dst; src ] in
   let plain_field dst src =
-    { stmt_ghost = Convert_env.is_ghost env;
-      stmt_node = COMPUTATION(mk_expr env (BINARY(ASSIGN,dst,src)), loc)}
+    make_stmt env (COMPUTATION(mk_expr env (BINARY(ASSIGN,dst,src)), loc))
   in
   let signature most_derived class_name =
     let result = Cxx_utils.unqual_type Void in
@@ -3173,8 +3145,7 @@ let create_copy_constructor env most_derived class_name =
     { result; parameter; variadic = false }
   in
   let return () =
-    { stmt_ghost = Convert_env.is_ghost env;
-      stmt_node = RETURN ({ expr_loc = loc; expr_node = NOTHING}, loc) }
+    make_stmt env (RETURN ({ expr_loc = loc; expr_node = NOTHING}, loc))
   in
   create_generic_op
     { is_copy = true;
@@ -3201,8 +3172,7 @@ let create_move_constructor env most_derived class_name =
   in
   let class_field dst src = [ dst; src ] in
   let plain_field dst src =
-    { stmt_ghost = Convert_env.is_ghost env;
-      stmt_node = COMPUTATION(mk_expr env (BINARY(ASSIGN,dst,src)), loc)}
+    make_stmt env (COMPUTATION(mk_expr env (BINARY(ASSIGN,dst,src)), loc))
   in
   let signature most_derived class_name =
     let result = Cxx_utils.unqual_type Void in
@@ -3211,8 +3181,7 @@ let create_move_constructor env most_derived class_name =
     { result; parameter; variadic = false }
   in
   let return () =
-    { stmt_ghost = Convert_env.is_ghost env;
-      stmt_node = RETURN ({ expr_loc = loc; expr_node = NOTHING}, loc) }
+    make_stmt env (RETURN ({ expr_loc = loc; expr_node = NOTHING}, loc))
   in
   create_generic_op
     { is_copy = true;
@@ -3237,8 +3206,7 @@ let create_assign_operator env most_derived class_name =
   let name = op_name "operator=" in
   let class_field dst src = [ dst; src ] in
   let plain_field dst src =
-    { stmt_ghost = Convert_env.is_ghost env;
-      stmt_node = COMPUTATION(mk_expr env (BINARY(ASSIGN,dst,src)), loc)}
+    make_stmt env (COMPUTATION(mk_expr env (BINARY(ASSIGN,dst,src)), loc))
   in
   let signature most_derived class_name =
     let mytype = bare_or_derived_type env most_derived class_name in
@@ -3247,9 +3215,8 @@ let create_assign_operator env most_derived class_name =
     { result; parameter; variadic = false }
   in
   let return () =
-    { stmt_ghost = Convert_env.is_ghost env;
-      stmt_node =
-        RETURN ({expr_loc = loc; expr_node = VARIABLE "this"}, loc) }
+    make_stmt env
+      (RETURN ({expr_loc = loc; expr_node = VARIABLE "this"}, loc))
   in
   create_generic_op
     { is_copy = true;
@@ -3274,8 +3241,7 @@ let create_move_operator env most_derived class_name =
   let name = op_name "operator=" in
   let class_field dst src = [ dst; src ] in
   let plain_field dst src =
-    { stmt_ghost = Convert_env.is_ghost env;
-      stmt_node = COMPUTATION(mk_expr env (BINARY(ASSIGN,dst,src)), loc)}
+    make_stmt env (COMPUTATION(mk_expr env (BINARY(ASSIGN,dst,src)), loc))
   in
   let signature most_derived class_name =
     let mytype = bare_or_derived_type env most_derived class_name in
@@ -3284,8 +3250,7 @@ let create_move_operator env most_derived class_name =
     { result; parameter; variadic = false }
   in
   let return () =
-    { stmt_ghost = Convert_env.is_ghost env;
-      stmt_node = RETURN ({ expr_loc = loc; expr_node = VARIABLE "this"}, loc)}
+    make_stmt env (RETURN ({ expr_loc = loc; expr_node = VARIABLE "this"}, loc))
   in
   create_generic_op
     { is_copy = true;
@@ -3317,13 +3282,10 @@ let create_destructor env most_derived class_name =
     else None
   in
   let class_field dst _ = [ dst ] in
-  let plain_field _ _ =
-    { stmt_ghost = Convert_env.is_ghost env; stmt_node = NOP loc }
-  in
+  let plain_field _ _ = make_stmt env (NOP loc) in
   let kind most_derived = FKDestructor most_derived in
   let return () =
-    { stmt_ghost = Convert_env.is_ghost env;
-      stmt_node = RETURN ({ expr_loc = loc; expr_node = NOTHING}, loc) }
+    make_stmt env (RETURN ({ expr_loc = loc; expr_node = NOTHING}, loc))
   in
   create_generic_op
     { is_copy = false;
@@ -3733,7 +3695,6 @@ let do_not_translate name =
 let extract_name = Reorder_defs.name_of_glob
 
 let add_cons_init env d body =
-  let ghost = Convert_env.is_ghost env in
   match d with
   | DECDEF (spec,
             (t, [(name, dt, attrs, loc),
@@ -3749,8 +3710,7 @@ let add_cons_init env d body =
     in
     Convert_env.add_c_global env
       (make_global_cons_init env name
-         (body @
-          [{ stmt_ghost = ghost; stmt_node = COMPUTATION (expr, loc)}]))
+         (body @ [make_stmt env (COMPUTATION (expr, loc))]))
   | DECDEF (spec,
             (t, [(name, dt, attrs, loc),
                  SINGLE_INIT ({expr_node = GNU_BODY b})]),
@@ -3762,7 +3722,7 @@ let add_cons_init env d body =
     in
     Convert_env.add_c_global env
       (make_global_cons_init env name
-         (body @ [{ stmt_ghost = ghost; stmt_node = BLOCK (b, loc,loc)}]))
+         (body @ [make_stmt env (BLOCK (b, loc,loc))]))
   | _ ->
     (match body with
        | [] -> Convert_env.add_c_global env d
@@ -3772,15 +3732,14 @@ let add_cons_init env d body =
          Convert_env.add_c_global env (make_global_cons_init env name body))
 
 let add_glob_temp env defs (def,init_stmt) =
-    let stmt_ghost = Convert_env.is_ghost env in 
-    let defs =
-      match init_stmt with
-        | None -> defs
-        | Some { stmt_node } -> { stmt_ghost; stmt_node } :: defs
-    in
-    match def with
+  let defs =
+    match init_stmt with
     | None -> defs
-    | Some def -> { stmt_ghost; stmt_node = DEFINITION def } :: defs
+    | Some { stmt_node } -> make_stmt env stmt_node :: defs
+  in
+  match def with
+  | None -> defs
+  | Some def -> make_stmt env (DEFINITION def) :: defs
 
 let is_frama_clang_array_init_name = function
   | Implementation { decl_name } ->
@@ -3858,16 +3817,16 @@ let rec convert_global env glob =
       (match body with
         | None ->
           let glob = DECDEF(spec,(rt,[name,NO_INIT]), cloc) in
-          let env = Convert_env.reset_func benv in
-          Convert_env.add_c_global env glob
+          let env = Convert_env.add_c_global benv glob in
+          Convert_env.reset_func env
         | Some body ->
           if (not has_virtual_base)
             || Frama_Clang_option.Cxx_virtual_bare_methods_in_clang.get ()
           then
             let body, benv = convert_block benv body false in
-            let env = Convert_env.reset_func benv in
             let glob = FUNDEF(spec,(rt,name),body,cloc,cloc) in
-            Convert_env.add_c_global env glob
+            let env = Convert_env.add_c_global benv glob in
+            Convert_env.reset_func env
           else
             let cbody, benv = convert_block benv body false in
             let cbody_bare, benv = convert_block benv body true in
@@ -3885,11 +3844,12 @@ let rec convert_global env glob =
               make_prototype
                 cloc benv qname_bare kind return_type all_args variadic false
             in
-            let env = Convert_env.reset_func benv in
             let gbare = FUNDEF(spec,(rt_bare,name_bare),cbody_bare,cloc,cloc) in
             let glob = FUNDEF(spec,(rt,name),cbody,cloc,cloc) in
-            let env = Convert_env.add_c_global env gbare in
-            Convert_env.add_c_global env glob)
+            let env = Convert_env.add_c_global benv gbare in
+            let env = Convert_env.add_c_global env glob in
+            Convert_env.reset_func env
+           )
     | Compound(loc,name,kind,inherits,body,has_virtual,tc, is_extern_c,ghost) ->
       let old_ghost = Convert_env.is_ghost env in
       let env = Convert_env.set_loc env loc in
@@ -3947,7 +3907,7 @@ let rec convert_global env glob =
                match init_body with
                | NOP _ -> []
                | BLOCK({ bstmts }, _,_) -> bstmts
-               | _ -> [{stmt_ghost = ghost; stmt_node = init_body}]
+               | _ -> [make_stmt env init_body]
              in
              let init_all =
                List.fold_left (add_glob_temp env) init_func tmps
@@ -4009,10 +3969,10 @@ let rec convert_global env glob =
         let decl, env =
           convert_static_const env loc name ikind kind value false
         in
+        let env = Convert_env.add_c_global env decl in
         let env = Convert_env.set_ghost env old_ghost in
-        let env = Convert_env.set_extern_c env old_extern_c in
-        Convert_env.add_c_global env decl
-    | EnumDecl(loc,name,ikind, body,is_extern_c_context,ghost) ->
+        Convert_env.set_extern_c env old_extern_c
+     | EnumDecl(loc,name,ikind, body,is_extern_c_context,ghost) ->
       let old_ghost = Convert_env.is_ghost env in
       let env = Convert_env.set_loc env loc in
       let env = Convert_env.set_ghost env ghost in
@@ -4029,8 +3989,9 @@ let rec convert_global env glob =
       in
       let tags = Extlib.opt_map (convert_enum_constants env ikind) body in
       let glob = ONLYTYPEDEF([SpecType (Tenum(name,tags,[]))],cloc) in
+      let env = Convert_env.add_c_global env glob in
       let env = Convert_env.set_ghost env old_ghost in
-      Convert_env.add_c_global env glob
+      env
 
 let convert_ast file =
   let env = List.fold_left convert_global Convert_env.empty_env file.globals in
