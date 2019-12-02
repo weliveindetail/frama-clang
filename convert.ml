@@ -102,8 +102,8 @@ let rec protect_array_type al dim d =
     (* array dim of ptr to d' is d' *foo[dim] *)
     PTR(al',protect_array_type al dim d')
     (* array dim of ptr to function returning d' is d' ( *foo[dim]()) *)
-  | PROTO(d',args,variadic) ->
-    PROTO(protect_array_type al dim d',args,variadic)
+  | PROTO(d',args,ghost_args,variadic) ->
+    PROTO(protect_array_type al dim d',args,ghost_args, variadic)
 
 (* creates a *d. Similar issue as for protect_array_type. *)
 let rec protect_ptr_type al d =
@@ -332,7 +332,7 @@ let add_attr env name args =
   let payload =
     match args with
     | [] -> name
-    | _ -> { expr_loc; expr_node = CALL (name, args) }
+    | _ -> { expr_loc; expr_node = CALL (name, args, []) }
   in
   ("__declspec", [ payload ])
 
@@ -367,7 +367,7 @@ let rm_fc_destructor_attr attrs =
     (fun (name,content) ->
        name <> "__declspec" ||
        (match content with
-        | [ { expr_node = CALL ({ expr_node = VARIABLE n }, _)}] ->
+        | [ { expr_node = CALL ({ expr_node = VARIABLE n }, _, _)}] ->
           n <> Cabs2cil.frama_c_destructor
         | _ -> true))
     attrs
@@ -646,7 +646,7 @@ let rec convert_base_type env spec decl typ does_remove_virtual =
     rt,
     (fun d ->
       rt_decl
-        (PROTO (decl (protect_ptr_type attrs d), args,variadic)))
+        (PROTO (decl (protect_ptr_type attrs d), args,[],variadic)))
   | LVReference (PFunctionPointer s)
   | RVReference (PFunctionPointer s) ->
     let rt, rt_decl, args, variadic =
@@ -655,7 +655,7 @@ let rec convert_base_type env spec decl typ does_remove_virtual =
     let attrs= List.map cv_to_attr spec in
     rt,
     (fun d ->
-       rt_decl (PROTO (decl (protect_ptr_type attrs d),args,variadic)))
+       rt_decl (PROTO (decl (protect_ptr_type attrs d),args,[],variadic)))
   | Pointer(PStandardMethodPointer _)
   | LVReference (PStandardMethodPointer _) 
   | RVReference (PStandardMethodPointer _) ->
@@ -758,7 +758,7 @@ and make_prototype loc env name kind rt args variadic does_remove_virtual =
       (SpecAttr (add_attr env Cil.frama_c_init_obj []) :: spec, name) :: args'
     | _ -> args
   in
-  env, (rt, (name,decl (PROTO(JUSTBASE,args,variadic)),[],loc))
+  env, (rt, (name,decl (PROTO(JUSTBASE,args,[],variadic)),[],loc))
 
 and convert_constant env c does_remove_virtual = match c with
   | IntCst (t,_,v) ->
@@ -900,19 +900,21 @@ and convert_expr_node ?(drop_temp=false) env aux e does_remove_virtual =
           env,
           aux,
           CALL(mk_expr env (VARIABLE "malloc"),
-               [mk_expr env (TYPE_SIZEOF (bt,decl JUSTBASE))])
+               [mk_expr env (TYPE_SIZEOF (bt,decl JUSTBASE))],[])
       | MallocArray(t,s) ->
           let bt,decl = convert_base_type env [] id t does_remove_virtual in
           let env, aux, size = convert_expr env aux s does_remove_virtual in
           env,
           aux,
-          CALL(mk_expr env (VARIABLE "malloc"),
-               [mk_expr env
-                   (BINARY(MUL,
-                           mk_expr env (TYPE_SIZEOF(bt,decl JUSTBASE)),size))])
+          CALL(
+            mk_expr env (VARIABLE "malloc"),
+            [mk_expr env
+               (BINARY
+                  (MUL,
+                   mk_expr env (TYPE_SIZEOF(bt,decl JUSTBASE)),size))], [])
       | Free e | FreeArray e ->
           let env, aux, arg = convert_expr env aux e does_remove_virtual in
-          env, aux, CALL(mk_expr env (VARIABLE "free"),[arg])
+          env, aux, CALL(mk_expr env (VARIABLE "free"),[arg],[])
       | Assign(x,e) when is_constructor_call e ->
         let kind, name, tn, sigtype, args = extract_constructor_call e in
         let e =
@@ -1178,7 +1180,7 @@ and convert_expr_node ?(drop_temp=false) env aux e does_remove_virtual =
                 env, aux,
                 QUESTION(
                   mk_expr env
-                    (CALL(mk_expr env (VARIABLE dynamic_cast_name),args)),
+                    (CALL(mk_expr env (VARIABLE dynamic_cast_name),args,[])),
                   mk_cast env
                     (rt,decl JUSTBASE)
                     (mk_expr env
@@ -1310,7 +1312,7 @@ and convert_expr_node ?(drop_temp=false) env aux e does_remove_virtual =
         in
         let args = mk_addrof env callee :: args in
         env, aux,
-        CALL(mk_expr_l loc (MEMBEROF (callee, lambda_apply_name)), args)
+        CALL(mk_expr_l loc (MEMBEROF (callee, lambda_apply_name)), args, [])
       | Static_call(name, signature, kind, args, t, is_extern_c) ->
         let cname =
           if is_extern_c then name.decl_name
@@ -1342,7 +1344,7 @@ and convert_expr_node ?(drop_temp=false) env aux e does_remove_virtual =
         let args =
           convert_reference_parameters env signature.variadic prm args
         in
-        env, aux, CALL(mk_var env cname,args)
+        env, aux, CALL(mk_var env cname,args,[])
       | Virtual_call(name,signature,_(*kind*),this,args,method_index, shift,
           shiftPvmt)
         ->
@@ -1462,7 +1464,7 @@ and convert_expr_node ?(drop_temp=false) env aux e does_remove_virtual =
                    proto_rt_decl
                      (PROTO
                         ((PTR(List.map cv_to_attr proto_spec,JUSTBASE)),
-                         proto_args,false)))
+                         proto_args,[],false)))
                   (mk_expr
                      env
                      (MEMBEROFPTR (mk_var env var_name, "method_ptr"))))),
@@ -1481,7 +1483,7 @@ and convert_expr_node ?(drop_temp=false) env aux e does_remove_virtual =
                          (List.fold_left shift_expr this shift)),
                       (mk_expr env
                          (MEMBEROFPTR (mk_var env var_name, "shift_this")))))))
-            :: args)
+            :: args,[])
       | Dynamic_call(_kind,ptr,args) ->
         (* NB: might be slightly different for virtual method *)
         let signature = Convert_env.get_dynamic_signature env ptr.econtent in
@@ -1493,7 +1495,7 @@ and convert_expr_node ?(drop_temp=false) env aux e does_remove_virtual =
         let args =
           convert_reference_parameters env signature.variadic prm args
         in
-        env, aux, CALL(f,args)
+        env, aux, CALL(f,args,[])
       | Temporary(name, ctyp, init_exp, force) ->
         let env = Convert_env.add_local_var env name ctyp.plain_type in
         let typ, decl = convert_specifiers env ctyp does_remove_virtual in
@@ -1573,7 +1575,7 @@ and convert_expr_node ?(drop_temp=false) env aux e does_remove_virtual =
         (* implement the ugly comment in cabs.ml *)
         let builtin = mk_expr env (VARIABLE "__builtin_va_arg") in
         let typ_expr = mk_expr env (TYPE_SIZEOF (typ, decl JUSTBASE)) in
-        env, merge_aux aux' aux, CALL (builtin,[e;typ_expr])
+        env, merge_aux aux' aux, CALL (builtin,[e;typ_expr],[])
       | Throw None ->
         let stmt =
           { stmt_ghost = false;
@@ -1664,7 +1666,7 @@ and convert_expr_node ?(drop_temp=false) env aux e does_remove_virtual =
                       mk_expr env (VARIABLE array_name);
                       mk_expr env
                         (CONSTANT (CONST_INT (string_of_int il_size)))
-                    ])),loc)
+                    ],[])),loc)
           }
         in
         let cil_type, cil_decl =
@@ -1805,7 +1807,7 @@ and make_assign_cap env cap =
          make_computation env
            (mk_expr env
               (CALL
-                 (mk_var env cname, [ mk_addrof env dst; mk_addrof env src])))
+                 (mk_var env cname, [mk_addrof env dst; mk_addrof env src],[])))
        | None ->
          make_computation env (mk_assign env dst src)
       )
@@ -1817,7 +1819,7 @@ and make_assign_cap env cap =
            (CALL(
                mk_var env "Frama_C_memcpy",
                [mk_addrof env dst; mk_addrof env src;
-                mk_expr env (TYPE_SIZEOF([SpecType ctyp],JUSTBASE))])))
+                mk_expr env (TYPE_SIZEOF([SpecType ctyp],JUSTBASE))],[])))
     | Named (name, _) ->
       aux (Convert_env.get_typedef env name)
   in
@@ -1850,7 +1852,7 @@ and init_lambda_object
   let ptr = mk_var env body_name in
   let mk_arg cap = mk_var env (fst (capture_name_type env cap)) in
   let args = List.map mk_arg closure in
-  let call = mk_expr env (CALL(f,lam :: ptr :: args)) in
+  let call = mk_expr env (CALL(f,lam :: ptr :: args,[])) in
   make_computation env call
 
 and convert_expr ?drop_temp env aux e =
@@ -1894,7 +1896,7 @@ and convert_constr_expr env is_const aux n kind tc t args does_remove_virtual =
   let env, aux, args = convert_list_expr env aux args does_remove_virtual in
   let prm = remove_void signature.parameter in
   let args = convert_reference_parameters env t.variadic prm args in
-  env, aux, mk_expr env (CALL(mk_var env cname,args))
+  env, aux, mk_expr env (CALL(mk_var env cname,args,[]))
 
 and convert_full_constr_expr env is_const n kind tc t args =
   convert_constr_expr env is_const empty_aux n kind tc t args
@@ -2865,7 +2867,7 @@ let rec implicit_op_call op env most_derived (s, t) dst src =
     stmt_node =
       COMPUTATION(
         mk_expr env
-          (CALL(mk_expr env (VARIABLE cname), args)), loc) }, defs, env
+          (CALL(mk_expr env (VARIABLE cname),args,[])), loc) }, defs, env
 
 and create_generic_op op env most_derived class_name =
   let loc = Convert_env.get_clang_loc env in
@@ -3082,7 +3084,7 @@ and create_assign_stmt_type op env typ dst src =
                      mk_expr env (VARIABLE "Frama_C_memcpy"),
                      [mk_expr env (UNARY(ADDROF,dst));
                       mk_expr env (UNARY(ADDROF,src));
-                      mk_expr env (TYPE_SIZEOF([SpecType ctyp],JUSTBASE))])),
+                      mk_expr env (TYPE_SIZEOF([SpecType ctyp],JUSTBASE))],[])),
                loc)}, [], env
       end else
         (* No initialization is performed by default constructor, cf 12.6.2§8.
@@ -3715,7 +3717,7 @@ let convert_class env name tkind kind inherits body has_virtual =
 let make_global_cons_init env name init =
   let loc = Convert_env.get_loc env in
   FUNDEF(None,([SpecType Tvoid; SpecAttr("__constructor__",[])],
-               ("__fc_init" ^ name, PROTO(JUSTBASE,[],false),[],loc)),
+               ("__fc_init" ^ name, PROTO(JUSTBASE,[],[],false),[],loc)),
          { blabels = []; battrs = []; bstmts = init }, loc, loc)
 
 let builtins = [ "__builtin_va_start" ]
@@ -4050,7 +4052,7 @@ let convert_ast file =
                [],
                PROTO (
                  JUSTBASE ,
-                 [(sizeof_t, ("size", JUSTBASE, [], basic_loc))], false)),
+                 [(sizeof_t, ("size", JUSTBASE, [], basic_loc))], [], false)),
              [], basic_loc), NO_INIT)]), basic_loc))
      ::
      ((false,
@@ -4061,7 +4063,7 @@ let convert_ast file =
               PROTO (
                 JUSTBASE ,
                 [([SpecType Tvoid],
-                  ("ptr", PTR ([], JUSTBASE), [], basic_loc))], false),
+                  ("ptr", PTR ([], JUSTBASE), [], basic_loc))], [], false),
               [], basic_loc), NO_INIT)]), basic_loc))
       ::
       ((false,
@@ -4077,7 +4079,7 @@ let convert_ast file =
                      ("dest", PTR ([], JUSTBASE), [], basic_loc));
                     ([SpecCV CV_CONST; SpecType Tvoid],
                      ("src", PTR ([], JUSTBASE), [], basic_loc));
-                    (sizeof_t, ("size", JUSTBASE, [], basic_loc))], false)),
+                    (sizeof_t, ("size", JUSTBASE, [], basic_loc))], [], false)),
                [], basic_loc), NO_INIT)]), basic_loc))
        :: globs)))
   in
