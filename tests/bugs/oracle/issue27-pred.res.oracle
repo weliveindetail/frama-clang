@@ -3,8 +3,9 @@ Now output intermediate result
 [wp] Running WP plugin...
 [wp] Warning: Missing RTE guards
 [wp] 2 goals scheduled
-[wp] [Alt-Ergo] Goal typed_Z3posi_ensures_2 : Valid
 [wp] [Alt-Ergo] Goal typed_Z3posi_ensures : Valid
+[wp] [Alt-Ergo] Goal typed_Z3posi_ensures_2 : Valid (7)
+[wp] [Cache] updated:1
 [wp] Proved goals:    2 / 2
   Qed:               0 
   Alt-Ergo:    2  (7)

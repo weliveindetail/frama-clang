@@ -26,24 +26,24 @@ struct Tuple<Pair<int,unsigned int>,Pair<signed char,unsigned char>> {
    
 };
 typedef struct Tuple<Pair<int,unsigned int>,Pair<signed char,unsigned char>> type;
-void Tuple<Pair<int,unsigned int>,Pair<signed char,unsigned char>>::Ctor(
-struct Tuple<Pair<int,unsigned int>,Pair<signed char,unsigned char>> const *this);
+void Tuple<Pair<int,unsigned int>,Pair<signed char,unsigned char>>::Ctor
+(struct Tuple<Pair<int,unsigned int>,Pair<signed char,unsigned char>> const *this);
 
-void Tuple<Pair<int,unsigned int>,Pair<signed char,unsigned char>>::Ctor(
-struct Tuple<Pair<int,unsigned int>,Pair<signed char,unsigned char>> const *this,
-struct Tuple<Pair<int,unsigned int>,Pair<signed char,unsigned char>> const *__frama_c_arg_0);
+void Tuple<Pair<int,unsigned int>,Pair<signed char,unsigned char>>::Ctor
+(struct Tuple<Pair<int,unsigned int>,Pair<signed char,unsigned char>> const *this,
+ struct Tuple<Pair<int,unsigned int>,Pair<signed char,unsigned char>> const *__frama_c_arg_0);
 
-void Tuple<Pair<int,unsigned int>,Pair<signed char,unsigned char>>::Ctor(
-struct Tuple<Pair<int,unsigned int>,Pair<signed char,unsigned char>> const *this,
-struct Tuple<Pair<int,unsigned int>,Pair<signed char,unsigned char>> *__frama_c_arg_0);
+void Tuple<Pair<int,unsigned int>,Pair<signed char,unsigned char>>::Ctor
+(struct Tuple<Pair<int,unsigned int>,Pair<signed char,unsigned char>> const *this,
+ struct Tuple<Pair<int,unsigned int>,Pair<signed char,unsigned char>> *__frama_c_arg_0);
 
 struct _frama_c_vmt _frama_c_vmt_header;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
 
 struct _frama_c_vmt_content _frama_c_vmt[1];
 /*@ requires \valid_read(this); */
-void Tuple<Pair<int,unsigned int>,Pair<signed char,unsigned char>>::Ctor(
-struct Tuple<Pair<int,unsigned int>,Pair<signed char,unsigned char>> const *this)
+void Tuple<Pair<int,unsigned int>,Pair<signed char,unsigned char>>::Ctor
+(struct Tuple<Pair<int,unsigned int>,Pair<signed char,unsigned char>> const *this)
 {
   return;
 }
@@ -52,9 +52,9 @@ struct Tuple<Pair<int,unsigned int>,Pair<signed char,unsigned char>> const *this
     requires \valid_read(this);
     requires \valid_read(__frama_c_arg_0);
  */
-void Tuple<Pair<int,unsigned int>,Pair<signed char,unsigned char>>::Ctor(
-struct Tuple<Pair<int,unsigned int>,Pair<signed char,unsigned char>> const *this,
-struct Tuple<Pair<int,unsigned int>,Pair<signed char,unsigned char>> const *__frama_c_arg_0)
+void Tuple<Pair<int,unsigned int>,Pair<signed char,unsigned char>>::Ctor
+(struct Tuple<Pair<int,unsigned int>,Pair<signed char,unsigned char>> const *this,
+ struct Tuple<Pair<int,unsigned int>,Pair<signed char,unsigned char>> const *__frama_c_arg_0)
 {
   return;
 }
@@ -63,9 +63,9 @@ struct Tuple<Pair<int,unsigned int>,Pair<signed char,unsigned char>> const *__fr
     requires \valid_read(this);
     requires \valid(__frama_c_arg_0);
  */
-void Tuple<Pair<int,unsigned int>,Pair<signed char,unsigned char>>::Ctor(
-struct Tuple<Pair<int,unsigned int>,Pair<signed char,unsigned char>> const *this,
-struct Tuple<Pair<int,unsigned int>,Pair<signed char,unsigned char>> *__frama_c_arg_0)
+void Tuple<Pair<int,unsigned int>,Pair<signed char,unsigned char>>::Ctor
+(struct Tuple<Pair<int,unsigned int>,Pair<signed char,unsigned char>> const *this,
+ struct Tuple<Pair<int,unsigned int>,Pair<signed char,unsigned char>> *__frama_c_arg_0)
 {
   return;
 }

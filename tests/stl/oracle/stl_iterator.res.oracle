@@ -377,27 +377,27 @@ struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info =
    .base_classes = (struct _frama_c_rtti_name_info_content *)0,
    .number_of_base_classes = 0,
    .pvmt = (struct _frama_c_vmt *)0};
-void iterator<std::random_access_iterator_tag,int,int,int*,int&>::Ctor(
-struct iterator<std::random_access_iterator_tag,int,int,int*,int&> const *this,
-struct iterator<std::random_access_iterator_tag,int,int,int*,int&> const *__frama_c_arg_0);
+void iterator<std::random_access_iterator_tag,int,int,int*,int&>::Ctor
+(struct iterator<std::random_access_iterator_tag,int,int,int*,int&> const *this,
+ struct iterator<std::random_access_iterator_tag,int,int,int*,int&> const *__frama_c_arg_0);
 
-void iterator<std::random_access_iterator_tag,int,int,int*,int&>::Ctor(
-struct iterator<std::random_access_iterator_tag,int,int,int*,int&> const *this,
-struct iterator<std::random_access_iterator_tag,int,int,int*,int&> *__frama_c_arg_0);
+void iterator<std::random_access_iterator_tag,int,int,int*,int&>::Ctor
+(struct iterator<std::random_access_iterator_tag,int,int,int*,int&> const *this,
+ struct iterator<std::random_access_iterator_tag,int,int,int*,int&> *__frama_c_arg_0);
 
-void iterator<std::random_access_iterator_tag,int,int,int*,int&>::Dtor(
-struct iterator<std::random_access_iterator_tag,int,int,int*,int&> const *this);
+void iterator<std::random_access_iterator_tag,int,int,int*,int&>::Dtor
+(struct iterator<std::random_access_iterator_tag,int,int,int*,int&> const *this);
 
-struct iterator<std::random_access_iterator_tag,int,int,int*,int&> *operator=(
-struct iterator<std::random_access_iterator_tag,int,int,int*,int&> *this,
-struct iterator<std::random_access_iterator_tag,int,int,int*,int&> const *__frama_c_arg_0);
+struct iterator<std::random_access_iterator_tag,int,int,int*,int&> *operator=
+(struct iterator<std::random_access_iterator_tag,int,int,int*,int&> *this,
+ struct iterator<std::random_access_iterator_tag,int,int,int*,int&> const *__frama_c_arg_0);
 
-struct iterator<std::random_access_iterator_tag,int,int,int*,int&> *operator=(
-struct iterator<std::random_access_iterator_tag,int,int,int*,int&> *this,
-struct iterator<std::random_access_iterator_tag,int,int,int*,int&> *__frama_c_arg_0);
+struct iterator<std::random_access_iterator_tag,int,int,int*,int&> *operator=
+(struct iterator<std::random_access_iterator_tag,int,int,int*,int&> *this,
+ struct iterator<std::random_access_iterator_tag,int,int,int*,int&> *__frama_c_arg_0);
 
-void iterator<std::random_access_iterator_tag,int,int,int*,int&>::Ctor(
-struct iterator<std::random_access_iterator_tag,int,int,int*,int&> const *this);
+void iterator<std::random_access_iterator_tag,int,int,int*,int&>::Ctor
+(struct iterator<std::random_access_iterator_tag,int,int,int*,int&> const *this);
 
 struct _frama_c_vmt _frama_c_vmt_header;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
@@ -407,9 +407,9 @@ struct _frama_c_vmt_content _frama_c_vmt[1];
     requires \valid_read(this);
     requires \valid_read(__frama_c_arg_0);
  */
-void iterator<std::random_access_iterator_tag,int,int,int*,int&>::Ctor(
-struct iterator<std::random_access_iterator_tag,int,int,int*,int&> const *this,
-struct iterator<std::random_access_iterator_tag,int,int,int*,int&> const *__frama_c_arg_0)
+void iterator<std::random_access_iterator_tag,int,int,int*,int&>::Ctor
+(struct iterator<std::random_access_iterator_tag,int,int,int*,int&> const *this,
+ struct iterator<std::random_access_iterator_tag,int,int,int*,int&> const *__frama_c_arg_0)
 {
   return;
 }
@@ -418,16 +418,16 @@ struct iterator<std::random_access_iterator_tag,int,int,int*,int&> const *__fram
     requires \valid_read(this);
     requires \valid(__frama_c_arg_0);
  */
-void iterator<std::random_access_iterator_tag,int,int,int*,int&>::Ctor(
-struct iterator<std::random_access_iterator_tag,int,int,int*,int&> const *this,
-struct iterator<std::random_access_iterator_tag,int,int,int*,int&> *__frama_c_arg_0)
+void iterator<std::random_access_iterator_tag,int,int,int*,int&>::Ctor
+(struct iterator<std::random_access_iterator_tag,int,int,int*,int&> const *this,
+ struct iterator<std::random_access_iterator_tag,int,int,int*,int&> *__frama_c_arg_0)
 {
   return;
 }
 
 /*@ requires \valid_read(this); */
-void iterator<std::random_access_iterator_tag,int,int,int*,int&>::Dtor(
-struct iterator<std::random_access_iterator_tag,int,int,int*,int&> const *this)
+void iterator<std::random_access_iterator_tag,int,int,int*,int&>::Dtor
+(struct iterator<std::random_access_iterator_tag,int,int,int*,int&> const *this)
 {
   return;
 }
@@ -436,9 +436,9 @@ struct iterator<std::random_access_iterator_tag,int,int,int*,int&> const *this)
     requires \valid_read(__frama_c_arg_0);
     ensures \valid(\result);
  */
-struct iterator<std::random_access_iterator_tag,int,int,int*,int&> *operator=(
-struct iterator<std::random_access_iterator_tag,int,int,int*,int&> *this,
-struct iterator<std::random_access_iterator_tag,int,int,int*,int&> const *__frama_c_arg_0)
+struct iterator<std::random_access_iterator_tag,int,int,int*,int&> *operator=
+(struct iterator<std::random_access_iterator_tag,int,int,int*,int&> *this,
+ struct iterator<std::random_access_iterator_tag,int,int,int*,int&> const *__frama_c_arg_0)
 {
   return this;
 }
@@ -447,16 +447,16 @@ struct iterator<std::random_access_iterator_tag,int,int,int*,int&> const *__fram
     requires \valid(__frama_c_arg_0);
     ensures \valid(\result);
  */
-struct iterator<std::random_access_iterator_tag,int,int,int*,int&> *operator=(
-struct iterator<std::random_access_iterator_tag,int,int,int*,int&> *this,
-struct iterator<std::random_access_iterator_tag,int,int,int*,int&> *__frama_c_arg_0)
+struct iterator<std::random_access_iterator_tag,int,int,int*,int&> *operator=
+(struct iterator<std::random_access_iterator_tag,int,int,int*,int&> *this,
+ struct iterator<std::random_access_iterator_tag,int,int,int*,int&> *__frama_c_arg_0)
 {
   return this;
 }
 
 /*@ requires \valid_read(this); */
-void iterator<std::random_access_iterator_tag,int,int,int*,int&>::Ctor(
-struct iterator<std::random_access_iterator_tag,int,int,int*,int&> const *this)
+void iterator<std::random_access_iterator_tag,int,int,int*,int&>::Ctor
+(struct iterator<std::random_access_iterator_tag,int,int,int*,int&> const *this)
 {
   return;
 }

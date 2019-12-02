@@ -426,6 +426,23 @@ axiomatic StrChr {
   }
  */
 /*@
+axiomatic WMemChr {
+  logic 𝔹 wmemchr{L}(int *s, int c, ℤ n) 
+    reads *(s + (0 .. n - 1));
+  
+  logic ℤ wmemchr_off{L}(int *s, int c, ℤ n) 
+    reads *(s + (0 .. n - 1));
+  
+  axiom wmemchr_def{L}:
+    ∀ int *s;
+    ∀ int c;
+    ∀ ℤ n;
+      wmemchr(s, c, n) ≢ (0 ≢ 0) ⇔
+      (∃ int i; 0 ≤ i < n ∧ *(s + i) ≡ c);
+  
+  }
+ */
+/*@
 axiomatic WcsLen {
   logic ℤ wcslen{L}(int *s) 
     reads *(s + (0 ..));
@@ -1630,6 +1647,21 @@ struct sigaction *__fc_p_sigaction = __fc_sigaction;
     requires valid_oldact_or_null: oldact ≡ \null ∨ \valid(oldact);
     requires valid_read_act_or_null: act ≡ \null ∨ \valid_read(act);
     requires separated_acts: separation: \separated(act, oldact);
+    ensures
+      act_changed:
+        \old(act) ≡ \null ∨
+        \subset(*(__fc_p_sigaction + \old(signum)), *\old(act));
+    ensures
+      oldact_assigned:
+        \old(oldact) ≡ \null ∨
+        *\old(oldact) ∈ *(__fc_p_sigaction + \old(signum));
+    ensures result_ok_or_error: \result ≡ 0 ∨ \result ≡ -1;
+    assigns *oldact, *(__fc_p_sigaction + signum), \result;
+    assigns *oldact \from __fc_p_sigaction;
+    assigns *(__fc_p_sigaction + signum) \from *act;
+    assigns \result
+      \from (indirect: signum), (indirect: act), (indirect: *act),
+            (indirect: oldact), (indirect: *oldact);
  */
 int sigaction(int signum, struct sigaction const * __restrict act,
               struct sigaction * __restrict oldact);
@@ -1661,9 +1693,10 @@ clock_t clock(void);
     assigns \result \from time1, time0; */
 double difftime(time_t time1, time_t time0);
 
-/*@ assigns *timeptr, \result;
+/*@ requires valid_timeptr: \valid(timeptr);
+    assigns *timeptr, \result;
     assigns *timeptr \from *timeptr;
-    assigns \result \from *timeptr;
+    assigns \result \from (indirect: *timeptr);
  */
 time_t mktime(struct tm *timeptr);
 
@@ -1712,7 +1745,8 @@ void __fc_init__fc_time_tm(void)
 }
 
 struct tm * const __fc_p_time_tm = & __fc_time_tm;
-/*@ ensures
+/*@ requires valid_timer: \valid_read(timer);
+    ensures
       result_null_or_internal_tm:
         \result ≡ &__fc_time_tm ∨ \result ≡ \null;
     assigns \result, __fc_time_tm;
@@ -1721,7 +1755,8 @@ struct tm * const __fc_p_time_tm = & __fc_time_tm;
  */
 struct tm *gmtime(time_t const *timer);
 
-/*@ ensures
+/*@ requires valid_timer: \valid_read(timer);
+    ensures
       result_null_or_internal_tm:
         \result ≡ &__fc_time_tm ∨ \result ≡ \null;
     assigns \result, __fc_time_tm;
@@ -1813,10 +1848,56 @@ axiomatic nanosleep_predicates {
       assumes relative_time: (flags & 1) ≡ 0;
       assumes interrupted: __fc_interrupted ≢ 0;
       assumes no_einval: valid_clock_id(clock_id);
+      ensures result_interrupted: \result ≡ 4;
+      ensures
+        interrupted_remaining: initialization:
+          \old(rmtp) ≢ \null ⇒
+          \initialized(&\old(rmtp)->tv_sec) ∧
+          \initialized(&\old(rmtp)->tv_nsec);
+      ensures
+        interrupted_remaining_decreases:
+          \old(rmtp) ≢ \null ⇒
+          \old(rqtp)->tv_sec * 1000000000 + \old(rqtp)->tv_nsec ≥
+          \old(rmtp)->tv_sec * 1000000000 + \old(rmtp)->tv_nsec;
+      ensures
+        remaining_valid:
+          \old(rmtp) ≢ \null ⇒ 0 ≤ \old(rmtp)->tv_nsec < 1000000000;
+      assigns \result, *rmtp;
+      assigns \result
+        \from (indirect: __fc_time), (indirect: clock_id), (indirect: rqtp),
+              (indirect: *rqtp);
+      assigns *rmtp
+        \from __fc_time, (indirect: clock_id), (indirect: rqtp),
+              (indirect: *rqtp), (indirect: rmtp);
+    
+    behavior relative_no_error:
+      assumes relative_time: (flags & 1) ≡ 0;
+      assumes not_interrupted: __fc_interrupted ≡ 0;
+      assumes no_einval: valid_clock_id(clock_id);
+      ensures result_ok: \result ≡ 0;
       assigns \result;
       assigns \result
         \from (indirect: __fc_time), (indirect: clock_id), (indirect: rqtp),
               (indirect: *rqtp);
+    
+    behavior relative_invalid_clock_id:
+      assumes relative_time: (flags & 1) ≡ 0;
+      assumes not_interrupted: __fc_interrupted ≡ 0;
+      assumes einval: ¬valid_clock_id(clock_id);
+      ensures result_einval: \result ≡ 22;
+      assigns \result;
+      assigns \result
+        \from (indirect: __fc_time), (indirect: clock_id), (indirect: rqtp),
+              (indirect: *rqtp);
+    
+    complete behaviors relative_invalid_clock_id,
+                       relative_no_error,
+                       relative_interrupted,
+                       absolute;
+    disjoint behaviors relative_invalid_clock_id,
+                       relative_no_error,
+                       relative_interrupted,
+                       absolute;
  */
 int clock_nanosleep(clockid_t clock_id, int flags,
                     struct timespec const *rqtp, struct timespec *rmtp);
@@ -1827,13 +1908,29 @@ int clock_nanosleep(clockid_t clock_id, int flags,
         \initialized(&rqtp->tv_sec) ∧ \initialized(&rqtp->tv_nsec);
     requires valid_nanosecs: 0 ≤ rqtp->tv_nsec < 1000000000;
     requires valid_remaining_or_null: rmtp ≡ \null ∨ \valid(rmtp);
-    assigns \result;
+    ensures result_elapsed_or_interrupted: \result ≡ 0 ∨ \result ≡ -1;
+    ensures
+      interrupted_remaining: initialization:
+        \old(rmtp) ≢ \null ∧ \result ≡ -1 ⇒
+        \initialized(&\old(rmtp)->tv_sec) ∧
+        \initialized(&\old(rmtp)->tv_nsec);
+    ensures
+      interrupted_remaining_decreases:
+        \old(rmtp) ≢ \null ∧ \result ≡ -1 ⇒
+        \old(rqtp)->tv_sec * 1000000000 + \old(rqtp)->tv_nsec ≥
+        \old(rmtp)->tv_sec * 1000000000 + \old(rmtp)->tv_nsec;
+    ensures
+      interrupted_remaining_valid:
+        \old(rmtp) ≢ \null ∧ \result ≡ -1 ⇒
+        0 ≤ \old(rmtp)->tv_nsec < 1000000000;
+    assigns \result, *rmtp;
     assigns \result
       \from (indirect: __fc_time), (indirect: rqtp), (indirect: *rqtp);
+    assigns *rmtp
+      \from (indirect: __fc_time), (indirect: rqtp), (indirect: *rqtp),
+            (indirect: rmtp);
  */
 int nanosleep(struct timespec const *rqtp, struct timespec *rmtp);
-
-void tzset(void);
 
 int daylight;
 long timezone;
@@ -1843,34 +1940,9 @@ char *tzname[2];
  */
 void tzset(void);
 
-/*@ ensures
-      result_null_or_inside_s:
-        \result ≡ \null ∨ \subset(\result, \old(s) + (0 .. \old(n) - 1));
-    assigns \result;
-    assigns \result
-      \from s, (indirect: *(s + (0 .. n - 1))), (indirect: c), (indirect: n);
- */
-int *wmemchr(int const *s, int c, size_t n);
-
-/*@ assigns \result;
-    assigns \result
-      \from (indirect: *(s1 + (0 .. n - 1))),
-            (indirect: *(s2 + (0 .. n - 1))), (indirect: n);
- */
-int wmemcmp(int const *s1, int const *s2, size_t n);
-
-/*@ requires
-      src: dest: separation:
-        \separated(dest + (0 .. n - 1), src + (0 .. n - 1));
+/*@ requires valid_src: \valid_read(src + (0 .. n - 1));
+    requires valid_dest: \valid(dest + (0 .. n - 1));
     ensures result_ptr: \result ≡ \old(dest);
-    assigns *(dest + (0 .. n - 1)), \result;
-    assigns *(dest + (0 .. n - 1))
-      \from *(src + (0 .. n - 1)), (indirect: src), (indirect: n);
-    assigns \result \from dest;
- */
-int *wmemcpy(int * __restrict dest, int const * __restrict src, size_t n);
-
-/*@ ensures result_ptr: \result ≡ \old(dest);
     assigns *(dest + (0 .. n - 1)), \result;
     assigns *(dest + (0 .. n - 1))
       \from *(src + (0 .. n - 1)), (indirect: src), (indirect: n);
@@ -1878,7 +1950,8 @@ int *wmemcpy(int * __restrict dest, int const * __restrict src, size_t n);
  */
 int *wmemmove(int *dest, int const *src, size_t n);
 
-/*@ ensures result_ptr: \result ≡ \old(wcs);
+/*@ requires valid_wcs: \valid(wcs + (0 .. n - 1));
+    ensures result_ptr: \result ≡ \old(wcs);
     ensures
       wcs: initialization: \initialized(\old(wcs) + (0 .. \old(n) - 1));
     ensures
@@ -1889,7 +1962,17 @@ int *wmemmove(int *dest, int const *src, size_t n);
  */
 int *wmemset(int *wcs, int wc, size_t n);
 
-/*@ ensures result_ptr: \result ≡ \old(dest);
+/*@ requires valid_wstring_src: valid_read_wstring(src);
+    requires valid_wstring_dest: valid_wstring(dest);
+    requires
+      room_for_concatenation:
+        \valid(dest + (wcslen(dest) .. wcslen(dest) + wcslen(src)));
+    requires
+      separation:
+        \separated(
+          dest + (0 .. wcslen(dest) + wcslen(src)), src + (0 .. wcslen(src))
+          );
+    ensures result_ptr: \result ≡ \old(dest);
     assigns *(dest + (0 ..)), \result;
     assigns *(dest + (0 ..))
       \from *(dest + (0 ..)), (indirect: dest), *(src + (0 ..)),
@@ -1907,28 +1990,46 @@ int *wcscat(int * __restrict dest, int const * __restrict src);
  */
 int *wcschr(int const *wcs, int wc);
 
-/*@ assigns \result;
+/*@ requires valid_wstring_s1: valid_read_wstring(s1);
+    requires valid_wstring_s2: valid_read_wstring(s2);
+    assigns \result;
     assigns \result
       \from (indirect: *(s1 + (0 ..))), (indirect: *(s2 + (0 ..)));
  */
 int wcscmp(int const *s1, int const *s2);
 
-/*@ ensures result_ptr: \result ≡ \old(dest);
-    assigns *(dest + (0 ..)), \result;
-    assigns *(dest + (0 ..))
-      \from *(src + (0 ..)), (indirect: src), *(dest + (0 ..)),
-            (indirect: dest);
+/*@ requires valid_wstring_src: valid_read_wstring(src);
+    requires room_wstring: \valid(dest + (0 .. wcslen(src)));
+    requires
+      separation:
+        \separated(dest + (0 .. wcslen(src)), src + (0 .. wcslen(src)));
+    ensures result_ptr: \result ≡ \old(dest);
+    assigns *(dest + (0 .. wcslen{Old}(src))), \result;
+    assigns *(dest + (0 .. wcslen{Old}(src)))
+      \from *(src + (0 .. wcslen{Old}(src))), (indirect: src);
     assigns \result \from dest;
  */
 int *wcscpy(int * __restrict dest, int const * __restrict src);
 
-/*@ assigns \result;
+/*@ requires valid_wstring_wcs: valid_read_wstring(wcs);
+    requires valid_wstring_accept: valid_read_wstring(accept);
+    assigns \result;
     assigns \result
       \from (indirect: *(wcs + (0 ..))), (indirect: *(accept + (0 ..)));
  */
 size_t wcscspn(int const *wcs, int const *accept);
 
-/*@ assigns *(dest + (0 ..)), \result;
+/*@ requires valid_nwstring_src: valid_read_nwstring(src, n);
+    requires valid_wstring_dest: valid_wstring(dest);
+    requires
+      room_for_concatenation:
+        \valid(dest + (wcslen(dest) .. wcslen(dest) + \min(wcslen(src), n)));
+    requires
+      separation:
+        \separated(
+          dest + (0 .. wcslen(dest) + wcslen(src)), src + (0 .. wcslen(src))
+          );
+    assigns *(dest + (0 ..)), \result;
     assigns *(dest + (0 ..))
       \from *(dest + (0 ..)), (indirect: dest), *(src + (0 .. n - 1)),
             (indirect: src), (indirect: n);
@@ -1938,7 +2039,9 @@ size_t wcscspn(int const *wcs, int const *accept);
  */
 size_t wcslcat(int * __restrict dest, int const * __restrict src, size_t n);
 
-/*@ requires
+/*@ requires valid_wstring_src: valid_read_wstring(src);
+    requires room_nwstring: \valid(dest + (0 .. n));
+    requires
       src: dest: separation:
         \separated(dest + (0 .. n - 1), src + (0 .. n - 1));
     assigns *(dest + (0 .. n - 1)), \result;
@@ -1951,12 +2054,23 @@ size_t wcslcat(int * __restrict dest, int const * __restrict src, size_t n);
 size_t wcslcpy(int *dest, int const *src, size_t n);
 
 /*@ requires valid_string_s: valid_read_wstring(s);
+    ensures result_is_length: \result ≡ wcslen(\old(s));
     assigns \result;
-    assigns \result \from (indirect: *(s + (0 ..)));
+    assigns \result \from (indirect: *(s + (0 .. wcslen{Old}(s))));
  */
 size_t wcslen(int const *s);
 
-/*@ ensures result_ptr: \result ≡ \old(dest);
+/*@ requires valid_nwstring_src: valid_read_nwstring(src, n);
+    requires valid_wstring_dest: valid_wstring(dest);
+    requires
+      room_for_concatenation:
+        \valid(dest + (wcslen(dest) .. wcslen(dest) + \min(wcslen(src), n)));
+    requires
+      separation:
+        \separated(
+          dest + (0 .. wcslen(dest) + wcslen(src)), src + (0 .. wcslen(src))
+          );
+    ensures result_ptr: \result ≡ \old(dest);
     assigns *(dest + (0 ..)), \result;
     assigns *(dest + (0 ..))
       \from *(dest + (0 ..)), (indirect: dest), *(src + (0 .. n - 1)),
@@ -1965,17 +2079,22 @@ size_t wcslen(int const *s);
  */
 int *wcsncat(int * __restrict dest, int const * __restrict src, size_t n);
 
-/*@ assigns \result;
+/*@ requires valid_wstring_s1: valid_read_wstring(s1);
+    requires valid_wstring_s2: valid_read_wstring(s2);
+    assigns \result;
     assigns \result
       \from (indirect: *(s1 + (0 .. n - 1))),
             (indirect: *(s2 + (0 .. n - 1))), (indirect: n);
  */
 int wcsncmp(int const *s1, int const *s2, size_t n);
 
-/*@ requires
+/*@ requires valid_wstring_src: valid_read_wstring(src);
+    requires room_nwstring: \valid(dest + (0 .. n - 1));
+    requires
       src: dest: separation:
         \separated(dest + (0 .. n - 1), src + (0 .. n - 1));
     ensures result_ptr: \result ≡ \old(dest);
+    ensures initialization: \initialized(\old(dest) + (0 .. \old(n) - 1));
     assigns *(dest + (0 .. n - 1)), \result;
     assigns *(dest + (0 .. n - 1))
       \from *(src + (0 .. n - 1)), (indirect: src), (indirect: n);
@@ -1983,7 +2102,9 @@ int wcsncmp(int const *s1, int const *s2, size_t n);
  */
 int *wcsncpy(int * __restrict dest, int const * __restrict src, size_t n);
 
-/*@ ensures
+/*@ requires valid_wstring_wcs: valid_read_wstring(wcs);
+    requires valid_wstring_accept: valid_read_wstring(accept);
+    ensures
       result_null_or_inside_wcs:
         \result ≡ \null ∨ \subset(\result, \old(wcs) + (0 ..));
     assigns \result;
@@ -1992,21 +2113,28 @@ int *wcsncpy(int * __restrict dest, int const * __restrict src, size_t n);
  */
 int *wcspbrk(int const *wcs, int const *accept);
 
-/*@ ensures
+/*@ requires valid_wstring_wcs: valid_read_wstring(wcs);
+    ensures
       result_null_or_inside_wcs:
         \result ≡ \null ∨ \subset(\result, \old(wcs) + (0 ..));
     assigns \result;
-    assigns \result \from wcs, (indirect: *(wcs + (0 ..))), (indirect: wc);
+    assigns \result
+      \from wcs, (indirect: *(wcs + (0 .. wcslen{Old}(wcs)))), (indirect: wc);
  */
 int *wcsrchr(int const *wcs, int wc);
 
-/*@ assigns \result;
+/*@ requires valid_wstring_wcs: valid_read_wstring(wcs);
+    requires valid_wstring_accept: valid_read_wstring(accept);
+    assigns \result;
     assigns \result
-      \from (indirect: *(wcs + (0 ..))), (indirect: *(accept + (0 ..)));
+      \from (indirect: *(wcs + (0 .. wcslen{Old}(wcs)))),
+            (indirect: *(accept + (0 .. wcslen{Old}(accept))));
  */
 size_t wcsspn(int const *wcs, int const *accept);
 
-/*@ ensures
+/*@ requires valid_wstring_haystack: valid_read_wstring(haystack);
+    requires valid_wstring_needle: valid_read_wstring(needle);
+    ensures
       result_null_or_inside_haystack:
         \result ≡ \null ∨ \subset(\result, \old(haystack) + (0 ..));
     assigns \result;
@@ -2016,13 +2144,14 @@ size_t wcsspn(int const *wcs, int const *accept);
  */
 int *wcsstr(int const *haystack, int const *needle);
 
-/*@ requires valid_stream: \valid(stream);
+/*@ requires room_nwstring: \valid(ws + (0 .. n - 1));
+    requires valid_stream: \valid(stream);
     ensures result_null_or_same: \result ≡ \null ∨ \result ≡ \old(ws);
     ensures
       terminated_string_on_success:
         \result ≢ \null ⇒ valid_wstring(\old(ws));
-    assigns *(ws + (0 .. n)), \result;
-    assigns *(ws + (0 .. n)) \from (indirect: n), (indirect: *stream);
+    assigns *(ws + (0 .. n - 1)), \result;
+    assigns *(ws + (0 .. n - 1)) \from (indirect: n), (indirect: *stream);
     assigns \result \from ws, (indirect: n), (indirect: *stream);
  */
 int *fgetws(int * __restrict ws, int n, FILE * __restrict stream);

@@ -33,6 +33,8 @@ void vector::Ctor(struct vector const *this,
 
 void vector::Ctor(struct vector const *this, struct vector *__frama_c_arg_0);
 
+void vector::Dtor(struct vector const *this);
+
 struct _frama_c_vmt _frama_c_vmt_header;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
 
@@ -58,6 +60,12 @@ void vector::Ctor(struct vector const *this,
     requires \valid(__frama_c_arg_0);
  */
 void vector::Ctor(struct vector const *this, struct vector *__frama_c_arg_0)
+{
+  return;
+}
+
+/*@ requires \valid_read(this); */
+void vector::Dtor(struct vector const *this)
 {
   return;
 }

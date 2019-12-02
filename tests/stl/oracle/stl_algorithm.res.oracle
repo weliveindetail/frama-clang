@@ -840,6 +840,23 @@ axiomatic StrChr {
   }
  */
 /*@
+axiomatic WMemChr {
+  logic 𝔹 wmemchr{L}(int *s, int c, ℤ n) 
+    reads *(s + (0 .. n - 1));
+  
+  logic ℤ wmemchr_off{L}(int *s, int c, ℤ n) 
+    reads *(s + (0 .. n - 1));
+  
+  axiom wmemchr_def{L}:
+    ∀ int *s;
+    ∀ int c;
+    ∀ ℤ n;
+      wmemchr(s, c, n) ≢ (0 ≢ 0) ⇔
+      (∃ int i; 0 ≤ i < n ∧ *(s + i) ≡ c);
+  
+  }
+ */
+/*@
 axiomatic WcsLen {
   logic ℤ wcslen{L}(int *s) 
     reads *(s + (0 ..));
@@ -2681,8 +2698,8 @@ struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info =
    .number_of_base_classes = 0,
    .pvmt = (struct _frama_c_vmt *)0};
 /*@ requires \valid_read(pred); */
-struct unary_negate<bool*,<abst>> not1<bool*,<abst>>(_Bool (* const *pred)(
-                                                     int ))
+struct unary_negate<bool*,<abst>> not1<bool*,<abst>>(_Bool (* const *pred)
+                                                     (int ))
 {
   struct unary_negate<bool*,<abst>> __fc_tmp_2;
   unary_negate<bool*,<abst>>::Ctor(& __fc_tmp_2,pred);
@@ -2690,8 +2707,8 @@ struct unary_negate<bool*,<abst>> not1<bool*,<abst>>(_Bool (* const *pred)(
 }
 
 /*@ requires \valid_read(pred); */
-struct unary_negate<std::reference_wrapper<bool&,<abst>>> not1<std::reference_wrapper<bool&,<abst>>>(
-struct reference_wrapper<bool&,<abst>> const *pred)
+struct unary_negate<std::reference_wrapper<bool&,<abst>>> not1<std::reference_wrapper<bool&,<abst>>>
+(struct reference_wrapper<bool&,<abst>> const *pred)
 {
   struct unary_negate<std::reference_wrapper<bool&,<abst>>> __fc_tmp_3;
   unary_negate<std::reference_wrapper<bool&,<abst>>>::Ctor(& __fc_tmp_3,pred);
@@ -2946,8 +2963,8 @@ _Bool none_of<int*,bool*,<abst>>(int *first, int *last, _Bool (*pred)(int ))
   return tmp_0;
 }
 
-void (*for_each<int*,void*,<abst>>(int *first, int *last, void (*f)(int )))(
-int )
+void (*for_each<int*,void*,<abst>>(int *first, int *last, void (*f)(int )))
+(int )
 {
   void (*__retres)(int );
   type *tmp_0;
@@ -2997,9 +3014,9 @@ int *find_if<int*,bool&,<abst>>(int *first, int *last, _Bool (*pred)(int ))
   return_label: return __retres;
 }
 
-int *find_if<int*,std::unary_negate<std::reference_wrapper<bool&,<abst>>>>(
-int *first, int *last,
-struct unary_negate<std::reference_wrapper<bool&,<abst>>> pred)
+int *find_if<int*,std::unary_negate<std::reference_wrapper<bool&,<abst>>>>
+(int *first, int *last,
+ struct unary_negate<std::reference_wrapper<bool&,<abst>>> pred)
 {
   int *__retres;
   int **it = & first;
@@ -3324,11 +3341,11 @@ _Bool is_permutation<int*,int*>(int *first1, int *last1, int *first2)
   return_label: return __retres;
 }
 
-void UlN3std15iterator_traitsIPiEE10value_typeEUc4predN3stdE8equal_toIiE3it1PiE__cons(
-struct UlN3std15iterator_traitsIPiEE10value_typeEUc4predN3stdE8equal_toIiE3it1PiE_ const *__fc_closure,
-_Bool (*__fc_func)(struct UlN3std15iterator_traitsIPiEE10value_typeEUc4predN3stdE8equal_toIiE3it1PiE_ const *,
-                   value_type ),
-struct equal_to<int> pred, int *it1)
+void UlN3std15iterator_traitsIPiEE10value_typeEUc4predN3stdE8equal_toIiE3it1PiE__cons
+(struct UlN3std15iterator_traitsIPiEE10value_typeEUc4predN3stdE8equal_toIiE3it1PiE_ const *__fc_closure,
+ _Bool (*__fc_func)(struct UlN3std15iterator_traitsIPiEE10value_typeEUc4predN3stdE8equal_toIiE3it1PiE_ const *,
+                    value_type ),
+ struct equal_to<int> pred, int *it1)
 {
   __fc_closure->__fc_lambda_apply = __fc_func;
   equal_to<int>::Ctor(& __fc_closure->pred,

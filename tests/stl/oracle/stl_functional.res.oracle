@@ -569,6 +569,23 @@ axiomatic StrChr {
   }
  */
 /*@
+axiomatic WMemChr {
+  logic 𝔹 wmemchr{L}(int *s, int c, ℤ n) 
+    reads *(s + (0 .. n - 1));
+  
+  logic ℤ wmemchr_off{L}(int *s, int c, ℤ n) 
+    reads *(s + (0 .. n - 1));
+  
+  axiom wmemchr_def{L}:
+    ∀ int *s;
+    ∀ int c;
+    ∀ ℤ n;
+      wmemchr(s, c, n) ≢ (0 ≢ 0) ⇔
+      (∃ int i; 0 ≤ i < n ∧ *(s + i) ≡ c);
+  
+  }
+ */
+/*@
 axiomatic WcsLen {
   logic ℤ wcslen{L}(int *s) 
     reads *(s + (0 ..));

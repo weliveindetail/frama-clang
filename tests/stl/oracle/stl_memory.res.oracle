@@ -341,8 +341,8 @@ void swap<std::default_delete<int>>(struct default_delete<int> *a,
 
 /*@ requires \valid(t);
     ensures \valid(\result); */
-struct unique_ptr<int[],std::default_delete<int[]>> *forward<std::unique_ptr<int[],std::default_delete<int[]>>>(
-type *t);
+struct unique_ptr<int[],std::default_delete<int[]>> *forward<std::unique_ptr<int[],std::default_delete<int[]>>>
+(type *t);
 
 /*@ requires \valid(t);
     ensures \valid(\result); */
@@ -568,6 +568,23 @@ axiomatic StrChr {
     ∀ ℤ c;
       strchr(s, c) ≢ (0 ≢ 0) ⇔
       (∃ ℤ i; 0 ≤ i ≤ strlen(s) ∧ *(s + i) ≡ (char)((int)c));
+  
+  }
+ */
+/*@
+axiomatic WMemChr {
+  logic 𝔹 wmemchr{L}(int *s, int c, ℤ n) 
+    reads *(s + (0 .. n - 1));
+  
+  logic ℤ wmemchr_off{L}(int *s, int c, ℤ n) 
+    reads *(s + (0 .. n - 1));
+  
+  axiom wmemchr_def{L}:
+    ∀ int *s;
+    ∀ int c;
+    ∀ ℤ n;
+      wmemchr(s, c, n) ≢ (0 ≢ 0) ⇔
+      (∃ int i; 0 ≤ i < n ∧ *(s + i) ≡ c);
   
   }
  */
@@ -2468,8 +2485,8 @@ void swap(struct unique_ptr<int[],std::default_delete<int[]>> *this,
 
 /*@ requires \valid(t);
     ensures \valid(\result); */
-struct unique_ptr<int[],std::default_delete<int[]>> *forward<std::unique_ptr<int[],std::default_delete<int[]>>>(
-type *t)
+struct unique_ptr<int[],std::default_delete<int[]>> *forward<std::unique_ptr<int[],std::default_delete<int[]>>>
+(type *t)
 {
   return t;
 }
