@@ -434,7 +434,9 @@ public:
           currentClassInfoIter = _currentClassInfo.begin(),
           currentClassInfoIterEnd = _currentClassInfo.end();
         bool hasResult = false;
-        for (; !hasResult && currentClassIter != currentClassIterEnd;
+        for (; !hasResult &&
+               currentClassIter != currentClassIterEnd &&
+               currentClassInfoIter != currentClassInfoIterEnd;
               ++currentClassIter, ++currentClassInfoIter) {
           if (*currentClassIter == derived) {
             hasResult = true;
