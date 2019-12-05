@@ -329,7 +329,6 @@ LogicType::readToken(Parser::State& state, Parser::Arguments& arguments) {
               DefineAddError("expected an identifier after the struct, union, or class token at the beginning of a type");
               return RRFinished;
             }
-            // FIXME - should check that the subsequent identifier really is declared as a class/union/struct per 'prefixedToken'
           }
         }
         switch (token.getType()) {
@@ -351,9 +350,29 @@ LogicType::readToken(Parser::State& state, Parser::Arguments& arguments) {
                 clang::Decl::Kind kind = cidentifier->getKind();
                 if (kind >= clang::Decl::firstRecord
                       && kind <= clang::Decl::lastRecord) {
-                  assert(llvm::dyn_cast<clang::RecordDecl>(cidentifier));
-                  _declContext = static_cast<const clang::RecordDecl*>(
-                      cidentifier);
+                  const clang::RecordDecl* decl =
+                    llvm::dyn_cast<clang::RecordDecl>(cidentifier);
+                  assert(decl);
+                  _declContext = decl;
+                  switch (prefixedToken) {
+                    case KeywordToken::TUndefined: break;
+                    case KeywordToken::TUnion:
+                      if (!decl->isUnion()) {
+                        DefineAddError(identifier + " is not an union.");
+                        return RRFinished;
+                      }
+                      break;
+                    case KeywordToken::TStruct:
+                    case KeywordToken::TClass:
+                      if (!(decl->isStruct() || decl->isClass())) {
+                        DefineAddError(
+                          identifier + " is not a struct or class.");
+                        return RRFinished;
+                      }
+                      break;
+                    default: break;
+                  }
+
                   if (!hasFoundLogicQualification)
                     DefineGotoCase(AfterCContextIdentifier)
                   else
@@ -361,6 +380,11 @@ LogicType::readToken(Parser::State& state, Parser::Arguments& arguments) {
                 };
                 if (kind >= clang::Decl::firstType
                       && kind <= clang::Decl::lastType) {
+                  if (prefixedToken != KeywordToken::TUndefined) {
+                    DefineAddError(
+                      identifier + " is not a struct, class, or union.");
+                    return RRFinished;
+                  }
                   if (hasFoundLogicQualification) /* else issue a conflict */
                     DefineGotoCase(AfterLogicIdentifier);
                   _typeResult =
@@ -370,6 +394,11 @@ LogicType::readToken(Parser::State& state, Parser::Arguments& arguments) {
                 if ((kind >= clang::Decl::firstTemplate
                       && kind <= clang::Decl::lastTemplate)
                     || kind == clang::Decl::NonTypeTemplateParm) {
+                  DefineAddError(
+                    "unsupported: templates in logic annotations");
+                  return RRFinished;
+                  // the following is completely false: we have Foo<Bar> in
+                  // ACSL++ and translate it as Bar in IR...
                   assert(templateArgument);
                   switch (templateArgument->getKind()) {
                     case clang::TemplateArgument::Type:
@@ -383,6 +412,11 @@ LogicType::readToken(Parser::State& state, Parser::Arguments& arguments) {
                   };
                 };
                 switch (kind) {
+                  if (prefixedToken != KeywordToken::TUndefined) {
+                    DefineAddError(
+                      identifier + " is a namespace.");
+                    return RRFinished;
+                  }
                   // case clang::Decl::Label:
                   case clang::Decl::Namespace:
                     assert(llvm::dyn_cast<clang::NamespaceDecl>(cidentifier));
