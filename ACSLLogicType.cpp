@@ -399,24 +399,24 @@ LogicType::readToken(Parser::State& state, Parser::Arguments& arguments) {
                   return RRFinished;
                   // the following is completely false: we have Foo<Bar> in
                   // ACSL++ and translate it as Bar in IR...
-                  assert(templateArgument);
-                  switch (templateArgument->getKind()) {
-                    case clang::TemplateArgument::Type:
-                      _typeResult =
-                        arguments.get_clang_utils()->makeLogicType(
-                          arguments.tokenSourceLocation(),
-                          templateArgument->getAsType().getTypePtr());
-                      DefineGotoCase(TypeSuffix)
-                    default:
-                      break;
-                  };
+                  // assert(templateArgument);
+                  // switch (templateArgument->getKind()) {
+                  //  case clang::TemplateArgument::Type:
+                  //    _typeResult =
+                  //      arguments.get_clang_utils()->makeLogicType(
+                  //        arguments.tokenSourceLocation(),
+                  //        templateArgument->getAsType().getTypePtr());
+                  //    DefineGotoCase(TypeSuffix)
+                  //  default:
+                  //    break;
+                  // };
                 };
+                if (prefixedToken != KeywordToken::TUndefined) {
+                  DefineAddError(
+                    identifier + " is a namespace.");
+                  return RRFinished;
+                }
                 switch (kind) {
-                  if (prefixedToken != KeywordToken::TUndefined) {
-                    DefineAddError(
-                      identifier + " is a namespace.");
-                    return RRFinished;
-                  }
                   // case clang::Decl::Label:
                   case clang::Decl::Namespace:
                     assert(llvm::dyn_cast<clang::NamespaceDecl>(cidentifier));
@@ -1122,6 +1122,8 @@ LogicType::readToken(Parser::State& state, Parser::Arguments& arguments) {
       };
       DefineGotoCase(TypeSuffixArray)
     DefineParseCase(TypeProduct)
+      // TODO only the parsing rules are correct. Type products are not
+      // implemented in the IR.
       { Parser::State::RuleAccess::TCastFromRule<LogicType>
             subtype(state.getRuleResult());
         // ...
@@ -1150,13 +1152,15 @@ LogicType::readToken(Parser::State& state, Parser::Arguments& arguments) {
       };
       DefineReduceAndParse
     DefineParseCase(TypeRecord)
+      //TODO only the parsing rules are correct. Records are not implemented
+      //in the IR
       { Parser::State::RuleAccess::TCastFromRule<LogicType>
             subtype(state.getRuleResult());
         // ...
         state.freeRuleResult();
         if (arguments.queryToken().getType() == AbstractToken::TIdentifier) {
-          const std::string& identifier = ((const IdentifierToken&)
-              arguments.getContentToken()).content();
+          //const std::string& identifier =
+          //  ((const IdentifierToken&) arguments.getContentToken()).content();
           DefineGotoCase(TypeRecordItem)
         };
         DefineAddError("expecting identifier when parsing a record type");
