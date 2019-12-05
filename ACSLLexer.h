@@ -380,24 +380,9 @@ protected:
    void lexUsingClang(const clang::Sema* _sema, const std::string& input, clang::SourceLocation loc, std::list<clang::Token>& clangTokens);
 
 private:
-   //! copies a lexer, including its internal state
-   //!
-   // Private because we have not implemented copying lexer state
-   Lexer(const Lexer& source)
-     : _currentToken(source._currentToken),
-       _context(source._context),
-       _extension(source._extension), _token(source._token),
-     _hasNewlineToken(source._hasNewlineToken),
-     _buffer(source._buffer),
-     _revised(source._revised),
-     _position(source._position),
-     _tokenLocation(source._tokenLocation),
-     _charLitKind(source._charLitKind),
-     _stateLexer(source._stateLexer),
-     _clangSema(source._clangSema),
-     _clangSourceLocation(source._clangSourceLocation),
-     _AcceptedUtf8Symbols()
-     { assert(0); } // Not allowed to be used
+
+   Lexer(const Lexer& source) = delete;
+
 public:
   //! creates a lexer
   Lexer(const clang::Sema* sema);
