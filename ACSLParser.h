@@ -185,18 +185,28 @@ public:
         Clang_utils* clang_utils, const RTTITable& rttiTable
         )
       :
-        _localStackHeight(0), _errorMessages(NULL),
-        _countErrors(0), _clangContext(clangContext), _clangAST(clangAST), 
-        _clangSema(clangSema), _clangScope(clangScope),
-        _annotContext(Unspecified),
         _lexer(clangSema),
+        _tokenLocation(NULL),
+        _clangLocation(),
+        _localStackHeight(0),
+        _errorMessages(NULL),
+        _countErrors(0),
+        _doesStopOnError(clang_utils->stopOnAnnotError()),
+        _clangContext(clangContext),
+        _clangAST(clangAST),
+        _clangSema(clangSema),
+        _clangScope(clangScope),
         _clang_utils(clang_utils),
         _rttiTable(rttiTable),
         _currentLogicScope(clang_utils->queryDeclLogicScope(clangContext)),
-        _result_context(false), _isVerbose(false)
-      { _doesStopOnError = clang_utils->stopOnAnnotError();
-        _isVerbose = clang_utils->isVerbose();
-      }
+        _localBinding(),
+        _logicFormals(),
+        _logicLabels(),
+        _annotContext(Unspecified),
+        _result_context(false),
+        _isVerbose(clang_utils->isVerbose())
+      { }
+
     ~Arguments()
       { std::map<std::string, std::list<logic_var_def> >::iterator
           iterEnd = _localBinding.end();
