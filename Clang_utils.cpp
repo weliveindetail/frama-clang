@@ -68,6 +68,10 @@ compare_qualified_name(qualified_name n1, qualified_name n2) {
 
 int compare_template_parameter(template_parameter tp1, template_parameter tp2);
 
+int compare_signature(signature s1, signature s2);
+
+int compare_capture(capture c1, capture c2);
+
 int
 compare_typ(typ t1, typ t2) {
   int result = 0;
@@ -158,9 +162,91 @@ compare_typ(typ t1, typ t2) {
         result = compare_qualified_name(t1->cons_typ.Named.name,
             t2->cons_typ.Named.name);
         break;
+      case LAMBDA:
+        result =
+          compare_signature(
+            t1->cons_typ.Lambda.proto, t2->cons_typ.Lambda.proto);
+        if (result==0) {
+          /* capture */ list l1 = t1->cons_typ.Lambda.closure;
+          /* capture */ list l2 = t2->cons_typ.Lambda.closure;
+          while (result == 0 && l1 && l2) {
+            result =
+              compare_capture(
+                (capture)l1->element.container,
+                (capture)l2->element.container);
+            l1 = l1->next;
+            l2 = l2->next;
+          }
+          if (result == 0 && (l1 || l2)) {
+            if (!l1) result = -1; else result = 1;
+          }
+        }
+        break;
     }
   };
   return result;
+}
+
+int compare_qual_type(qual_type t1, qual_type t2) {
+  int result = compare_typ(t1->plain_type, t2->plain_type);
+  if (result == 0) {
+    /* specifier */ list l1 = t1 -> qualifier;
+    /* specifier */ list l2 = t2 -> qualifier;
+    while (result == 0 && l1 && l2) {
+      if (l1->element.plain < l2->element.plain) result = -1;
+      if (l1->element.plain > l2->element.plain) result = 1;
+      l1 = l1 -> next; l2 = l2->next;
+    }
+    if (result != 0) return result;
+    if (l1 && !l2) return 1;
+    if (!l1 && l2) return -1;
+    return 0;
+  } else return result;
+}
+
+int compare_signature(signature s1, signature s2) {
+  int result = compare_qual_type(s1->result, s2->result);
+  if (result!=0) return result;
+  /* qual_type */ list l1 = s1->parameter;
+  /* qual_type */ list l2 = s2->parameter;
+  while (l1 && l2) {
+    result = compare_qual_type(
+      (qual_type)l1->element.container,(qual_type)l2->element.container);
+    if (result != 0) return result;
+    l1 = l1->next; l2 = l2->next;
+  }
+  if (l1 && !l2) return 1;
+  if (!l1 && l2) return -1;
+  if (s1->variadic && !s2->variadic) return 1;
+  if (!s1->variadic && s2->variadic) return -1;
+  return 0;
+}
+
+int compare_capture(capture c1, capture c2) {
+  if (c1->tag_capture < c2->tag_capture) return -1;
+  if (c2->tag_capture < c1->tag_capture) return 1;
+  switch(c1->tag_capture) {
+    case CAP_ID: {
+      int result =
+        compare_qual_type (c1->cons_capture.Cap_id.cap_id_type,
+                           c2->cons_capture.Cap_id.cap_id_type);
+      if (result !=0) return result;
+      if (c1->cons_capture.Cap_id.cap_id_ref &&
+          !c2->cons_capture.Cap_id.cap_id_ref) return 1;
+      if (!c1->cons_capture.Cap_id.cap_id_ref &&
+          c2->cons_capture.Cap_id.cap_id_ref) return -1;
+      return 0;
+    }
+    case CAP_THIS:
+      if (c1->cons_capture.Cap_this.cap_this_ref &&
+          !c2->cons_capture.Cap_this.cap_this_ref) return 1;
+      if (!c1->cons_capture.Cap_this.cap_this_ref &&
+          c2->cons_capture.Cap_this.cap_this_ref) return -1;
+      return 0;
+  }
+  /* we can only get there if c1->tag_capture
+     ends up not being an enum tag_capture */
+  assert(false);
 }
 
 int
