@@ -36,10 +36,17 @@
 #include <set>
 #include <map>
 #include <functional>
+#ifdef __GNUC__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wclass-memaccess"
+#endif
 #include "clang/Basic/Version.h"
 #include "clang/AST/ASTContext.h"
 #include "clang/AST/DeclCXX.h"
 #include "clang/AST/DeclTemplate.h"
+#ifdef __GNUC__
+#pragma GCC diagnostic pop
+#endif
 
 extern "C" {
 #include "intermediate_format.h"

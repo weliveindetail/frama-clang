@@ -52,7 +52,8 @@ OBJS=\
 
 DEPS=$(OBJS:.o=.d)
 CXXFLAGS?=$(CLANG_CXXFLAGS)
-CXXFLAGS+=-Wno-enum-compare -DCLANG_BIN_DIR=\"$(CLANG_BIN_DIR)\" -Wall
+CXXFLAGS+=-DCLANG_BIN_DIR=\"$(CLANG_BIN_DIR)\" \
+          -Wall -Wno-comment -Wno-enum-compare
 CFLAGS?=$(CLANG_CFLAGS)
 CFLAGS+=-Wno-enum-compare
 

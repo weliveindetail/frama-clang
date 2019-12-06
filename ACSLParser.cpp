@@ -25,6 +25,10 @@
 //   Implementation of the ACSL++ parser.
 //
 
+#ifdef __GNUC__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wclass-memaccess"
+#endif
 #include "clang/Basic/Version.h"
 #include "llvm/ADT/SmallString.h"
 #include "clang/AST/ASTContext.h"
@@ -34,6 +38,9 @@
 #include "clang/Sema/Lookup.h"
 #include "clang/Basic/TargetInfo.h"
 #include "clang/Lex/MacroArgs.h"
+#ifdef __GNUC__
+#pragma GCC diagnostic pop
+#endif
 
 #include "ACSLParser.h"
 

@@ -28,7 +28,15 @@
 #ifndef Visit_TableH
 #define Visit_TableH
 
+#ifdef __GNUC__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wclass-memaccess"
+#endif
 #include "clang/AST/DeclCXX.h"
+#ifdef __GNUC__
+#pragma GCC diagnostic pop
+#endif
+
 #include "Clang_utils.h"
 
 extern "C" {

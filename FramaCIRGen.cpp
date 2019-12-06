@@ -25,6 +25,10 @@
 //   Definition of a translator clang -> intermediate_format (-> cabs -> cil).
 //
 
+#ifdef __GNUC__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wclass-memaccess"
+#endif
 #include "clang/AST/RecursiveASTVisitor.h"
 #include "clang/AST/ASTContext.h"
 #include "clang/AST/ASTConsumer.h"
@@ -48,6 +52,9 @@
 #include <sstream>
 #include <cstddef>
 #include <list>
+#ifdef __GNUC__
+#pragma GCC diagnostic pop
+#endif
 
 #include "ClangVisitor.h"
 
