@@ -58,17 +58,18 @@ Lexer::Error::str() const {
   return s.str();
 }
 
-Lexer::Lexer(const clang::Sema* sema)
-  :  _context('\0'),
-    _extension(0), _hasNewlineToken(false),
-    _charLitKind(DLexer::CharacterLiteralToken::TUndefined),
-    _AcceptedUtf8Symbols(),
-    _tokenLocation(NULL),
-    _stateLexer(SLStandard),
-    _clangSema(sema),
-    _clangTokensSet(false),
-    _ppCheckOnly(true),
-    _hasFinished(false)
+Lexer::Lexer(const clang::Sema* sema):
+  _hasFinished(false),
+  _tokenLocation(NULL),
+  _hasNewlineToken(false),
+  _context('\0'),
+  _extension(0),
+  _charLitKind(DLexer::CharacterLiteralToken::TUndefined),
+  _stateLexer(SLStandard),
+  _clangSema(sema),
+  _AcceptedUtf8Symbols(),
+  _clangTokensSet(false),
+  _ppCheckOnly(true)
 {
   // TODO - can we avoid creating these everytime we create a lexer
   lexerWarning = _clangSema->Diags.getCustomDiagID(clang::DiagnosticsEngine::Warning,"[lexer] %0");
