@@ -747,7 +747,7 @@ const std::string Lexer::getPreprocessorToken(const std::string& buffer, size_t&
     }
     break;
   }
-  int p = position;
+  size_t p = position;
   if (ch == '\0') return "";
   if (ch == '#') {
     // position is just after the returned string
@@ -757,7 +757,7 @@ const std::string Lexer::getPreprocessorToken(const std::string& buffer, size_t&
   // FIXME - digraphs, trigraphs
   if (ch == '"') {
     // Read a quoted string
-    int p = position;
+    size_t p = position;
     do {
       ch = advanceChar1NoToken(buffer,position,loc);
       if (ch == '\\') {
@@ -777,7 +777,7 @@ const std::string Lexer::getPreprocessorToken(const std::string& buffer, size_t&
   }
   if (ch == '\'') {
     // Read a quoted character string (PP allows multiple characters within single quotes)
-    int p = position;
+    size_t p = position;
     do {
       ch = advanceChar1NoToken(buffer,position,loc);
       if (ch == '\\') {
@@ -1990,7 +1990,7 @@ const std::string Lexer::skipToNextPPDirective(const std::string& buffer, size_t
   bool atLineStart = false;
   char ch;
   while (true) {
-    int n = loc->linenum1;
+    unsigned int n = loc->linenum1;
     skipSpace(buffer, position, loc); // Use this routine so lines are properly counted
     ch = buffer[position];
     if (ch == '\0') return ""; // No token found
@@ -3110,8 +3110,8 @@ void Lexer::lexUsingClang(const clang::Sema* _sema,  const std::string& input, c
   // tell clang or a MemoryBuffer where to presume the material starts.
 
   std::ostringstream prefix;
-  for (int i = 1; i<line; i++) prefix << "\n";
-  for (int i = 1; i<col; i++) prefix << " "; // FIXME - original file may have had tabs
+  for (size_t i = 1; i<line; i++) prefix << "\n";
+  for (size_t i = 1; i<col; i++) prefix << " "; // FIXME - original file may have had tabs
 
   // Append to the input exactly one token at the end of the string, so we can recognize when
   // the input has been fully lexed.
