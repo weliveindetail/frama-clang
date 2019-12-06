@@ -5920,7 +5920,7 @@ public:
           iter = _updates.begin(); iter != endUpdates; ++iter) {
         if (iter->first) free_term_offset(iter->first);
         if (iter->second) free_logic_type(iter->second);
-        memset(&*iter, 0, sizeof(std::pair<term_offset, logic_type>));
+        iter->first = NULL; iter->second = NULL;
       };
       _updates.clear();
     }
