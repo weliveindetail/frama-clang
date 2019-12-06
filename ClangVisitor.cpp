@@ -2846,11 +2846,12 @@ exp_node FramacVisitor::makeExpression(
             type = BOBITOR; assignment = AKASSIGN; break;
           case clang::BO_Comma:
             type = BOCOMMA; assignment = AKRVALUE; break;
-          // default:
-          //   std::cerr << "Unsupported binary expression:";
-          //   expr->dump(llvm::errs(), _context->getSourceManager());
-          //   std::cerr << "\nAborting\n";
-          //   exit(2);
+          case clang::BO_Cmp: // does not seem to be fully supported by clang
+            //itself according to https://clang.llvm.org/cxx_status.html#cxx2a
+          std::cerr << "Unsupported spaceship (<=>) operator:";
+          expr->dump(llvm::errs(), _context->getSourceManager());
+          std::cerr << "\nAborting\n";
+          exit(2);
         };
         exp_node lhsPart = makeExpression(binaryOperator->getLHS(),
                                           shouldDelay,receiver);
@@ -3457,6 +3458,9 @@ compilation_constant FramacVisitor::makeConstantExpression(
       // ought to be initialized by isCXX11ConstantExpr
 #if CLANG_VERSION_MAJOR < 9
       case clang::APValue::Uninitialized: assert(false);
+#else
+      case clang::APValue::None:
+      case clang::APValue::Indeterminate: assert(false);
 #endif
       case clang::APValue::Int: {
         const llvm::APSInt& v = result.getInt();
@@ -3483,6 +3487,9 @@ compilation_constant FramacVisitor::makeConstantExpression(
       case clang::APValue::Union:
       case clang::APValue::MemberPointer:
       case clang::APValue::AddrLabelDiff:
+#if CLANG_VERSION_MAJOR >= 9
+      case clang::APValue::FixedPoint:
+#endif
         {
           std::cerr << "unsupported constant expression: ";
           expr->dump();
