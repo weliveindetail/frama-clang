@@ -755,7 +755,7 @@ StringLiteralToken::_write(std::ostream& out, PersistentFormat& format) const {
 
 std::string
 OperatorPunctuatorToken::text() const {
-  std::string t("<operator??>");
+  std::string t("<??unknown>");
   switch (queryOwnField()) {
     case TOpenBrace: t = '{'; break;
     case TCloseBrace: t = '}'; break;
