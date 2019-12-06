@@ -92,8 +92,6 @@ void Parser::addBuiltinBinding(const std::string& ident, logic_type ret_type, st
 //}
 
 void Parser::addBuiltinBindings() {
-  logic_type Lbool = logic_type_Lint(IBOOL);
-  logic_type Lint = logic_type_Lint(IINT);
   logic_type Linteger = logic_type_Linteger();
   logic_type Lreal = logic_type_Lreal();
   logic_type Ldouble = logic_type_Lfloat(FDOUBLE);
