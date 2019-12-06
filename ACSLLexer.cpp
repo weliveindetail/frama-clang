@@ -940,8 +940,6 @@ Lexer::ReadResult Lexer::readToken() {
               // Continue on though
             }
             _token = protectedKeywordOrIdentifier(text);
-            AbstractToken token = queryToken();
-            KeywordToken::Type ty = ((KeywordToken&)token).getType();
             setLocation(tt.getLocation(),tt.getEndLoc()); // FIXME prefer using t.getLocation() but that is not always valid on an unknown token
             _clangTokens.pop_front();
           } else {
@@ -1678,11 +1676,11 @@ void Lexer::handlePPDirectiveInACSL(const std::string& buffer, size_t& position,
   const clang::FileID fileID = sourceMgr.getFileID(_clangSourceLocation);
 
   clang::SourceLocation hashloc = sourceMgr.translateLineCol(fileID,loc->linenum1,loc->charnum1);
-  char ch = skipSpace(buffer,position,loc,false);
+  skipSpace(buffer,position,loc,false);
   clang::SourceLocation idloc = sourceMgr.translateLineCol(fileID,loc->linenum1,loc->charnum1);
 
   size_t p = position; // first char of identifier
-  ReadResult result = Lexer::readIdentifierToken(buffer, position, loc);
+  Lexer::readIdentifierToken(buffer, position, loc);
   // We either have a non-empty identifier, or a keyword, or an empty identifier
   // (if the next character is not a valid identifier start character, such as punctuation)
   std::string id(buffer,p,position-p);
@@ -1987,7 +1985,6 @@ Lexer::getMacro(const std::string& name) const {
 
 
 const std::string Lexer::skipToNextPPDirective(const std::string& buffer, size_t& position, location loc) {
-  bool atLineStart = false;
   char ch;
   while (true) {
     unsigned int n = loc->linenum1;
@@ -2035,7 +2032,6 @@ Lexer::makeLocation(clang::SourceLocation source) const {
 
 DLexer::Token
 Lexer::convertClangTokenToACSLToken(const clang::Token& source) const {
-  location loc = makeLocation(source.getLocation());
   switch (source.getKind()) {
     case clang::tok::eof: // End of file.
     case clang::tok::eod: // End of preprocessing directive (end of line inside
@@ -2127,7 +2123,6 @@ Lexer::convertClangTokenToACSLToken(const clang::Token& source) const {
         if (isInvalid)
           return DLexer::Token();
         ReadResult readResult;
-        location loc = cons_location("",0,1,"",0,1);
         size_t position = 1;
         Acsl::Lexer lexer(_clangSema);
         lexer.setBuffer(thisTok, _clangSourceLocation, position, false); // FIXME - is this needed
