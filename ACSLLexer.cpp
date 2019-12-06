@@ -1759,7 +1759,7 @@ void Lexer::handlePPDirectiveInACSL(const std::string& buffer, size_t& position,
         _clangSema->Diags.Report(idloc,ppError) << msg.str();
         removeFromRevision(start);
       } else if (ppstate == PP_IN_IF) {
-        ppstate == PP_SKIP_TO_END;
+        ppstate = PP_SKIP_TO_END;
       } else if (ppstate == PP_SKIP_TO_ELIF) {
         ppstate = PP_IN_IF;
       } else if (ppstate == PP_SKIP_TO_END) {
