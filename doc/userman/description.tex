@@ -1,5 +1,3 @@
-
-
 \chapter{Installation}
 
 \fclang is currently still experimental and not part of regular \framac releases. It must be built from source and added to a \framac installation.
@@ -15,20 +13,40 @@ which itself is available from \url{http://releases.llvm.org}.
 Version \fclangversion of \fclang is compatible with version \clangversion of \clang.
 \end{itemize}
 
-Building and installing \fclang has two effects:
+In addition, a third package is needed for compiling \fclang,
+\lstinline|camlp5| (\url{https://camlp5.github.io/}).
+Once \fclang has been installed, \lstinline|camlp5| is not required anymore.
+Again, the easiest way to install
+\lstinline|camlp5| itself is through \lstinline|opam|.
+
+Building and installing \fclang has three effects:
 \begin{itemize}
-\item The \fclang executable files are installed within the \framac installation. 
-In particular, if \framac has been installed using \lstinline|opam|, then the principal executable  \irg will be installed in the 
-\lstinline|opam| \lstinline|bin| directory. 
-You must be sure that this directory is on your system \verb|$PATH| (try \lstinline|which framaCIRGen| after installation to be sure).
+\item The \fclang executable files are installed within
+the \framac installation.
+In particular, if \framac has been installed using \lstinline|opam|,
+then the principal executable  \irg will be installed in the
+\lstinline|opam| \lstinline|bin| directory.
+You must be sure that this directory is on your \verb|$PATH|.
+This is usually the default for standard \lstinline|opam| installations.
+In doubt, you can try the command \lstinline|which framaCIRGen|
+after installation to be sure that \irg will be correctly detected by your
+shell.
+\item The \framac plug-in itself is copied into the standard \framac plug-in
+directory (as given by \lstinline|frama-c-config -print-plugin-path|), so
+that it will be loaded automatically by the main \framac commands at each
+execution.
 \item Include files containing \acslpp specifications of \cpp library functions
-are copied to \verb|$FRAMAC_SHARE/libc| and 
+are copied to
 \verb|$FRAMAC_SHARE/frama-clang/libc++|, where \verb|$FRAMAC_SHARE| is the path
 given by the command \lstinline|frama-c-config -print-share-path|.
 \end{itemize}
-These include files are replacements for the standard system include files.
-They should have the same definitions of \C and \cpp functions and classes, but
-with \acslpp annotations giving their specifications.
+These include files are replacements for (a subset of)
+the standard system include files. They should have the same definitions of
+\C and \cpp functions and classes, but
+with \acslpp annotations giving their specifications. Note however that this is
+still very much a work in progress, except for the headers that are imported
+from the C standard library, which benefit from the specifications of the
+headers provided by \framac itself.
 
 The plugin can be built by hand from source using the following commands. Create a new directory to which you download and unpack the source distribution. Then \lstinline|cd| into the source directory itself (one level down) and execute:
 \begin{listing-nonumber}
@@ -40,9 +58,9 @@ make install
 By default, \fclang will install its files under the same root
 directory as \framac itself. In particular, if \framac has been
 installed from \lstinline|opam|, the installation will be done under
-\verb|$(opam var prefix)| directory. Standard configure options for
-manipulating installation directories are available, notably
-\verb|--prefix|.
+\verb|$(opam var prefix)| directory. Standard \lstinline|autoconf|-based
+configure options for manipulating installation directories are available,
+notably \verb|--prefix|.
 
 %\section{Current status}
 %
@@ -72,11 +90,14 @@ manipulating installation directories are available, notably
 \chapter{Running the plug-in}
 
 \section{\cpp files}
-Once installed the plugin is run automatically by \framac on any \cpp files listed on the command-line. \cpp files are identified by their filename suffixes. The default suffixes recognized as \cpp are these:
+Once installed the plugin is run automatically by \framac on any \cpp
+files listed on the command-line. \cpp files are identified by their
+filename suffixes. The default suffixes recognized as \cpp are these:
 \lstinline| .cpp, .C, .cxx, .ii, .ixx, .ipp, .i++, .inl, .h, .hh|
 
-Currently this set of suffixes is compiled in the plugin (in file \texttt{frama\_Clang\_register.ml}) and can only be changed by recompiling and
-reinstalling the plugin.
+Currently this set of suffixes is compiled in the plugin (in file
+\texttt{frama\_Clang\_register.ml}) and can only be changed by
+recompiling and reinstalling the plugin.
 
 \section{Frama-clang executable}
 The plug-in operates by invoking the executable \irg (which must be on the system \verb|$PATH|)
@@ -89,14 +110,42 @@ The file-system path identifying the executable is provided by the \textbf{-cxx-
 option and is \irg by default. The path may be absolute; if it is a relative path, it is found by searching the system \verb|$PATH|.
 
 
-The PARSING section of the output of \lstinline|frama-c -kernel-h| lists some options for controlling the behavior described above. Also see the options listed by \lstinline|frama-c -fclang-h| such as \lstinline|-cxx-stdlib-path|, \lstinline|-cxx-cstdlib-path|, \lstinline|-cxx-nostdinc|, \lstinline|-cxx-stdinc|.
+The PARSING section of the output of \lstinline|frama-c -kernel-h|
+lists some options for controlling the behavior described above. This is notably
+the case for:
+\begin{itemize}
+\item \lstinline|-cpp-extra-args| which contains arguments to be passed to the
+preprocessor (e.g. \lstinline|-D| macro definitions or \lstinline|-I|
+search path directives). In case the project under analysis mixes C and
+C++ files which
+require distinct preprocessor directives, it is possible to use the
+\fclang-specific option \lstinline|-fclang-cpp-extra-args|.
+In that case, \fclang will not consider \lstinline|-cpp-extra-args| at all.
+See section~\ref{sec:include-directories} for more information.
+\item \lstinline|-machdep| which indicates the architecture on
+which the program is supposed to run. See section~\ref{sec:bit} for more
+information
+\end{itemize}
+
+Apart from \lstinline|-fclang-cpp-extra-args|, and
+\lstinline|-cxx-clang-command|, \fclang options governing the
+parsing of C++ files are:
+\begin{itemize}
+\item \lstinline|-cxx-c++stdlib-path|, the path where \fclang standard C++
+  headers are located.
+\item \lstinline|-cxx-cstdlib-path|, the path where \framac standard C headers
+  are located
+\item \lstinline|-cxx-nostdinc|, instructs \irg not to consider \fclang and
+\framac headers (i.e. fall back to system headers).
+\end{itemize}
 
 \section{Frama-clang options}
 
 The options controlling \fclang are of four sorts:
 \begin{itemize}
-\item options known to the \framac kernel 
-\item options the  \fclang plug-in has registered with the \framac kernel. These also are recognized by the \fc command-line.
+\item options known to the \framac kernel
+\item options the  \fclang plug-in has registered with the \framac kernel.
+These also are recognized by the \fc command-line.
 \item options known to \irg directly (and not to \fc), These must be 
 included in the internal command that invokes \irg using the \option{-cpp-extra-args} option. These options are described in \S\ref{sec:standalone}.
 \item \clang options, which must also be supplied using the \option{-cpp-extra-args} option, and are passed through \irg to \cl. See \S\ref{sec:standalone}.
@@ -116,12 +165,6 @@ The most important of the options are these:
 \begin{itemize}
 \item \option{--help}  or \option{-h} -- introduction to \framac help
     \item \option{-kernel-h}, \option{-fclang-h} -- help information about \fc, the \fc kernel and the \fcl plug-in
-	\item \option{-cpp-extra-args <string>} -- the single string argument to this option is \textit{prepended} to the command-line when 
-	\lstinline|frama-clang| is invoked internally. It is particularly 
-	important for adding include directories (\lstinline|-I|) and
-	other options to be passed on to the clang compiler or the \irg executable. 
-	Multiple instances of this option have a cumulative effect, in order (rather
-	than later instances replacing earlier ones).
     \item \option{-print} -- prints out the input file seen by \fc; when \fcl is being used this is the input file after pre-processing and translation from \cpp to \C. Thus this output can be useful to see (and debug) the results of \fcl's transformations.
     \item \option{-kernel-warn-key=annot-error=<val>} sets the behavior of \framac, including \fclang, when a parsing error is encountered. The default value (set by the kernel) is \texttt{abort}, which terminates processing upon the first error; a more useful alternative is \texttt{active}, which reports errors but continues processing further annotations.
 	\item \option{-machdep <arg>} -- sets the target machine architecture, cf. \S\ref{sec:bit}
@@ -138,7 +181,7 @@ See \lstinline|-fclang-msg-key help| for a list of informational categories.
 \end{itemize}
 
 Note that the \framac option \verb|-no-pp-annot| is ignored by \fclang. Preprocessing is always performed on the source input (unless annotations are ignored entirely using \verb|-no-annot|).
-\section{Include directories}
+\section{Include directories}\label{sec:include-directories}
 
 By default \irg is given the paths to the two directories containing the \fcl and \fc header files, which include \acslpp specifications for the \cpp library functions. The default paths (\verb|$FRAMAC_SHARE/libc++| and
 \verb|$FRAMAC_SHARE/libc| respectively) to these directories
@@ -302,8 +345,13 @@ Although \clang can process languages other than \cpp, \cpp is the only one usab
 
 The launching of \irg by \framac includes the following options by default. The \fc option \lstinline|-fclang-msg-key=clang| will show (among other information) the internal command-line being invoked.
 \begin{itemize}
-\item \verb|-target <target>| with the target being set according to the \lstinline|-machdep| and \lstinline|-target| options given to \framac (cf. \S\ref{sec:bit})
-\item \verb|-D__FC_MACHDEP_86_32| -- also set according to the chosen architecture
+\item \verb|-target <target>| with the target being set according to
+  the \lstinline|-machdep| and \lstinline|-target| options given to
+  \framac (cf. \S\ref{sec:bit})
+\item \verb|-D__FC_MACHDEP_86_32| -- also set according to the chosen
+  architecture. The corresponding \verb|__FC_MACHDEP_*| macro is used in
+  \framac- and \fcl- provided standard headers for architecture-specific
+  features.
 \item \verb|-std=c++11| -- target C++11 features
 \item \verb|-nostdinc| -- use \fcl and \framac system header files, and not the compiler's own header files
 \item \verb|-I$FRAMAC_SHARE/frama-clangs/libc++ -I$FRAMAC_SHARE/libc| -- include the \fclang and \framac header files, which contain system library definitions with \acslpp annotations (the paths used are controlled by the \fc options \lstinline|-cxx-c++stdlib-path| and \lstinline|-cxx-cstdlib-path|).
