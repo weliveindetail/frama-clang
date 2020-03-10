@@ -7,6 +7,14 @@ extern "C" {
   struct B { int x; };
 };
 
+extern "C" {
+  enum E { TAG1, TAG2, TAG3 };
+
+ // enum E e = TAG1;
+}
+
+E e1 = TAG2;
+
 int f(A* x) { return 0;};
 int g(B x) { return x.x; }
 
