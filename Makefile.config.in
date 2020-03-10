@@ -21,7 +21,7 @@
 ##########################################################################
 
 ENABLE_FRAMA_CLANG=@ENABLE_FRAMA_CLANG@
-CAMLP4O=@CAMLP4O@
+CAMLP5O=@CAMLP5O@
 CXX=@CXX@
 CLANG_CXXFLAGS=@CLANG_CXXFLAGS@
 CLANG_CFLAGS=@CLANG_CFLAGS@

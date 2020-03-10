@@ -36,14 +36,14 @@ m4_ifndef([FRAMAC_M4_MACROS],
 check_plugin([frama_clang],PLUGIN_RELATIVE_PATH(plugin_file),
              [C++ front-end for Frama-C],yes)
 
-plugin_require_external(frama_clang,camlp4o)
+plugin_require_external(frama_clang,camlp5o)
 
 # check for system C++ compiler, as we can't rely on clang++ itself because
 # of potential incompatibilities with GNU libstdc++ v5.
 # See https://llvm.org/bugs/show_bug.cgi?id=23529 for more details
 AC_PROG_CXX()
 
-configure_tool([CAMLP4O],[camlp4o],[camlp4o not found.],no)
+configure_tool([CAMLP5O],[camlp5o],[camlp5o not found.],no)
 check_plugin_dependencies()
 
 AC_SUBST(CLANG_CXXFLAGS)

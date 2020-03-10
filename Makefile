@@ -82,7 +82,7 @@ dontrun:
 
 $(Frama_Clang_DIR)/gen_ast: $(PLUGIN_DIR)/gen_ast.ml
 	$(PRINT_OCAMLC) $@
-	$(OCAMLC) $(Frama_Clang_BFLAGS) -o $@ -pp $(CAMLP4O) \
+	$(OCAMLC) $(Frama_Clang_BFLAGS) -o $@ -pp $(CAMLP5O) \
         zarith.cma dynlink.cma transitioning.cmo $^
 
 $(Frama_Clang_DIR)/test_ast: \
