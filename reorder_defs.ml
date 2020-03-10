@@ -328,8 +328,9 @@ end
    environment afterwards).
 *)
 
+open Cil
+
 class compute_deps =
-  let open Cil in
   let is_global s = Extlib.string_prefix ~strict:true "_Z" s in
   object(self)
     inherit Cabsvisit.nopCabsVisitor
