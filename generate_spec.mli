@@ -2,7 +2,7 @@
 (*                                                                        *)
 (*  This file is part of Frama-Clang                                      *)
 (*                                                                        *)
-(*  Copyright (C) 2012-2018                                               *)
+(*  Copyright (C) 2012-2020                                               *)
 (*    CEA (Commissariat à l'énergie atomique et aux énergies              *)
 (*         alternatives)                                                  *)
 (*                                                                        *)
