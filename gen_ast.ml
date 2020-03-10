@@ -367,7 +367,7 @@ let generate_ocaml_parser_impl fmt base ast =
      @[<v 2>let rec aux i t =@;\
      Format.fprintf out \"%%*s%%a@@\\n\" i \"\" print_value t.value;@;\
      List.iter (aux (i+2)) t.children;@]@;\
-     in aux 0 t@]@;@;\ 
+     in aux 0 t@]@;@;\
      @[<v 2>let make_tree chan =@;\
      let parents = ref \
      [ { value = VName \"root\"; line = 0; children = [] } ] in@;\
@@ -776,7 +776,7 @@ let generate_destructor fmt { name; definition } =
 
 let rec generate_dup_assigns dst src fmt = function
     | Bool | Int | Int64 -> Format.fprintf fmt "%t = %t;@;" dst src
-    | Location -> 
+    | Location ->
       Format.fprintf fmt
         "%t = copy_loc(%t);@;" dst src
     | String -> Format.fprintf fmt
@@ -784,7 +784,7 @@ let rec generate_dup_assigns dst src fmt = function
     | Node s -> Format.fprintf fmt "%t = %s_dup(%t);@;" dst s src
     | Option t ->
       let subobj obj fmt = Format.fprintf fmt "%t->content" obj in
-      Format.fprintf fmt 
+      Format.fprintf fmt
         "%t = malloc(sizeof(struct _option));@;\
          %t->is_some = %t->is_some;@;\
          @[<v 2>if(%t->is_some) {@;%a@]@;}@;"
@@ -794,7 +794,7 @@ let rec generate_dup_assigns dst src fmt = function
         "@[<v 2>{@;\
          list elt_src = %t;@;\
          %t = NULL;@;\
-         list elt_dst = NULL;@;\         
+         list elt_dst = NULL;@;\
          @[<v 2>while(elt_src) {@;\
          list tmp = malloc(sizeof(struct _list));@;\
          if (!tmp) { memory_exhausted(); };@;\
