@@ -997,8 +997,8 @@ axiomatic dynamic_allocation {
   }
  */
 /*@
-predicate non_escaping{L}(void *s, size_t n) =
-  ∀ unsigned int i; 0 ≤ i < n ⇒ ¬\initialized((char *)s + i);
+predicate non_escaping{L}(void *s, ℤ n) =
+  ∀ ℤ i; 0 ≤ i < n ⇒ ¬\initialized((char *)s + i);
  */
 /*@
 predicate empty_block{L}(void *s) =
@@ -1056,7 +1056,7 @@ int memcmp(void const *s1, void const *s2, size_t n);
           ∀ ℤ i;
             (0 ≤ i < \old(n) ⇒
              *((unsigned char *)\old(s) + i) ≡ \old(c)) ⇒
-            \result ≤ \old(s) + i;
+            (unsigned char *)\result ≤ (unsigned char *)\old(s) + i;
     
     behavior not_found:
       assumes char_not_found: memchr((char *)s, c, n) ≡ (0 ≢ 0);
@@ -1413,7 +1413,7 @@ char *strerror(int errnum);
  */
 char *strcpy(char * __restrict dest, char const * __restrict src);
 
-/*@ requires valid_string_src: valid_read_string(src);
+/*@ requires valid_nstring_src: valid_read_nstring(src, n);
     requires room_nstring: \valid(dest + (0 .. n - 1));
     requires separation: \separated(dest + (0 .. n - 1), src + (0 .. n - 1));
     ensures result_ptr: \result ≡ \old(dest);
@@ -1578,7 +1578,8 @@ size_t strxfrm(char * __restrict dest, char const * __restrict src, size_t n);
  */
 char *strdup(char const *s);
 
-/*@ assigns \result;
+/*@ requires valid_string_s: valid_read_string(s);
+    assigns \result;
     assigns \result
       \from (indirect: *(s + (0 .. strlen{Old}(s)))), (indirect: n),
             (indirect: __fc_heap_status);
