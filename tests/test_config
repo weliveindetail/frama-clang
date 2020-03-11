@@ -2,5 +2,5 @@ FILEREG:.*\.\(cc\|cpp\|ii\)$
 MACRO: CXX -cxx-c++stdlib-path share/libc++ -cxx-clang-command="bin/framaCIRGen"
 MACRO: EVA -eva -eva-msg-key=-summary
 OPT:-print -check @CXX@
-FILTER:/bin/sed  -e "s|${FRAMAC_SHARE}|FRAMAC_SHARE|g"
+FILTER:/bin/sed  -e "s|${FRAMAC_SHARE}|FRAMAC_SHARE|g" -e "s|$(pwd)/||g"
 ##FILTER:/bin/sed -e '/^#[^\n]*/d' -e "s|${FRAMAC_SHARE}|FRAMAC_SHARE|g"
