@@ -20,7 +20,6 @@
 (*                                                                        *)
 (**************************************************************************)
 
-module FC_config = Config
 include
   Plugin.Register(
     struct
@@ -117,7 +116,7 @@ let () =
 module C_std_headers = 
   String(
     struct
-      let default = FC_config.datadir ^ "/libc"
+      let default = Fc_config.datadir ^ "/libc"
       let option_name = "-cxx-cstdlib-path"
       let help = "<path> where to look for C standard headers \
                   (default: Frama-C libc in " ^ default ^ ")"
@@ -127,7 +126,7 @@ module C_std_headers =
 module Cxx_std_headers = 
   String(
     struct
-      let default = FC_config.datadir ^ "/frama-clang/libc++"
+      let default = Fc_config.datadir ^ "/frama-clang/libc++"
       let option_name = "-cxx-c++stdlib-path"
       let help = "<path> where to look for C++ standard headers \
                   (default: FClang libc++ in " ^ default ^ ")"
