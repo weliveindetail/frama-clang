@@ -1928,6 +1928,32 @@ and convert_initializer env typ var init_exp does_remove_virtual =
         -> Fclang_datatype.Qualified_name.equal (v1,TStandard) (v2,TStandard)
       | _ -> false
   in
+  (* default 0-initialization. *)
+  let rec mk_default_init typ =
+    match typ.plain_type with
+    | Int _ | Enum _ | Pointer _ -> SINGLE_INIT(mk_zero env)
+    | Float _ -> SINGLE_INIT (mk_expr env (CONSTANT(CONST_FLOAT "0.")))
+
+    | LVReference _ | RVReference _ ->
+      Convert_env.fatal env "Unsupported: default initialization of reference"
+    | Lambda _ -> (* could probably be directly assert false *)
+      Convert_env.fatal env
+        "Unsupported: default initialization of lambda object"
+
+    (* initialize at least one element. *)
+   | Array typ ->
+      COMPOUND_INIT [ NEXT_INIT, mk_default_init typ.subtype ]
+    | Struct (s,ts) | Union (s,ts) ->
+      (match Convert_env.get_struct env (s,ts) with
+       | [] -> NO_INIT
+       | (field, typ) :: _ ->
+         COMPOUND_INIT
+           [ INFIELD_INIT(field,NEXT_INIT), mk_default_init typ ])
+
+    | Named (ty,_) when Cxx_utils.is_builtin_qual_type ty -> NO_INIT
+    | Named(ty,_) -> mk_default_init (Convert_env.get_typedef env ty)
+    | Void -> assert false
+  in
   let rec aux_init env typ var = function
     | Single_init init ->
       (match init.econtent with
@@ -1946,6 +1972,7 @@ and convert_initializer env typ var init_exp does_remove_virtual =
           let env, aux, def = convert_full_expr env init does_remove_virtual in
           let def = convert_ref env typ.plain_type def in
           env, aux, SINGLE_INIT def, None)
+    | Implicit_init -> env, [], mk_default_init typ, None
     | Compound_init l ->
       let typed_l = find_type_list env typ.plain_type l in
       let env, aux, init =

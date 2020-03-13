@@ -351,6 +351,7 @@ type case_statement =
    where we still want to know which field initialized. *)
 type init_expr =
   | Single_init { definition: expression; }
+  | Implicit_init { } (* implicit initialization *)
   | Compound_init { init_elts: init_expr list; }
   | Union_init { field: string; field_type: qual_type; definition: init_expr; }
   (* initialization of an array of objects. expression is parameterized by

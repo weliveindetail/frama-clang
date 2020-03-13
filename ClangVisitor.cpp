@@ -530,6 +530,9 @@ FramacVisitor::makeInitExpr(
       init_expr_Array_init(
         qualified_name_dup(idx), makeLocExpression(init,shouldDelay));
   };
+  if (clang::ImplicitValueInitExpr::classof(init)) {
+    return init_expr_Implicit_init();
+  }
   //TODO: there are other initializer classes.
   //Need to check whether they are used in the elaborated AST.
   // plain expression
