@@ -1679,12 +1679,13 @@ Clang_utils::makePlainType(
         if (declRegistration && declRegistration->doesRegisterDecl())
           declRegistration->registerDecl(enumType->getDecl());
         qualified_name name;
-        if (!isPOD || !Clang_utils::isExternCContext(enumType->getDecl()))
+        bool extern_c = Clang_utils::isExternCContext(enumType->getDecl());
+        if (!isPOD || !extern_c)
           name = makeQualifiedName(*enumType->getDecl());
         else
           name = qualified_name_cons(NULL,
             copy_string(enumType->getDecl()->getName().str()));
-        return typ_Enum(ekind_cons(name));
+        return typ_Enum(ekind_cons(name,extern_c));
       };
     case clang::Type::Auto: {
         assert(llvm::dyn_cast<const clang::AutoType>(type));

@@ -100,7 +100,10 @@ type qualified_name =
         | _ -> x"
 ;;
 
-type ekind = { body: qualified_name; }
+type ekind = {
+  body: qualified_name;
+  is_extern_c: bool;
+}
 ;;
 
 type funkind =

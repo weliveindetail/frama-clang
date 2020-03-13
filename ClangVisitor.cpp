@@ -2245,8 +2245,8 @@ exp_node FramacVisitor::makeDeclRefExpression(
     assert (llvm::dyn_cast<clang::EnumType const>(t));
     const clang::EnumType* enumType =
       static_cast<const clang::EnumType*>(t.getTypePtr());
+    const clang::EnumDecl* declEnum = enumType->getDecl();
     if (hasInstanceContext()) {
-      const clang::EnumDecl* declEnum = enumType->getDecl();
       if (!_tableForWaitingDeclarations.hasVisited(declEnum))
         unvisitedDecls().push_back(declEnum);
       else {
@@ -2266,7 +2266,9 @@ exp_node FramacVisitor::makeDeclRefExpression(
         exp_node_Constant(
           compilation_constant_EnumCst(
             _clangUtils->makeQualifiedName(*variableExpr->getDecl()),
-            ekind_cons(_clangUtils->makeQualifiedName(*enumType->getDecl())),
+            ekind_cons(
+              _clangUtils->makeQualifiedName(*declEnum),
+              Clang_utils::isExternCContext(enumType->getDecl())),
             (int64_t)enumDecl->getInitVal().getLimitedValue(UINT64_MAX))),
         variableExpr);
   }
@@ -7810,6 +7812,7 @@ bool FramacVisitor::VisitEnumDecl(clang::EnumDecl* Decl) {
   readGlobalComment(Decl, true /* mayHaveTemplate */);
   qualified_name enumName = _clangUtils->makeQualifiedName(*Decl);
   bool isFirstEnumName = true;
+  bool isExternC = Clang_utils::isExternCContext(Decl);
   const char* name = strdup(enumName->decl_name);
   // if (!_parents.hasLexicalContext())
   //   name = copy_string(Decl->getQualifiedNameAsString());
@@ -7824,8 +7827,9 @@ bool FramacVisitor::VisitEnumDecl(clang::EnumDecl* Decl) {
     qualified_name itemName = _clangUtils->makeQualifiedName(**enumIter);
     compilation_constant newEnum =
       compilation_constant_EnumCst(
-        itemName, ekind_cons(isFirstEnumName ? enumName
-          : qualified_name_dup(enumName)),
+        itemName,
+        ekind_cons(
+          isFirstEnumName ? enumName : qualified_name_dup(enumName),isExternC),
         (int64_t) enumIter->getInitVal().getLimitedValue(UINT64_MAX));
     isFirstEnumName = false;
     forwardEnums.insertContainer(newEnum);

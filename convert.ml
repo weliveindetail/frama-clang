@@ -609,7 +609,11 @@ let rec convert_base_type env spec decl typ does_remove_virtual =
   | Float FLongDouble -> (List.map spec_type [Tlong; Tdouble]) @ spec, decl
   | Enum e ->
     let body_name, t = Convert_env.typedef_normalize env e.body TStandard in
-    spec_type (Tenum(Mangling.mangle body_name t None,None,[]))::spec, decl
+    let name =
+      if e.ekind_is_extern_c then body_name.decl_name
+      else Mangling.mangle body_name t None
+    in
+    spec_type (Tenum(name,None,[]))::spec, decl
   | Struct (s,t) ->
     let name =
       if Convert_env.is_extern_c_aggregate env s t then s.decl_name
@@ -764,9 +768,14 @@ and convert_constant env c does_remove_virtual = match c with
   | FloatCst(_,v) -> CONSTANT(CONST_FLOAT v)
   | EnumCst(n,e,_) ->
     let n, t = Convert_env.typedef_normalize env n TStandard in
-    let name = Mangling.mangle n t None in
+    let name =
+      if e.ekind_is_extern_c then n.decl_name else Mangling.mangle n t None
+    in
     let body_name, t' = Convert_env.typedef_normalize env e.body TStandard in
-    let enum = Mangling.mangle body_name t' None in
+    let enum =
+      if e.ekind_is_extern_c then body_name.decl_name
+      else Mangling.mangle body_name t' None
+    in
     (* C++ enum constant are of type Enum, while C treat them as integers.
        This is not an issue for most purposes, except when it comes to
        handle exceptions: catching enum e is not the same as catching int x.
@@ -2459,10 +2468,12 @@ and convert_stmt_list env l does_remove_virtual =
 let convert_enum_constant env ikind e =
   let loc = Convert_env.get_loc env in
   match e with
-    | EnumCst(name,_,value) ->
-        let name, t
-          = Convert_env.typedef_normalize env name TStandard in
-        let name = Mangling.mangle name t None in
+    | EnumCst(name,e,value) ->
+        let name, t = Convert_env.typedef_normalize env name TStandard in
+        let name =
+          if e.ekind_is_extern_c then name.decl_name
+          else Mangling.mangle name t None
+        in
         (* If the value is negative, create an expression
            with a positive value. *)
         let value =

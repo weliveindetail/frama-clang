@@ -6,9 +6,15 @@ struct A;
 struct B {
    int x ;
 };
+enum E {
+    TAG1 = 0U,
+    TAG2 = 1U,
+    TAG3 = 2U
+};
 struct C {
    int y ;
 };
+enum E e1 = (enum E)TAG2;
 int f(struct A *x)
 {
   int __retres;
