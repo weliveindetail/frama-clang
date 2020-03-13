@@ -216,7 +216,7 @@ module Template_parameter =
       type t = template_parameter
       let name = "Fclang_datatype.Template_parameter"
       let reprs = [TPConstant (IntCst (IInt,ICLiteral,Int64.of_int 0))]
-      let compare = Pervasives.compare
+      let compare = Transitioning.Stdlib.compare
       let equal = Datatype.from_compare
       let copy = Datatype.identity
       let hash = Hashtbl.hash
@@ -230,7 +230,7 @@ module Qualified_name =
       let reprs = [({prequalification = [QNamespace "foo"]; decl_name = "bar"},
                     TStandard)]
       let name = "Fclang_datatype.Qualified_name"
-      let compare = Pervasives.compare
+      let compare = Transitioning.Stdlib.compare
       let equal = Datatype.from_compare
       let copy = Datatype.identity
       let hash = Hashtbl.hash
@@ -265,7 +265,7 @@ module Qual_type =
       let reprs = [ { qualifier = [Const]; plain_type = Int IInt } ]
       let name = "Fclang_datatype.Qual_type"
       let copy = Datatype.identity
-      let compare = Pervasives.compare
+      let compare = Transitioning.Stdlib.compare
       let equal = Datatype.from_compare
       let hash = Hashtbl.hash
       let pretty = pretty_qual_type
