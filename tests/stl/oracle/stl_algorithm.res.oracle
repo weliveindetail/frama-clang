@@ -1149,7 +1149,8 @@ int strcoll(char const *s1, char const *s2);
 
 /*@ requires valid_string_s: valid_read_string(s);
     assigns \result;
-    assigns \result \from s, *(s + (0 ..)), c;
+    assigns \result
+      \from s, (indirect: *(s + (0 .. strlen{Old}(s)))), (indirect: c);
     
     behavior found:
       assumes char_found: strchr(s, c) ≢ (0 ≢ 0);
@@ -1172,6 +1173,15 @@ int strcoll(char const *s1, char const *s2);
           \result ≡ \null ∨ \base_addr(\result) ≡ \base_addr(\old(s));
  */
 char *strchr(char const *s, int c);
+
+/*@ requires valid_string_s: valid_read_string(s);
+    ensures
+      result_same_base: \subset(\result, \old(s) + (0 .. strlen(\old(s))));
+    assigns \result;
+    assigns \result
+      \from s, (indirect: *(s + (0 .. strlen{Old}(s)))), (indirect: c);
+ */
+char *strchrnul(char const *s, int c);
 
 /*@ requires valid_string_s: valid_read_string(s);
     assigns \result;
