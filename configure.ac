@@ -101,11 +101,11 @@ esac
 
 LLVM_CONFIG="$LLVM_CONFIG $LLVM_STATIC"
 
-CLANG_CXX_COMMONFLAGS="$($LLVM_CONFIG --cppflags) -g -fPIC -fno-rtti"
-CLANG_CFLAGS="$($LLVM_CONFIG --cppflags) -g -fPIC"
+CLANG_CXX_COMMONFLAGS="$($LLVM_CONFIG --cppflags) -fPIC -fno-rtti"
+CLANG_CFLAGS="$($LLVM_CONFIG --cppflags) -fPIC"
 CLANG_INCDIR=$($LLVM_CONFIG --includedir)
 CLANG_LINKFLAGS="$($LLVM_CONFIG --ldflags)"
-CLANG_CXXFLAGS="$CLANG_CXX_COMMONFLAGS -std=c++11"
+CLANG_CXXFLAGS="$($LLVM_CONFIG --cxxflags) -fPIC"
 CLANG_SYSLIBS="$($LLVM_CONFIG --system-libs)"
 CLANG_BIN_DIR="$($LLVM_CONFIG --bindir)"
 if test "$LLVM_SHARED_MODE" = "shared"; then
