@@ -792,8 +792,19 @@ public:
   clang::SourceLocation getSourceLocation(const location loc) const {
     if (!loc) return clang::SourceLocation();
     const clang::SourceManager& sm = _context->getSourceManager();
+#if CLANG_VERSION_MAJOR >= 10
+    auto fileOpt = sm.getFileManager().getFileRef(std::string(loc->filename1));
+    if (fileOpt) {
+      const clang::FileEntry& file = fileOpt.get().getFileEntry();
+      return sm.translateFileLineCol(&file, loc->linenum1, loc->charnum1);
+    } else {
+      // use dummy FileID if we don't have a valid FileEntry
+      return sm.translateLineCol(clang::FileID(), loc->linenum1, loc->charnum1);
+    }
+#else
     const clang::FileEntry* file=sm.getFileManager().getFile(std::string(loc->filename1));
     return sm.translateFileLineCol(file,loc->linenum1,loc->charnum1);
+#endif
   }
 
 };

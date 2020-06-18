@@ -541,7 +541,11 @@ init_expr FramacVisitor::make_explicit_initializer_list(const clang::Expr* e) {
   // but there might be cases where clang give the list directly in e.
   if (e->getStmtClass() == clang::Stmt::MaterializeTemporaryExprClass) {
     auto tmp = llvm::dyn_cast<const clang::MaterializeTemporaryExpr>(e);
+#if CLANG_VERSION_MAJOR >= 10
+    e = tmp->getSubExpr();
+#else
     e = tmp->GetTemporaryExpr();
+#endif
   }
   assert("Expecting an InitListExpr under a CXXStdInitializeListExpr"
          && e->getStmtClass() == clang::Stmt::InitListExprClass);
@@ -2294,8 +2298,13 @@ exp_node FramacVisitor::makeMaterializeTemporaryExpression(
   expression etmp =
     expression_cons(loc, exp_node_Variable(variable_Local(qtmp)));
   _implicitThisStar = etmp;
-  init_expr temp =
-    makeInitExpr(tmpExpr->getType(), tmpExpr->GetTemporaryExpr(), shouldDelay);
+  const clang::Expr* e =
+#if CLANG_VERSION_MAJOR >= 10
+    tmpExpr->getSubExpr();
+#else
+    tmpExpr->GetTemporaryExpr();
+#endif
+  init_expr temp = makeInitExpr(tmpExpr->getType(), e, shouldDelay);
   qual_type temp_type =
     makeDefaultType(tmpExpr->getExprLoc(), tmpExpr->getType());
   _implicitThisStar = oldThisStar;
