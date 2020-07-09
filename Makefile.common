@@ -70,5 +70,5 @@ FCLANG_DISTRIBUTED_FILES=\
     gen_ast.ml intermediate_format.ast \
     configure.ac configure \
     Makefile Makefile.common Makefile.clang Makefile.config.in \
-    README \
+    README.md \
     $(addprefix share/libc++/, $(CXX_HEADERS)))

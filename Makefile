@@ -54,7 +54,7 @@ PLUGIN_DISTRIBUTED:=no
 PLUGIN_DISTRIB_EXTERNAL:=configure.ac configure Makefile Makefile.clang \
 Makefile.common Makefile.config.in gen_ast.ml *.cpp *.h \
 intermediate_format.ast DescentParse.template frama_Clang_config.ml.in \
-Doxyfile mainpage.dox README \
+Doxyfile mainpage.dox README.md \
 $(addprefix share/libc++/,$(CXX_HEADERS))
 include $(FRAMAC_SHARE)/Makefile.dynamic
 
@@ -122,7 +122,7 @@ distrib: clean
 	$(TAR) czf frama-clang-$(FCLANG_VERSION).tar.gz frama-clang-$(FCLANG_VERSION)
 	$(RM) -r frama-clang-$(FCLANG_VERSION)
 
-NOHEADER=%configure README
+NOHEADER=$(addprefix $(Frama_Clang_DIR)/, configure README.md)
 
 headers::
 	$(PRINT_MAKING) $@
