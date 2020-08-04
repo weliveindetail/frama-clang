@@ -39,7 +39,7 @@ PLUGIN_CMO:=intermediate_format_parser frama_Clang_option		\
 	    convert_link frama_Clang_register
 ifneq ("$(MAKECMDGOALS)","uninstall")
 PLUGIN_GENERATED:= \
- $(addprefix ${PLUGIN_DIR}/, \
+ $(addprefix $(PLUGIN_DIR)/, \
   intermediate_format_parser.ml \
   intermediate_format.mli intermediate_format_parser.mli)
 else
@@ -80,18 +80,18 @@ tests:: dontrun
 dontrun:
 	(cd tests; echo `grep -r 'DONTRUN' $(PLUGIN_TESTS_DIRS) | wc -l` test files marked DONTRUN )
 
-$(Frama_Clang_DIR)/gen_ast: $(PLUGIN_DIR)/gen_ast.ml
+$(Frama_Clang_DIR)/gen_ast: $(Frama_Clang_DIR)/gen_ast.ml
 	$(PRINT_OCAMLC) $@
 	$(OCAMLC) $(Frama_Clang_BFLAGS) -o $@ -pp $(CAMLP5O) \
-        zarith.cma dynlink.cma transitioning.cmo $^
+        zarith.cma dynlink.cma $^
 
 $(Frama_Clang_DIR)/test_ast: \
   $(Frama_Clang_DIR)/intermediate_format.cmo \
   $(Frama_Clang_DIR)/intermediate_format.o
 
-$(PLUGIN_DIR)/%_parser.ml $(PLUGIN_DIR)/%_parser.mli \
-$(PLUGIN_DIR)/%.mli $(PLUGIN_DIR)/%.c: \
-   $(PLUGIN_DIR)/%.ast $(PLUGIN_DIR)/gen_ast
+$(Frama_Clang_DIR)/%_parser.ml $(Frama_Clang_DIR)/%_parser.mli \
+$(Frama_Clang_DIR)/%.mli $(Frama_Clang_DIR)/%.c: \
+   $(Frama_Clang_DIR)/%.ast $(Frama_Clang_DIR)/gen_ast
 	$(PRINT_MAKING) "intermediate AST"
 	$(Frama_Clang_DIR)/gen_ast $<
 
