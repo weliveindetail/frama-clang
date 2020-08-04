@@ -1913,6 +1913,17 @@ axiomatic nanosleep_predicates {
 int clock_nanosleep(clockid_t clock_id, int flags,
                     struct timespec const *rqtp, struct timespec *rmtp);
 
+/*@ requires valid_timer: \valid_read(timer);
+    requires valid_result: \valid(result);
+    ensures
+      result_null_or_result: \result ≡ \old(result) ∨ \result ≡ \null;
+    assigns \result, *result;
+    assigns \result \from (indirect: *timer), result;
+    assigns *result \from (indirect: *timer);
+ */
+struct tm *gmtime_r(time_t const * __restrict timer,
+                    struct tm * __restrict result);
+
 /*@ requires valid_request: \valid_read(rqtp);
     requires
       initialized_request: initialization:
