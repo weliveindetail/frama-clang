@@ -54,10 +54,10 @@ module Dep_node = struct
 
   let compare x y =
     if x.id = -1 || y.id = -1 then begin
-      let res = Transitioning.Stdlib.compare x.kind y.kind in
+      let res = Stdlib.compare x.kind y.kind in
       if res = 0 then begin
-        let res = Transitioning.Stdlib.compare x.name y.name in
-        if res = 0 then Transitioning.Stdlib.compare x.is_def y.is_def else res
+        let res = Stdlib.compare x.name y.name in
+        if res = 0 then Stdlib.compare x.is_def y.is_def else res
       end else res
     end else begin
       let res = compare y.id x.id in

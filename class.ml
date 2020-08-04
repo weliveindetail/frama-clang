@@ -27,7 +27,7 @@ module Inheritance_graph =
     (Fclang_datatype.Qualified_name)
     (struct
       type t = int * access_kind * vkind
-      let compare = Transitioning.Stdlib.compare
+      let compare = Stdlib.compare
       let default = (0, Private, VStandard)
      end)
 
