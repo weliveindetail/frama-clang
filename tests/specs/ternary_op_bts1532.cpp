@@ -1,6 +1,6 @@
 
-//@ ensures \result == (1 ? 2 : 3);
-bool empty() { return (1 ? 2 : 3); }
+//@ ensures \result == (x ? 0 : 1);
+bool empty(int x) { return (x ? 0 : 1); }
 
 //@ logic integer min(integer x, integer y) = x < y ? x : y;
 
