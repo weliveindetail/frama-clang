@@ -1,4 +1,4 @@
 FILEREG:.*\.\(cc\|cpp\|ii\)$
 MACRO: CXX -machdep=x86_64 -cxx-c++stdlib-path share/libc++ -cxx-clang-command="bin/framaCIRGen -target x86_64-linux-gnu -D__FC_MACHDEP_X86_64"
-OPT:-print -wp -wp-msg-key="no-time-info,no-step-info" -wp-cache none  @CXX@
+OPT:-print -wp -wp-msg-key shell -wp-cache none  @CXX@
 FILTER:/bin/sed -e '/^#[^\n]*/d' -e "s|${FRAMAC_SHARE}|FRAMAC_SHARE|g" -e 's/Alt-Ergo [0-9.]\+/Alt-Ergo/' -e "s|$(pwd)/||g"
