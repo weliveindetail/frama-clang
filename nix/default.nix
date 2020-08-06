@@ -14,7 +14,7 @@ in
 plugins.helpers.simple_plugin
    { inherit pkgs stdenv src opam2nix ocaml_version plugins;
      name = "frama-clang";
-     deps = [ unstablePckgs.llvmPackages_9.clang-unwrapped unstablePckgs.llvm_9 pkgs.gnused ];
+     deps = [ unstablePckgs.llvmPackages_9.clang-unwrapped unstablePckgs.llvm_9 pkgs.gnused pkgs.alt-ergo ];
      opamPackages = [ "camlp5" ];
      configure_options = "-with-clang-includedir=${unstablePckgs.llvmPackages_9.clang-unwrapped}";
      preFramaCTests = ''
