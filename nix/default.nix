@@ -3,12 +3,12 @@
    ocaml_version ? "ocamlPackages_latest.ocaml", plugins ? { } }:
 
 let
-     unstablePckgs = import (builtins.fetchGit {
+     unstablePckgs = import (pkgs.fetchFromGitHub {
          # Descriptive name to make the store path easier to identify
-         name = "With-RTTI-fix";
-         url = "https://github.com/NixOS/nixpkgs/";
-         ref = "master";
+         owner = "nixos";
+         repo = "nixpkgs";
          rev = "0f0b14258be090303c5013c2e29234040fa9766c";
+         sha256 = "0000000000000000000000000000000000000000000000000000";
      }) {};
 in
 plugins.helpers.simple_plugin
