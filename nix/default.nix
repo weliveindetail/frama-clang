@@ -8,7 +8,7 @@ let
          owner = "nixos";
          repo = "nixpkgs";
          rev = "0f0b14258be090303c5013c2e29234040fa9766c";
-         sha256 = "0000000000000000000000000000000000000000000000000000";
+         sha256 = "0srpsnr5fhn2zp36jx3inj6vrs5n302hh3vv0c7rsc90aq5i27cr";
      }) {};
 in
 plugins.helpers.simple_plugin
