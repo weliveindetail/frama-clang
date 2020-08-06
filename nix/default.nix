@@ -14,11 +14,11 @@ in
 plugins.helpers.simple_plugin
    { inherit pkgs stdenv src opam2nix ocaml_version plugins;
      name = "frama-clang";
-     deps = [ unstablePckgs.llvmPackages_9.clang-unwrapped unstablePckgs.llvm_9 pkgs.gnused pkgs.alt-ergo ];
-     opamPackages = [ "camlp5" ];
+     deps = [ unstablePckgs.llvmPackages_9.clang-unwrapped unstablePckgs.llvm_9 pkgs.gnused ];
+     opamPackages = [ "camlp5" { name = "alt-ergo"; constraint = "=2.0.0"; } ];
      configure_options = "-with-clang-includedir=${unstablePckgs.llvmPackages_9.clang-unwrapped}";
      preFramaCTests = ''
-       echo Configuring Why3 for frama-clang.
+       echo CONFIGURING Why3 for Frama_Clang.
        export HOME=$(mktemp -d)
        why3 config --full-config
      '';
