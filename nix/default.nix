@@ -16,7 +16,6 @@ plugins.helpers.simple_plugin
      name = "frama-clang";
      deps = [ unstablePckgs.llvmPackages_9.clang-unwrapped unstablePckgs.llvm_9 pkgs.gnused ];
      opamPackages = [ "camlp5" { name = "alt-ergo"; constraint = "=2.0.0"; } ];
-     configure_options = "-with-clang-includedir=${unstablePckgs.llvmPackages_9.clang-unwrapped}";
      preFramaCTests = ''
        echo CONFIGURING Why3 for Frama_Clang.
        export HOME=$(mktemp -d)
