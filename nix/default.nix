@@ -19,6 +19,7 @@ plugins.helpers.simple_plugin
      configure_options = "-with-clang-includedir=${unstablePckgs.llvmPackages_9.clang-unwrapped}";
      preFramaCTests = ''
        echo Configuring Why3 for frama-clang.
+       export HOME=$(mktemp -d)
        why3 config --full-config
      '';
    }
