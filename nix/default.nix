@@ -17,4 +17,8 @@ plugins.helpers.simple_plugin
      deps = [ unstablePckgs.llvmPackages_9.clang-unwrapped unstablePckgs.llvm_9 pkgs.gnused ];
      opamPackages = [ "camlp5" ];
      configure_options = "-with-clang-includedir=${unstablePckgs.llvmPackages_9.clang-unwrapped}";
+     preFramaCTests = ''
+       echo Configuring Why3 for frama-clang.
+       why3 config --full-config
+     '';
    }
