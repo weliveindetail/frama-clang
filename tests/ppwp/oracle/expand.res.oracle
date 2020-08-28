@@ -1,3 +1,4 @@
+# frama-c -wp [...]
 [kernel] Parsing tests/ppwp/expand.cpp (external front-end)
 Now output intermediate result
 [wp] Running WP plugin...

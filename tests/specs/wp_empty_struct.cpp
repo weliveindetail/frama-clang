@@ -1,5 +1,5 @@
 /* run.config
-OPT: -wp -wp-msg-key shell -wp-cache none @CXX@
+OPT: @CXX@ @WP@
 */
 class Point2
 {
