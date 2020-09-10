@@ -23,15 +23,17 @@
 open Logic_ptree
 open Intermediate_format
 
+let toplevel_pred tp_statement = { tp_only_check = false; tp_statement }
+
 let const_valid lexpr_loc pkind t =
   let lexpr_node =
     match pkind with
     | PDataPointer { qualifier = q } ->
       if List.mem Const q then PLvalid_read(None, t) else PLvalid(None,t)
     | PFunctionPointer _ | PStandardMethodPointer _ | PVirtualMethodPointer _
-      -> PLvalid_function(t) 
+      -> PLvalid_function(t)
   in
-  { lexpr_node; lexpr_loc }
+  toplevel_pred { lexpr_node; lexpr_loc }
 
 let add_valid_result env typ =
   let loc = Convert_env.get_loc env in
@@ -62,8 +64,10 @@ let add_valid_references env l = List.fold_left (add_valid_reference env) [] l
 let add_valid_this env kind =
   let lexpr_loc = Convert_env.get_loc env in
   let this = { lexpr_node = PLvar "this"; lexpr_loc } in
-  let valid_read = { lexpr_node = PLvalid_read (None, this); lexpr_loc } in
-  let valid = { lexpr_node = PLvalid(None, this); lexpr_loc } in
+  let valid_read =
+    toplevel_pred { lexpr_node = PLvalid_read (None, this); lexpr_loc }
+  in
+  let valid = toplevel_pred { lexpr_node = PLvalid(None, this); lexpr_loc } in
   match kind with
   | FKCastMethodOperator (cv,_) when List.mem Const cv -> [ valid_read ]
   | FKMethod cv when List.mem Const cv -> [ valid_read ]
@@ -79,12 +83,15 @@ let add_separated_arg env acc arg =
             (name,ts) (Extlib.the (Convert_env.get_current_class env))
         ->
         let lexpr_loc = Cil_datatype.Location.of_lexing_loc arg.arg_loc in
-        { lexpr_node =
-            PLseparated(
-              [ { lexpr_node = PLvar "this"; lexpr_loc };
-                { lexpr_node = PLvar arg.arg_name; lexpr_loc } ]);
-          lexpr_loc }
-        :: acc
+        let p =
+          { lexpr_node =
+              PLseparated(
+                [ { lexpr_node = PLvar "this"; lexpr_loc };
+                  { lexpr_node = PLvar arg.arg_name; lexpr_loc } ]);
+            lexpr_loc }
+        in
+        let pred = toplevel_pred p in
+        pred :: acc
       | Named (name,_), _ when Cxx_utils.is_builtin_qual_type name -> acc
       | Named (name,_), _
         -> check_class (Convert_env.get_typedef env name).plain_type

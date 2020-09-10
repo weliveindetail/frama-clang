@@ -593,6 +593,11 @@ let convert_assigns env = function
   | Intermediate_format.Writes l ->
       Logic_ptree.Writes (List.map (convert_from env) l)
 
+let convert_pred_tp env p =
+  (* TODO: support check in ACSL++. *)
+  let tp_statement = convert_pred_named env p in
+  { tp_only_check = false; tp_statement }
+
 let convert_termination_kind = function
   | Intermediate_format.Normal -> Cil_types.Normal
   | Intermediate_format.Exits -> Cil_types.Exits
@@ -601,11 +606,11 @@ let convert_termination_kind = function
   | Intermediate_format.Returns -> Cil_types.Returns
 
 let convert_post_cond env p =
-  convert_termination_kind p.tkind, convert_pred_named env p.pred
+  convert_termination_kind p.tkind, convert_pred_tp env p.pred
 
 let convert_behavior env bhv =
   let b_name = bhv.beh_name in
-  let b_requires = List.map (convert_pred_named env) bhv.requires in
+  let b_requires = List.map (convert_pred_tp env) bhv.requires in
   let b_assumes = List.map (convert_pred_named env) bhv.assumes in
   let b_post_cond = List.map (convert_post_cond env) bhv.post_cond in
   let b_assigns = convert_assigns env bhv.assignements in
@@ -664,11 +669,11 @@ let convert_pragma env = function
 
 let convert_code_annot env = function
   | Intermediate_format.Assert(bhvs,pred) ->
-    AAssert(bhvs, Assert, convert_pred_named env pred)
+    AAssert(bhvs, convert_pred_tp env pred)
   | StmtSpec(bhvs,spec) -> AStmtSpec(bhvs,convert_function_contract env spec)
   | Invariant(bhvs,kind,inv) ->
     let kind = convert_inv_kind kind in
-    let inv = convert_pred_named env inv in
+    let inv = convert_pred_tp env inv in
     AInvariant(bhvs,kind,inv)
   | Variant v -> AVariant (convert_variant env v)
   | Assigns (bhvs,a) -> AAssigns(bhvs,convert_assigns env a)
@@ -761,7 +766,7 @@ let rec convert_annot env annot =
       | Dlemma(loc,name,is_axiom,labs,params,body) ->
         let env = Convert_env.set_loc env loc in
         let labs = List.map convert_logic_label labs in
-        let body = convert_pred_named env body in
+        let body = convert_pred_tp env body in
         LDlemma(name,is_axiom,labs,params,body), env
       | Dinvariant(loc,body) ->
         let env = Convert_env.set_loc env loc in
