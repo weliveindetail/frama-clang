@@ -1735,6 +1735,18 @@ time_t time(time_t *timer);
 
 char __fc_ctime[26];
 char * const __fc_p_ctime = __fc_ctime;
+/*@ requires valid_timeptr: \valid_read(timeptr);
+    requires init_timeptr: initialization: \initialized(timeptr);
+    ensures result_points_to_ctime: \result ≡ __fc_p_ctime;
+    ensures result_valid_string: valid_read_string(__fc_p_ctime);
+    assigns __fc_ctime[0 .. 25], \result;
+    assigns __fc_ctime[0 .. 25]
+      \from (indirect: *timeptr), (indirect: __fc_time);
+    assigns \result
+      \from (indirect: *timeptr), (indirect: __fc_time), __fc_p_ctime;
+ */
+char *asctime(struct tm const *timeptr);
+
 /*@ requires valid_timer: \valid_read(timer);
     requires init_timer: initialization: \initialized(timer);
     ensures result_points_to_ctime: \result ≡ __fc_p_ctime;
