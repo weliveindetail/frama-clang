@@ -15,7 +15,7 @@ plugins.helpers.simple_plugin
    { inherit pkgs stdenv src opam2nix ocaml_version plugins;
      name = "frama-clang";
      deps = [ unstablePckgs.llvmPackages_9.clang-unwrapped unstablePckgs.llvm_9 pkgs.gnused ];
-     opamPackages = [ "camlp5" { name = "alt-ergo"; constraint = "=2.3.1"; } ];
+     opamPackages = [ "camlp5" ];
      preFramaCTests = ''
        echo CONFIGURING Why3 for Frama_Clang.
        export HOME=$(mktemp -d)
