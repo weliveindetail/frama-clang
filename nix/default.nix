@@ -19,6 +19,6 @@ plugins.helpers.simple_plugin
      preFramaCTests = ''
        echo CONFIGURING Why3 for Frama_Clang.
        export HOME=$(mktemp -d)
-       why3 config --full-config
+       why3 config --detect
      '';
    }
