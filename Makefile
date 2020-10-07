@@ -45,6 +45,7 @@ PLUGIN_GENERATED:= \
 else
 PLUGIN_GENERATED:=
 endif
+PLUGIN_DEPENDENCIES:= wp
 ifeq ("$(RUN_TESTS)","yes")
 PLUGIN_TESTS_DIRS:=basic stl class val_analysis template specs exn pp ppwp bugs da
 else

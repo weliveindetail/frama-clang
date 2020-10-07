@@ -37,6 +37,7 @@ check_plugin([frama_clang],PLUGIN_RELATIVE_PATH(plugin_file),
              [C++ front-end for Frama-C],yes)
 
 plugin_require_external(frama_clang,camlp5o)
+plugin_use(frama_clang,wp)
 
 # check for system C++ compiler, as we can't rely on clang++ itself because
 # of potential incompatibilities with GNU libstdc++ v5.

@@ -176,6 +176,10 @@ let parse_cxx file =
 
 let cxx_suffixes = [ ".cpp"; ".C"; ".cxx"; ".c++"; ".cc"; ".ii" ]
 
+let remove_wp_assigns_warning () =
+  Wp.Wp_parameters.set_warn_status Wp.AssignsCompleteness.wkey_pedantic Log.Winactive
+
 let () =
+  remove_wp_assigns_warning () ;
   List.iter
     (fun suf -> File.new_file_type suf parse_cxx) cxx_suffixes
