@@ -5,8 +5,8 @@ let
     src = builtins.fetchGit {
             "url" = "https://bobot:${password}@git.frama-c.com/frama-c/Frama-CI.git";
             "name" = "Frama-CI";
-            "rev" = "ecd0aa7dc29f0d715b379af6894099091da27212";
-            "ref" = "update-opam-repo";
+            "rev" = "01d423ae0e14b2d0d41e952d261aa859b2a3855e";
+            "ref" = "master";
     };
  in
  {
