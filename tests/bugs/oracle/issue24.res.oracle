@@ -4,11 +4,11 @@ Now output intermediate result
 [wp] Running WP plugin...
 [wp] Warning: Missing RTE guards
 [wp] 6 goals scheduled
+[wp] [Alt-Ergo] Goal typed_Z1m_assert : Valid
+[wp] [Alt-Ergo] Goal typed_Z1m_assert_2 : Valid
+[wp] [Alt-Ergo] Goal typed_Z1m_assert_3 : Valid
 [wp] [Qed] Goal typed_Z1m_assert_4 : Valid
 [wp] [Qed] Goal typed_Z1m_assert_5 : Valid
-[wp] [Alt-Ergo] Goal typed_Z1m_assert_3 : Valid
-[wp] [Alt-Ergo] Goal typed_Z1m_assert_2 : Valid
-[wp] [Alt-Ergo] Goal typed_Z1m_assert : Valid
 [wp] [Alt-Ergo] Goal typed_Z1m_assert_6 : Valid
 [wp] Proved goals:    6 / 6
   Qed:             2 

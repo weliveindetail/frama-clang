@@ -1,6 +1,6 @@
 FILEREG:.*\.\(cc\|cpp\|ii\)$
 MACRO: CXX -cxx-c++stdlib-path share/libc++ -cxx-clang-command="bin/framaCIRGen"
 MACRO: EVA -eva -eva-msg-key=-summary
-MACRO: WP -wp -wp-session tests/wp-cache -wp-cache update -wp-msg-key shell
+MACRO: WP -wp -wp-par 1 -wp-session tests/wp-cache -wp-cache update -wp-msg-key shell
 OPT:-print -check @CXX@
 FILTER:/bin/sed  -e "s|${FRAMAC_SHARE}|FRAMAC_SHARE|g" -e "s|$(pwd)/||g"
