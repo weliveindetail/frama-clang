@@ -62,7 +62,7 @@ int main(void)
   x = 43;
   ;
   tmp = Sm_get();
-  printf_va_1("MARK %d %d\n",tmp,cache);
+  printf("MARK %d %d\n",tmp,cache); /* printf_va_1 */
   __retres = 0;
   return __retres;
 }
