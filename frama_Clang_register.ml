@@ -179,7 +179,10 @@ let parse_cxx file =
   Convert.remove_unneeded cil;
   (cil, cabs)
 
-let cxx_suffixes = [ ".cpp"; ".C"; ".cxx"; ".c++"; ".cc"; ".ii" ]
+let cxx_suffixes =
+  [ ".cpp"; ".C"; ".cxx"; ".c++"; ".cc"; ".ii";
+    ".hpp"; ".H"; ".hxx"; ".h++"; ".hh"
+  ]
 
 let remove_wp_assigns_warning () =
   Wp.Wp_parameters.set_warn_status Wp.AssignsCompleteness.wkey_pedantic Log.Winactive
