@@ -594,9 +594,9 @@ let convert_assigns env = function
       Logic_ptree.Writes (List.map (convert_from env) l)
 
 let convert_pred_tp env p =
-  (* TODO: support check in ACSL++. *)
+  (* TODO: support check and admit in ACSL++. *)
   let tp_statement = convert_pred_named env p in
-  { tp_only_check = false; tp_statement }
+  { tp_kind = Assert; tp_statement }
 
 let convert_termination_kind = function
   | Intermediate_format.Normal -> Cil_types.Normal

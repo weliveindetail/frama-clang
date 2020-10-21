@@ -23,7 +23,7 @@
 open Logic_ptree
 open Intermediate_format
 
-let toplevel_pred tp_statement = { tp_only_check = false; tp_statement }
+let toplevel_pred tp_statement = { tp_kind = Assert; tp_statement }
 
 let const_valid lexpr_loc pkind t =
   let lexpr_node =
