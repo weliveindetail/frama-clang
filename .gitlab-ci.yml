@@ -4,7 +4,7 @@ stages:
 
 variables:
     CURRENT: $CI_COMMIT_REF_NAME
-    DEFAULT: "stable/titanium"
+    DEFAULT: "master"
     OCAML: "4_08"
     FRAMA_CI_OPT: "--override frama-clang:$CI_COMMIT_REF_NAME,$CI_COMMIT_SHA"
 
