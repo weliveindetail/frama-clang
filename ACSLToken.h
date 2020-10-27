@@ -28,7 +28,7 @@
 #ifndef ACSL_TokenH
 
 #include "DescentParse.h"
-#include <tr1/unordered_map>
+#include <unordered_map>
 #include <sstream>
 
 /** @file */
@@ -258,7 +258,7 @@ class KeywordToken : public AbstractToken {
         TEnd
     };
 
-  typedef std::tr1::unordered_map<std::string, Type> Map;
+  typedef std::unordered_map<std::string, Type> Map;
   typedef std::pair<std::string, KeywordToken::Type> Connection;
 
   static Connection mapUnicode[];
@@ -559,7 +559,7 @@ public:
 
   virtual std::string text() const;
 
-  typedef std::tr1::unordered_map<std::string, Type> Map;
+  typedef std::unordered_map<std::string, Type> Map;
   typedef std::pair<std::string, OperatorPunctuatorToken::Type> Connection;
 
   static Connection mapUnicode[];

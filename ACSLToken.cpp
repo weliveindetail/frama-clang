@@ -134,7 +134,7 @@ KeywordToken::mapUnicode[] = {
 
 };
 
-std::tr1::unordered_map<std::string, KeywordToken::Type>
+std::unordered_map<std::string, KeywordToken::Type>
 KeywordToken::_unicodeKeywords(
     mapUnicode,
     mapUnicode + sizeof(mapUnicode) / sizeof(mapUnicode[0]));
@@ -238,7 +238,7 @@ KeywordToken::mapUnprotected[] = {
   std::make_pair("allocates", TAllocates)
 };
 
-std::tr1::unordered_map<std::string, KeywordToken::Type>
+std::unordered_map<std::string, KeywordToken::Type>
 KeywordToken::_unprotectedKeywords(
   mapUnprotected,
   mapUnprotected + sizeof(mapUnprotected) / sizeof(mapUnprotected[0]));
@@ -429,13 +429,13 @@ KeywordToken::mapProtected[] = {
   };
 */
 
-std::tr1::unordered_map<std::string, KeywordToken::Type>
+std::unordered_map<std::string, KeywordToken::Type>
 KeywordToken::_protectedKeywords(
   mapProtected,
   mapProtected + sizeof(mapProtected) / sizeof(mapProtected[0]));
 
 /*
-std::tr1::unordered_map<std::string, KeywordToken::Type>
+std::unordered_map<std::string, KeywordToken::Type>
 KeywordToken::_protectedKeywords =
   { { "forall", TForall },
     { "exists", TLExists },
