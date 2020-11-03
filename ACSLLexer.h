@@ -380,7 +380,6 @@ protected:
    void lexUsingClang(const clang::Sema* _sema, const std::string& input, clang::SourceLocation loc, std::list<clang::Token>& clangTokens);
 
 private:
-
    Lexer(const Lexer& source) = delete;
 
 public:

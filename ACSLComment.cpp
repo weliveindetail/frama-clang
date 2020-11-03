@@ -35,7 +35,7 @@
 #include <string>
 
 bool
-ACSLComment::checkAnnotation(const std::string& text, clang::SourceLocation clangLocation, const clang::Sema* sema, std::string& revised) {
+ACSLComment::checkAnnotation(const std::string& text, clang::SourceLocation clangLocation, const clang::Sema* sema, std::string& revised) const {
 
   Acsl::Lexer lexer(sema);
   // We check the preprocessing directives by using builtin lexing (that is, not clang),
@@ -65,7 +65,7 @@ ACSLComment::checkAnnotation(const std::string& text, clang::SourceLocation clan
 }
 
 ACSLComment::Kind
-ACSLComment::getAnnotationKind(const std::string& text, clang::SourceLocation clangLocation, const clang::Sema* sema) {
+ACSLComment::getAnnotationKind(const std::string& text, clang::SourceLocation clangLocation, const clang::Sema* sema) const {
 
   const char* start = text.c_str();
   size_t length = text.size();
@@ -88,7 +88,7 @@ ACSLComment::getAnnotationKind(const std::string& text, clang::SourceLocation cl
     return KUndefined;
   }
 
-  Acsl::DLexer::KeywordToken key = (Acsl::DLexer::KeywordToken&)t;
+  Acsl::DLexer::KeywordToken key = (const Acsl::DLexer::KeywordToken&)t;
   Acsl::DLexer::KeywordToken::Type ktype = (Acsl::DLexer::KeywordToken::Type)key.getType();
 
   std::string firstWord;

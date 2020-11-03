@@ -805,7 +805,7 @@ const std::string Lexer::getPreprocessorToken(const std::string& buffer, size_t&
   while (isalnum(ch) || ch == '_' ) { // FIXME - also $?
     ch = advanceChar1NoToken(buffer,position,loc);
   }
-  if (p != position) {
+  if ((size_t) p != position) {
     // An identifiers preprocessor token
     const std::string id = std::string(buffer,p,position-p);
     if (!raw) {
@@ -830,7 +830,7 @@ const std::string Lexer::getPreprocessorToken(const std::string& buffer, size_t&
   while (!isalnum(ch) && ch != '_' && !isspace(ch) && ch != '@' && ch != '\0') {
     ch = advanceChar1NoToken(buffer,position,loc);
   }
-  if (position != p) advanceChar1NoToken(buffer,position,loc);
+  if (position != (size_t) p) advanceChar1NoToken(buffer,position,loc);
   return std::string(buffer,p,position-p);
   // FIXME - what about non-printable tokens or illegal tokens
 }
@@ -1998,12 +1998,12 @@ const std::string Lexer::skipToNextPPDirective(const std::string& buffer, size_t
     skipSpace(buffer, position, loc); // Use this routine so lines are properly counted
     ch = buffer[position];
     if (ch == '\0') return ""; // No token found
-    bool atLineStart = n != loc->linenum1;
+    bool atLineStart = (size_t) n != loc->linenum1;
     if (atLineStart && ch == '#') {
       n = loc->linenum1;
       advanceChar1NoToken(buffer,position,loc);
       skipSpace(buffer,position,loc);
-      if (n != loc->linenum1) {
+      if ((size_t) n != loc->linenum1) {
         // FIXME - does not handle lines with only comments after the #
         // Empty directive
         return std::string(" ");
@@ -2311,6 +2311,7 @@ Lexer::convertClangTokenToACSLToken(const clang::Token& source) const {
     case clang::tok::hashhash:
     case clang::tok::hashat:
       notImplemented(source);
+      assert(false);
 
     // C++ Support
     case clang::tok::periodstar:
@@ -2331,6 +2332,7 @@ Lexer::convertClangTokenToACSLToken(const clang::Token& source) const {
     case clang::tok::lesslessless:
     case clang::tok::greatergreatergreater:
       notImplemented(source);
+      assert(false);
 
     // C99 6.4.1: Keywords.  These turn into kw_* tokens.
     case clang::tok::kw_auto:
@@ -2338,6 +2340,7 @@ Lexer::convertClangTokenToACSLToken(const clang::Token& source) const {
           .setType(DLexer::KeywordToken::TAuto));
     case clang::tok::kw_break:
       notImplemented(source);
+      assert(false);
       // return DLexer::Token(DLexer::KeywordToken()
       //     .setType(DLexer::KeywordToken::TBreak));
     case clang::tok::kw_case:
@@ -2351,6 +2354,7 @@ Lexer::convertClangTokenToACSLToken(const clang::Token& source) const {
           .setType(DLexer::KeywordToken::TConst));
     case clang::tok::kw_continue:
       notImplemented(source);
+      assert(false);
       // return DLexer::Token(DLexer::KeywordToken()
       //     .setType(DLexer::KeywordToken::TContinue));
     case clang::tok::kw_default:
@@ -2496,18 +2500,22 @@ Lexer::convertClangTokenToACSLToken(const clang::Token& source) const {
           .setType(DLexer::KeywordToken::TFalse));
     case clang::tok::kw_friend:
       notImplemented(source);
+      assert(false);
       // return DLexer::Token(DLexer::KeywordToken()
       //     .setType(DLexer::KeywordToken::TFriend));
     case clang::tok::kw_mutable:
       notImplemented(source);
+      assert(false);
       // return DLexer::Token(DLexer::KeywordToken()
       //     .setType(DLexer::KeywordToken::TMutable));
     case clang::tok::kw_namespace:
       notImplemented(source);
+      assert(false);
       // return DLexer::Token(DLexer::KeywordToken()
       //     .setType(DLexer::KeywordToken::TNamespace));
     case clang::tok::kw_new:
       notImplemented(source);
+      assert(false);
       // return DLexer::Token(DLexer::KeywordToken()
       //     .setType(DLexer::KeywordToken::TNew));
     case clang::tok::kw_operator:
@@ -2515,14 +2523,17 @@ Lexer::convertClangTokenToACSLToken(const clang::Token& source) const {
           .setType(DLexer::KeywordToken::TOperator));
     case clang::tok::kw_private:
       notImplemented(source);
+      assert(false);
       // return DLexer::Token(DLexer::KeywordToken()
       //     .setType(DLexer::KeywordToken::TPrivate));
     case clang::tok::kw_protected:
       notImplemented(source);
+      assert(false);
       // return DLexer::Token(DLexer::KeywordToken()
       //     .setType(DLexer::KeywordToken::TProtected));
     case clang::tok::kw_public:
       notImplemented(source);
+      assert(false);
       // return DLexer::Token(DLexer::KeywordToken()
       //     .setType(DLexer::KeywordToken::TPublic));
     case clang::tok::kw_reinterpret_cast:
@@ -2533,6 +2544,7 @@ Lexer::convertClangTokenToACSLToken(const clang::Token& source) const {
           .setType(DLexer::KeywordToken::TStaticCast));
     case clang::tok::kw_template:
       notImplemented(source);
+      assert(false);
       // return DLexer::Token(DLexer::KeywordToken()
       //     .setType(DLexer::KeywordToken::TTemplate));
     case clang::tok::kw_this:
@@ -2542,6 +2554,7 @@ Lexer::convertClangTokenToACSLToken(const clang::Token& source) const {
       }
     case clang::tok::kw_throw:
       notImplemented(source);
+      assert(false);
       // return DLexer::Token(DLexer::KeywordToken()
       //     .setType(DLexer::KeywordToken::TThrow));
     case clang::tok::kw_true:
@@ -2549,6 +2562,7 @@ Lexer::convertClangTokenToACSLToken(const clang::Token& source) const {
           .setType(DLexer::KeywordToken::TTrue));
     case clang::tok::kw_try:
       notImplemented(source);
+      assert(false);
       // return DLexer::Token(DLexer::KeywordToken()
       //     .setType(DLexer::KeywordToken::TTry));
     case clang::tok::kw_typename:
@@ -2556,10 +2570,12 @@ Lexer::convertClangTokenToACSLToken(const clang::Token& source) const {
           .setType(DLexer::KeywordToken::TTypename));
     case clang::tok::kw_typeid:
       notImplemented(source);
+      assert(false);
       // return DLexer::Token(DLexer::KeywordToken()
       //     .setType(DLexer::KeywordToken::TTypeid));
     case clang::tok::kw_using:
       notImplemented(source);
+      assert(false);
       // return DLexer::Token(DLexer::KeywordToken()
       //     .setType(DLexer::KeywordToken::TUsing));
     case clang::tok::kw_virtual:

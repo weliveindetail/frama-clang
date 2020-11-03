@@ -2874,6 +2874,13 @@ exp_node FramacVisitor::makeExpression(
           expr->dump(llvm::errs(), _context->getSourceManager());
           std::cerr << "\nAborting\n";
           exit(2);
+          // default:
+          //   std::cerr << "Unsupported binary expression:";
+          //   expr->dump(llvm::errs(), _context->getSourceManager());
+          //   std::cerr << "\nAborting\n";
+          //   exit(2);
+          default:
+            break;
         };
         exp_node lhsPart = makeExpression(binaryOperator->getLHS(),
                                           shouldDelay,receiver);
@@ -3323,6 +3330,7 @@ exp_node FramacVisitor::makeExpression(
               _clangUtils->makeType(expr->getExprLoc(), type)),
             expr);
         }
+        assert(false);
       };
     case clang::Stmt::CXXDefaultInitExprClass:
       { assert (llvm::dyn_cast<clang::CXXDefaultInitExpr>(expr));
@@ -3402,6 +3410,7 @@ exp_node FramacVisitor::makeExpression(
             std::cerr <<
             "Unsupported type (record) for default init with braces"
             << std::endl;
+            return NULL;
           default:
             return  guard.setAssignResult(
                       makeExpression(
@@ -3518,6 +3527,8 @@ compilation_constant FramacVisitor::makeConstantExpression(
           std::cerr << "\nAborting\n";
           exit(2);
         }
+      default:
+        break;
     }
   };
   std::cerr << "constant expression cannot be evaluated at compile-time";
@@ -5538,7 +5549,7 @@ LAddSema:
   };
 
   comment.parseStatementAnnotation(*container, clangContext, _context, _sema,
-      scope, _clangUtils, _rttiTable, loc);
+      scope, _clangUtils, _rttiTable);
 
   if (foundBlock) {
     _sema->PopCompoundScope();
@@ -5955,6 +5966,7 @@ void FramacVisitor::readRecordComments(
           //     .getContent());
           break;
         };
+        break;
       default:
         parseDefaultComment(*_annotationCommentList[previousTemplateComment]);
         break;
@@ -5984,6 +5996,7 @@ void FramacVisitor::readRecordComments(
           //     .getContent());
           break;
         };
+        break;
       default:
         parseDefaultComment(*_annotationCommentList[previousComment]);
         break;

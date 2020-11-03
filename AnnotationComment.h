@@ -149,7 +149,7 @@ public:
   virtual void parseStatementAnnotation(ForwardReferenceList& codeContainer,
     const clang::DeclContext* clangContext, clang::ASTContext* astContext,
     clang::Sema* sema, clang::Scope* scope, Clang_utils* clangUtils,
-    const RTTITable& rttiTable, location loc) {assert(0);}
+    const RTTITable& rttiTable) {assert(0);}
   virtual void parseFunctionContract(option& /* function_contract */ contract,
     const clang::DeclContext* clangContext, clang::ASTContext* astContext,
     clang::Sema* sema, clang::Scope* scope, Clang_utils* clangUtils,

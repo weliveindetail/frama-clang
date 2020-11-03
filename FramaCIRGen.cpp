@@ -192,19 +192,18 @@ ProcessArguments::process(char** argument, int& currentArgument) {
         else {
           currentArgument--;
           _doesGenerateBareFunctions=true;
-          return true;
         }
+        return true;
       case '-':
         if (strcmp(argument[0],"--stop-annot-error")==0) {
           _doesStopAnnotError=true;
           --currentArgument;
-          return true;
         }
-        if (strcmp(argument[0],"--gen-impl-meth")==0) {
+        else if (strcmp(argument[0],"--gen-impl-meth")==0) {
           _doesGenerateImplicitMethods=true;
           --currentArgument;
-          return true;
         }
+        return true;
       default:
         --currentArgument;
         return true;

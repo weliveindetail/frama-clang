@@ -804,6 +804,8 @@ LAfterQualification:
           };
         };
       };
+      DefineAddError("expecting a '{' after 'axiomatic id '")
+      DefineGotoCaseAndParse(BeforeSemiColon)
    DefineParseCase(AfterAxiomaticBody)
      { AbstractToken token = arguments.queryToken();
        if (token.getType() == AbstractToken::TOperatorPunctuator) {
@@ -968,6 +970,7 @@ LAfterQualification:
           }
         };
         DefineAddError("expecting assignment '=' after 'logic type-var'")
+        DefineGotoCaseAndParse(BeforeSemiColon)
       };
     DefineParseCase(TypeDef)
       { Parser::State::RuleAccess::TCastFromRule<LogicType>
@@ -1149,6 +1152,7 @@ LAfterQualification:
       DefineGotoCase(EndTypeInvariant)
     DefineParseCase(Inductive)
       DefineAddError("unimplemented case")
+      DefineGotoCaseAndParse(BeforeSemiColon)
 
     DefineParseCase(Global)
       { AbstractToken token = arguments.queryToken();

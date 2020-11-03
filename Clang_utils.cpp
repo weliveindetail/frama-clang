@@ -182,6 +182,8 @@ compare_typ(typ t1, typ t2) {
           }
         }
         break;
+      default:
+        break;
     }
   };
   return result;

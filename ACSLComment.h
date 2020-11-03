@@ -58,9 +58,9 @@ public:
     : AnnotationComment(source), _startOfGhost(source._startOfGhost) {}
 
   /*! checks annotation for improper use of preprocessor directives, returns true if errors found */
-  virtual bool checkAnnotation(const std::string& text, clang::SourceLocation clangLocation, const clang::Sema* sema, std::string& revised) ;
+  virtual bool checkAnnotation(const std::string& text, clang::SourceLocation clangLocation, const clang::Sema* sema, std::string& revised) const;
 
-  virtual Kind getAnnotationKind(const std::string& text, clang::SourceLocation clangLocation, const clang::Sema* sema) ;
+  virtual Kind getAnnotationKind(const std::string& text, clang::SourceLocation clangLocation, const clang::Sema* sema) const;
 
   virtual void parseGlobal(ForwardReferenceList& globals,
     ForwardReferenceList* classContent, const clang::DeclContext* clangContext,
