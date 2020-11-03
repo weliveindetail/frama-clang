@@ -3712,7 +3712,11 @@ statement FramacVisitor::makeExprWithCleanupsStmt(
   forwardStmts.insertContainer(body);
   forwardStmts.advanceToEnd();
   for (unsigned declIndex = 0; declIndex < numDecls; ++declIndex) {
+#if CLANG_VERSION_MAJOR >= 11
+    clang::BlockDecl* decl = cleanups->getObject(declIndex).get<clang::BlockDecl*>();
+#else
     clang::BlockDecl* decl = cleanups->getObject(declIndex);
+#endif
     statement body = makeStmt(decl->getBody(), &forwardStmts, context,
         shouldDelay);
     forwardStmts.insertContainer(body);
@@ -3734,7 +3738,11 @@ void FramacVisitor::makeCleanupsStmts(
     const clang::ExprWithCleanups& cleanup = **iter;
     unsigned numDecls = cleanup.getNumObjects();
     for (unsigned declIndex = 0; declIndex < numDecls; ++declIndex) {
+#if CLANG_VERSION_MAJOR >= 11
+      clang::BlockDecl* decl = cleanup.getObject(declIndex).get<clang::BlockDecl*>();
+#else
       clang::BlockDecl* decl = cleanup.getObject(declIndex);
+#endif
       statement body = makeStmt(decl->getBody(), &forwardStmts, context,
           shouldDelay);
       forwardStmts.insertContainer(body);
@@ -3756,7 +3764,11 @@ void FramacVisitor::makeCleanupsStmts(
     const clang::ExprWithCleanups& cleanup = **iter;
     unsigned numDecls = cleanup.getNumObjects();
     for (unsigned declIndex = 0; declIndex < numDecls; ++declIndex) {
+#if CLANG_VERSION_MAJOR >= 11
+      clang::BlockDecl* decl = cleanup.getObject(declIndex).get<clang::BlockDecl*>();
+#else
       clang::BlockDecl* decl = cleanup.getObject(declIndex);
+#endif
       statement body = makeStmt(decl->getBody(), &forwardStmts, context,
           shouldDelay);
       forwardStmts.insertContainer(body);
@@ -3780,7 +3792,11 @@ void FramacVisitor::makeCleanupsStmts(
     const clang::ExprWithCleanups& cleanup = **iter;
     unsigned numDecls = cleanup.getNumObjects();
     for (unsigned declIndex = 0; declIndex < numDecls; ++declIndex) {
+#if CLANG_VERSION_MAJOR >= 11
+      clang::BlockDecl* decl = cleanup.getObject(declIndex).get<clang::BlockDecl*>();
+#else
       clang::BlockDecl* decl = cleanup.getObject(declIndex);
+#endif
       statement body = makeStmt(decl->getBody(), &forwardStmts, context,
           shouldDelay);
       forwardStmts.insertContainer(body);

@@ -44,6 +44,8 @@
 #include "clang/AST/ASTContext.h"
 #include "clang/AST/DeclCXX.h"
 #include "clang/AST/DeclTemplate.h"
+#include "clang/Basic/SourceManager.h"
+#include "clang/Basic/FileManager.h"
 #ifdef __GNUC__
 #pragma GCC diagnostic pop
 #endif

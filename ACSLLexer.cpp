@@ -2088,8 +2088,7 @@ Lexer::convertClangTokenToACSLToken(const clang::Token& source) const {
       };
     case clang::tok::raw_identifier:      // Used only in raw lexing mode.
       { DLexer::IdentifierToken* result = new DLexer::IdentifierToken;
-        result->content() =
-          std::string(source.getRawIdentifier(), source.getLength());
+        result->content() = source.getRawIdentifier().str();
         return DLexer::Token(result);
       };
 
@@ -2102,7 +2101,7 @@ Lexer::convertClangTokenToACSLToken(const clang::Token& source) const {
         spellingBuffer.resize(source.getLength() + 1);
         bool isInvalid = false;
         std::string tokSpelling = _clangSema->getPreprocessor()
-          .getSpelling(source, spellingBuffer, &isInvalid);
+          .getSpelling(source, spellingBuffer, &isInvalid).str();
         if (isInvalid)
           return DLexer::Token();
 
@@ -2126,7 +2125,7 @@ Lexer::convertClangTokenToACSLToken(const clang::Token& source) const {
       { llvm::SmallString<16> charBuffer;
         bool isInvalid = false;
         std::string thisTok = _clangSema->getPreprocessor().getSpelling(source,
-            charBuffer, &isInvalid);
+            charBuffer, &isInvalid).str();
         if (isInvalid)
           return DLexer::Token();
         ReadResult readResult;
