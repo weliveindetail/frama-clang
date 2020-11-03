@@ -935,8 +935,8 @@ LogicType::readToken(Parser::State& state, Parser::Arguments& arguments) {
                 }
                 _seenSigned = true;
                 arguments.extendLocationWithToken(_loc);
-                DefineGotoCase(CTypeSuffix)
               }
+              DefineGotoCase(CTypeSuffix)
             }
             case KeywordToken::TLong: {
               if (_typeResult->tag_logic_type == LFLOAT) {
@@ -974,8 +974,8 @@ LogicType::readToken(Parser::State& state, Parser::Arguments& arguments) {
                       "unexpected 'long' type specification")
                 }
                 arguments.extendLocationWithToken(_loc);
-                DefineGotoCase(CTypeSuffix)
               }
+              DefineGotoCase(CTypeSuffix)
             }
             case KeywordToken::TShort: {
               // can only be mixed with signed, unsigned, and int

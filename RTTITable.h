@@ -78,6 +78,13 @@ private:
         : _method(source._method), _inheritancePath(source._inheritancePath),
           _virtualInheritancePath(source._virtualInheritancePath),
           _parentInheritancePath(source._parentInheritancePath) {}
+      VirtualMethodInfo& operator=(const VirtualMethodInfo& source)
+        { _method = source._method;
+          _inheritancePath = source._inheritancePath;
+          _virtualInheritancePath = source._virtualInheritancePath;
+          _parentInheritancePath = source._parentInheritancePath;
+          return *this;
+        }
 
       bool isValid() const
         { return _method

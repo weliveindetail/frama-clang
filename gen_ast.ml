@@ -703,6 +703,15 @@ let generate_c_constructor fmt ast =
   pretty_list ~pre:"@[<v 0>" ~sep:"@;@;" ~suf:"@;@;@]"
     generate_constructor fmt ast
 
+let has_free_access_content t =
+  match t with
+    | Bool | Int | Int64 -> false
+    | Location -> true
+    | String -> false
+    | Node _ -> true
+    | Option _ -> true
+    | List _ -> true
+
 let rec generate_free_call obj fmt t =
   match t with
     | Bool | Int | Int64 -> ()
@@ -728,12 +737,18 @@ let rec generate_free_call obj fmt t =
 and destruct_ptr_or_int obj fmt t =
   if not (is_base_type t) then begin
     let content fmt = Format.pp_print_string fmt "content" in
-    Format.fprintf fmt
-      "%a content = (%a)%t.container;@;%a"
-      print_c_type t
-      print_c_type t
-      obj
-      (generate_free_call content) t
+    if (has_free_access_content t)
+    then
+      Format.fprintf fmt
+        "%a content = (%a)%t.container;@;%a"
+        print_c_type t
+        print_c_type t
+        obj
+        (generate_free_call content) t
+    else
+      Format.fprintf fmt
+        "%a"
+        (generate_free_call content) t
   end
  
 

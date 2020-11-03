@@ -130,6 +130,10 @@ protected:
 public:
   AbstractToken(Type type) {}
   AbstractToken(const AbstractToken& source) : FormatParameters(source) {}
+  AbstractToken& operator=(const AbstractToken& source)
+    { FormatParameters::operator=(source);
+      return *this;
+    }
   virtual ~AbstractToken() {}
   virtual AbstractToken* clone() const { return _clone(); }
 

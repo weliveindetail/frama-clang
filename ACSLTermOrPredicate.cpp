@@ -6133,8 +6133,8 @@ TermOrPredicate::readToken(Parser::State& state, Parser::Arguments& arguments) {
                   arguments.extendLocationWithToken(_loc);
                   if (_doesStopTypeAmbiguity)
                     DefineTReduce;
-                  DefineGotoCase(AfterPrimary)
                 }
+                break;
               case KeywordToken::TAt:
                 if (excludeTypeAsResult()) {
                   _startLocation = arguments.newTokenLocation();

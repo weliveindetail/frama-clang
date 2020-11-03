@@ -158,7 +158,7 @@ public:
     { assert(0); return KUndefined; }
 
   //! checks annotation for improper use of preprocessor direcctives, returns true if errors found
-  virtual bool checkAnnotation(const std::string& text, clang::SourceLocation clangLocation, const clang::Sema* sema) const {
+  virtual bool checkAnnotation(const std::string& text, clang::SourceLocation clangLocation, const clang::Sema* sema, std::string& revised) const {
     return true;
   }
 }; 

@@ -824,6 +824,11 @@ public:
   ForwardReferenceList() : _front(NULL), _back(NULL) {}
   ForwardReferenceList(const ForwardReferenceList& source)
     : _front(source._front), _back(source._back) {}
+  ForwardReferenceList& operator=(const ForwardReferenceList& source)
+    { _front = source._front;
+      _back = source._back;
+      return *this;
+    }
   ForwardReferenceList(list& alist) : _front(&alist), _back(alist)
     { while (_back && _back->next) _back = _back->next; }
 
@@ -905,6 +910,11 @@ public:
     : ForwardReferenceList(source), _beforeBack(NULL) {}
   ForwardDoubleReferenceList(list& alist) : ForwardReferenceList(alist),
       _beforeBack(NULL) {}
+  ForwardDoubleReferenceList& operator=(const ForwardDoubleReferenceList& source)
+    { ForwardReferenceList::operator=(source);
+      _beforeBack = NULL;
+      return *this;
+    }
 
   void clear()
     { ForwardReferenceList::clear();
@@ -960,6 +970,11 @@ public:
   ForwardList() : _front(NULL), _back(NULL) {}
   ForwardList(const ForwardList& source)
     : _front(source._front), _back(source._back) {}
+  ForwardList& operator=(const ForwardList& source)
+    { _front = source._front;
+      _back = source._back;
+      return *this;
+    }
   bool isValid() const { return (!_front ? !_back : (_back && !_back->next)); }
   ForwardList& insertPlain(long value)
     { if (_back) {
