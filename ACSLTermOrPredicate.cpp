@@ -6133,6 +6133,7 @@ TermOrPredicate::readToken(Parser::State& state, Parser::Arguments& arguments) {
                   arguments.extendLocationWithToken(_loc);
                   if (_doesStopTypeAmbiguity)
                     DefineTReduce;
+                  DefineGotoCase(AfterPrimary)
                 }
                 break;
               case KeywordToken::TAt:
@@ -8222,7 +8223,7 @@ TermOrPredicate::readToken(Parser::State& state, Parser::Arguments& arguments) {
           DefineShift(EndSizeOf, *subTerm, &TermOrPredicate::readToken);
         }
       };
-      DefineGotoCase(EndSizeOf)
+      DefineGotoCaseAndParse(EndSizeOf)
     DefineParseCase(EndSizeOf)
       assert(_startLocation);
       { AbstractToken token = arguments.queryToken();
@@ -9261,7 +9262,7 @@ TermOrPredicate::Binders::readToken(Parser::State& state,
         _currentDeclType = rule->extractType();
         state.freeRuleResult();
       };
-      DefineReduceAndParse
+      DefineGotoCaseAndParse(TypeModifier)
     // We'll recurse to check for multiple '*', but we only have to extract
     // the specifier once. AfterType thus falls through 
     // the main part of the rule which starts here.
@@ -9806,7 +9807,7 @@ TermOrPredicate::WithConstruct::readToken(Parser::State& state,
         _node = term_cons(term_node_TUpdate(_node, offset, updateNode),
             loc, NULL);
       };
-      DefineGotoCase(End)
+      DefineGotoCaseAndParse(End)
     DefineParseCase(End)
       { AbstractToken token = arguments.queryToken();
         if (token.getType() == AbstractToken::TOperatorPunctuator) {
