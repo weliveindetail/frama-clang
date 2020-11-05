@@ -1216,7 +1216,7 @@ size_t strcspn(char const *s, char const *reject);
 /*@ requires valid_string_s: valid_read_string(s);
     requires valid_string_accept: valid_read_string(accept);
     ensures result_bounded: 0 ≤ \result ≤ strlen(\old(s));
-    assigns \result, \result;
+    assigns \result;
     assigns \result \from *(s + (0 ..)), *(accept + (0 ..));
     assigns \result
       \from (indirect: *(s + (0 ..))), (indirect: *(accept + (0 ..)));
