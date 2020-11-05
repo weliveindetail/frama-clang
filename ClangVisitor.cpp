@@ -2874,13 +2874,11 @@ exp_node FramacVisitor::makeExpression(
           expr->dump(llvm::errs(), _context->getSourceManager());
           std::cerr << "\nAborting\n";
           exit(2);
-          // default:
-          //   std::cerr << "Unsupported binary expression:";
-          //   expr->dump(llvm::errs(), _context->getSourceManager());
-          //   std::cerr << "\nAborting\n";
-          //   exit(2);
           default:
-            break;
+            std::cerr << "Unsupported binary expression:";
+            expr->dump(llvm::errs(), _context->getSourceManager());
+            std::cerr << "\nAborting\n";
+            exit(2);
         };
         exp_node lhsPart = makeExpression(binaryOperator->getLHS(),
                                           shouldDelay,receiver);

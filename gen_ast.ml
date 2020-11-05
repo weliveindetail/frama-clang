@@ -746,11 +746,11 @@ and destruct_ptr_or_int obj fmt t =
         obj
         (generate_free_call content) t
     else
+      (* Avoid generating an unused local variable. *)
       Format.fprintf fmt
         "%a"
         (generate_free_call content) t
   end
- 
 
 let generate_destructor_body obj fmt (name,typ) =
   let obj fmt = Format.fprintf fmt "%t.%s" obj name in

@@ -49,8 +49,6 @@
 #ifdef __GNUC__
 #pragma GCC diagnostic pop
 #endif
-#include "clang/Basic/SourceManager.h"
-#include "clang/Basic/FileManager.h"
 
 extern "C" {
 #include "intermediate_format.h"
