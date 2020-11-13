@@ -488,7 +488,11 @@ FramacVisitor::makeInitExpr(
       clang::InitListExpr::const_iterator field_end = init_list->end();
       if (field_init+1 != field_end) {
         std::cerr << "More than one initializer for an union.\n";
+#if CLANG_VERSION_MAJOR >= 11
+        init->dump(llvm::errs(), *_context);
+#else
         init->dump(llvm::errs(), _context->getSourceManager());
+#endif
         std::cerr << "Aborting\n";
         exit(2);
       };
@@ -1903,7 +1907,11 @@ exp_node FramacVisitor::makeCastExpression(
     case clang::CK_CopyAndAutoreleaseBlockObject:
     case clang::CK_BuiltinFnToFnPtr:
       std::cerr << "Unsupported cast:";
+#if CLANG_VERSION_MAJOR >= 11
+      castExpr->dump(llvm::errs(), *_context);
+#else
       castExpr->dump(llvm::errs(), _context->getSourceManager());
+#endif
       std::cerr << "\nAborting\n";
       exit(2);
     case clang::CK_FloatingRealToComplex:
@@ -1917,7 +1925,11 @@ exp_node FramacVisitor::makeCastExpression(
     case clang::CK_IntegralComplexCast:
     case clang::CK_IntegralComplexToFloatingComplex:
       std::cerr << "Unsupported context cast:";
+#if CLANG_VERSION_MAJOR >= 11
+      castExpr->dump(llvm::errs(), *_context);
+#else
       castExpr->dump(llvm::errs(), _context->getSourceManager());
+#endif
       std::cerr << "\nAborting\n";
       exit(2);
     case clang::CK_ToVoid:
@@ -2033,7 +2045,11 @@ exp_node FramacVisitor::makeCastExpression(
           castExpr);
     default:
       { std::cerr << "Unsupported context cast:";
+#if CLANG_VERSION_MAJOR >= 11
+        castExpr->dump(llvm::errs(), *_context);
+#else
         castExpr->dump(llvm::errs(), _context->getSourceManager());
+#endif
         std::cerr << "\nAborting\n";
         exit(2);
       };
@@ -2158,7 +2174,11 @@ exp_node FramacVisitor::makeDeclRefExpression(
   clang::Decl::Kind kind = variableExpr->getDecl()->getKind();
   if (kind == clang::Decl::Field) {
     std::cerr << "Unsupported field access:";
+#if CLANG_VERSION_MAJOR >= 11
+    variableExpr->dump(llvm::errs(), *_context);
+#else
     variableExpr->dump(llvm::errs(), _context->getSourceManager());
+#endif
     std::cerr << "\nAborting\n";
     exit(2);
   }
@@ -2274,13 +2294,21 @@ exp_node FramacVisitor::makeDeclRefExpression(
   }
   else if (kind == clang::Decl::IndirectField) {
     std::cerr << "Unsupported indirect field:";
+#if CLANG_VERSION_MAJOR >= 11
+    variableExpr->dump(llvm::errs(), *_context);
+#else
     variableExpr->dump(llvm::errs(), _context->getSourceManager());
+#endif
     std::cerr << "\nAborting\n";
     exit(2);
   }
   else {
     std::cerr << "Unsupported reference expression:";
+#if CLANG_VERSION_MAJOR >= 11
+    variableExpr->dump(llvm::errs(), *_context);
+#else
     variableExpr->dump(llvm::errs(), _context->getSourceManager());
+#endif
     std::cerr << "\nAborting\n";
     exit(2);
   };
@@ -2403,7 +2431,11 @@ exp_node FramacVisitor::makeUnaryOperator(
         shouldDelay, receiver), unaryExpr);
     default:
       std::cerr << "Unsupported unary expressions:";
+#if CLANG_VERSION_MAJOR >= 11
+      unaryExpr->dump(llvm::errs(), *_context);
+#else
       unaryExpr->dump(llvm::errs(), _context->getSourceManager());
+#endif
       std::cerr << "\nAborting\n";
       exit(2);
   };
@@ -2595,7 +2627,11 @@ FramacVisitor::makeImplicitValueInitExpression(
       || typeClass == clang::Type::Record) {
     if (!receiver) {
       std::cerr << "Unsupported initialization:";
+#if CLANG_VERSION_MAJOR >= 11
+      expr->dump(llvm::errs(), *_context);
+#else
       expr->dump(llvm::errs(), _context->getSourceManager());
+#endif
       std::cerr << "\nAborting\n";
       exit(2);
     };
@@ -2620,7 +2656,11 @@ FramacVisitor::makeImplicitValueInitExpression(
       };
     }
     std::cerr << "Unsupported initialization:";
+#if CLANG_VERSION_MAJOR >= 11
+    expr->dump(llvm::errs(), *_context);
+#else
     expr->dump(llvm::errs(), _context->getSourceManager());
+#endif
     std::cerr << "\nAborting\n";
     exit(2);
   };
@@ -2715,7 +2755,11 @@ exp_node FramacVisitor::makeUnaryExprOrTypeTraitExpression(
     kind = TCCALIGNOF;
   else {
     std::cerr << "Unsupported expression:";
+#if CLANG_VERSION_MAJOR >= 11
+    expr->dump(llvm::errs(), *_context);
+#else
     expr->dump(llvm::errs(), _context->getSourceManager());
+#endif
     std::cerr << "\nAborting\n";
     exit(2);
   };
@@ -2871,12 +2915,20 @@ exp_node FramacVisitor::makeExpression(
           case clang::BO_Cmp: // does not seem to be fully supported by clang
             //itself according to https://clang.llvm.org/cxx_status.html#cxx2a
           std::cerr << "Unsupported spaceship (<=>) operator:";
+#if CLANG_VERSION_MAJOR >= 11
+          expr->dump(llvm::errs(), *_context);
+#else
           expr->dump(llvm::errs(), _context->getSourceManager());
+#endif
           std::cerr << "\nAborting\n";
           exit(2);
           default:
             std::cerr << "Unsupported binary expression:";
+#if CLANG_VERSION_MAJOR >= 11
+            expr->dump(llvm::errs(), *_context);
+#else
             expr->dump(llvm::errs(), _context->getSourceManager());
+#endif
             std::cerr << "\nAborting\n";
             exit(2);
         };
@@ -2969,7 +3021,11 @@ exp_node FramacVisitor::makeExpression(
       };
     case clang::Stmt::CXXTypeidExprClass:
       std::cerr << "Unsupported typeid:";
+#if CLANG_VERSION_MAJOR >= 11
+      expr->dump(llvm::errs(), *_context);
+#else
       expr->dump(llvm::errs(), _context->getSourceManager());
+#endif
       std::cerr << "\nAborting\n";
       exit(2);
     case clang::Stmt::CallExprClass:
@@ -3008,7 +3064,11 @@ exp_node FramacVisitor::makeExpression(
             type = IWCHAR;
           else {
             std::cerr << "Unsupported character type:";
+#if CLANG_VERSION_MAJOR >= 11
+            expr->dump(llvm::errs(), *_context);
+#else
             expr->dump(llvm::errs(), _context->getSourceManager());
+#endif
             std::cerr << "\nAborting\n";
             exit(2);
           };
@@ -3261,7 +3321,11 @@ exp_node FramacVisitor::makeExpression(
             break;
           default:
             std::cerr << "Unsupported atomic builtin:";
+#if CLANG_VERSION_MAJOR >= 11
+            expr->dump(llvm::errs(), *_context);
+#else
             expr->dump(llvm::errs(), _context->getSourceManager());
+#endif
             std::cerr << "\nAborting\n";
             exit(2);
         };
@@ -3473,7 +3537,11 @@ exp_node FramacVisitor::makeExpression(
     default: {}
   }
   std::cerr << "Unsupported expression:";
+#if CLANG_VERSION_MAJOR >= 11
+  expr->dump(llvm::errs(), *_context);
+#else
   expr->dump(llvm::errs(), _context->getSourceManager());
+#endif
   std::cerr << "\nAborting\n";
   exit(2);
 }
@@ -3521,6 +3589,7 @@ compilation_constant FramacVisitor::makeConstantExpression(
 #endif
         {
           std::cerr << "unsupported constant expression: ";
+          expr->dump();
           expr->dump();
           std::cerr << "\nAborting\n";
           exit(2);
@@ -4127,7 +4196,11 @@ statement FramacVisitor::makeForStmt(
 
           if (!_cleanups.empty()) {
             std::cerr << "Unsupported statements to clean the expression\n";
+#if CLANG_VERSION_MAJOR >= 11
+            forStmt->dump(llvm::errs(), *_context);
+#else
             forStmt->dump(llvm::errs(), _context->getSourceManager());
+#endif
             std::cerr << "\ncontinue the translation\n";
             _cleanups.clear();
           };
@@ -4148,7 +4221,11 @@ statement FramacVisitor::makeForStmt(
                                            forStmt->getInit()), shouldDelay);
       if (!_cleanups.empty()) {
         std::cerr << "Unsupported statements to clean the expression\n";
+#if CLANG_VERSION_MAJOR >= 11
+        forStmt->dump(llvm::errs(), *_context);
+#else
         forStmt->dump(llvm::errs(), _context->getSourceManager());
+#endif
         std::cerr << "\ncontinue the translation\n";
         _cleanups.clear();
       };
@@ -4164,7 +4241,11 @@ statement FramacVisitor::makeForStmt(
       (expression_cons(makeLocation(forStmt->getCond()->getSourceRange()), condition));
     if (!_cleanups.empty()) {
       std::cerr << "Unsupported statements to clean the expression\n";
+#if CLANG_VERSION_MAJOR >= 11
+      forStmt->dump(llvm::errs(), *_context);
+#else
       forStmt->dump(llvm::errs(), _context->getSourceManager());
+#endif
       std::cerr << "\ncontinue the translation\n";
       _cleanups.clear();
     };
@@ -4797,7 +4878,11 @@ statement FramacVisitor::makeStmt(
     case clang::Stmt::CXXCatchStmtClass:
       assert(false);
       std::cerr << "Unsupported direct catch:\n";
+#if CLANG_VERSION_MAJOR >= 11
+      stmt->dump(llvm::errs(), *_context);
+#else
       stmt->dump(llvm::errs(), _context->getSourceManager());
+#endif
       std::cerr << "\nAborting\n";
       exit(2);
 
@@ -4812,7 +4897,11 @@ statement FramacVisitor::makeStmt(
     case clang::Stmt::MSDependentExistsStmtClass:
     default:
       std::cerr << "Unsupported Statement:\n";
+#if CLANG_VERSION_MAJOR >= 11
+      stmt->dump(llvm::errs(), *_context);
+#else
       stmt->dump(llvm::errs(), _context->getSourceManager());
+#endif
       std::cerr << "\nAborting\n";
       exit(2);
   }
@@ -9083,7 +9172,11 @@ bool FramacVisitor::VisitVarDecl(clang::VarDecl* Decl) {
     init = opt_some_container(makeInitExpr(Decl->getType(), Decl->getInit()));
     if (!_cleanups.empty()) {
       std::cerr << "Unsupported statements to clean the expression\n";
+#if CLANG_VERSION_MAJOR >= 11
+      Decl->getInit()->dump(llvm::errs(), *_context);
+#else
       Decl->getInit()->dump(llvm::errs(), _context->getSourceManager());
+#endif
       std::cerr << "\ncontinue the translation\n";
       _cleanups.clear();
     };
