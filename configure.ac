@@ -92,7 +92,7 @@ case $LLVM_VERSION in
   8.0.*) AC_MSG_RESULT([$LLVM_VERSION: Good]);;
   9.0.*) AC_MSG_RESULT([$LLVM_VERSION: Good]); RUN_TESTS=yes;;
   10.0.*) AC_MSG_RESULT([$LLVM_VERSION: Good]); RUN_TESTS=yes;;
-  11.0.*) AC_MSG_RESULT([$LLVM_VERSION: Good]); RUN_TESTS=yes;;
+  11.0.*) AC_MSG_RESULT([$LLVM_VERSION: Good]);;
   *) plugin_disable(frama_clang,
       [[LLVM Version $LLVM_VERSION is not supported. Please install LLVM 6.0.x, 7.0.x, 8.0.x, 9.0.x, or 10.0.x]]);;
 esac
