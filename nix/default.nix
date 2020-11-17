@@ -11,9 +11,9 @@ let
          sha256 = "0srpsnr5fhn2zp36jx3inj6vrs5n302hh3vv0c7rsc90aq5i27cr";
      }) {};
 in
-plugins.helpers.simple_plugin
+(plugins.helpers.simple_plugin
    { inherit pkgs stdenv src opam2nix ocaml_version plugins;
-     name = "frama-clang";
+     name = "frama-clang-on-llvm-9";
      deps = [ unstablePckgs.llvmPackages_9.clang-unwrapped unstablePckgs.llvm_9 pkgs.gnused ];
      opamPackages = [ "camlp5" ];
      preFramaCTests = ''
@@ -21,4 +21,14 @@ plugins.helpers.simple_plugin
        export HOME=$(mktemp -d)
        why3 config --detect
      '';
-   }
+   }) // { on-llvm10 = (plugins.helpers.simple_plugin
+   { inherit pkgs stdenv src opam2nix ocaml_version plugins;
+     name = "frama-clang-on-llvm-10";
+     deps = [ unstablePckgs.llvmPackages_10.clang-unwrapped unstablePckgs.llvm_10 pkgs.gnused ];
+     opamPackages = [ "camlp5" ];
+     preFramaCTests = ''
+       echo CONFIGURING Why3 for Frama_Clang.
+       export HOME=$(mktemp -d)
+       why3 config --detect
+     '';
+   }); }
