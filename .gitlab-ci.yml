@@ -16,9 +16,16 @@ git-update:
   tags:
    - nix
 
-Tests:
+tests-on-llvm-9:
   stage: tests
   script:
    - nix/frama-ci.sh build -A frama-clang.tests
+  tags:
+   - nix
+
+tests-on-llvm-10:
+  stage: tests
+  script:
+   - nix/frama-ci.sh build -A frama-clang.on-llvm10.tests
   tags:
    - nix
