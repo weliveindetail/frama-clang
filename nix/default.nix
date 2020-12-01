@@ -11,11 +11,15 @@ let
          sha256 = "0srpsnr5fhn2zp36jx3inj6vrs5n302hh3vv0c7rsc90aq5i27cr";
      }) {};
 in
-let frama_clang_build { llvm_version, llvm_package } :
+let frama_clang_build =
+  { llvm_version,
+    llvm?unstablePckgs.${"llvm_"+llvm_version},
+    llvm_package?unstablePckgs.${"llvmPackages_"+llvm_version} } :
+
 (plugins.helpers.simple_plugin
    { inherit pkgs stdenv src opam2nix ocaml_version plugins;
      name = "frama-clang-on-llvm-" + llvm_version;
-     deps = [ llvm_package.clang-unwrapped llvm_package pkgs.gnused ];
+     deps = [ llvm_package.clang-unwrapped llvm pkgs.gnused ];
      opamPackages = [ "camlp5" ];
      preFramaCTests = ''
        echo CONFIGURING Why3 for Frama_Clang.
@@ -24,8 +28,5 @@ let frama_clang_build { llvm_version, llvm_package } :
      '';
    });
 in
-(frama_clang_build { llvm_version="9"; llvm_package = unstablePckgs.llvm_9 })
-//
-{ on-llvm10 =
-    (frama_clang_build
-      { llvm_version="10"; llvm_package = unstablePckgs.llvm_10});}
+(frama_clang_build { llvm_version="9"; })
+// { on-llvm10 = (frama_clang_build { llvm_version="10"; });}
