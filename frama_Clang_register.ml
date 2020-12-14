@@ -139,7 +139,9 @@ let init_cxx_normalization () =
       if not (Kernel.RemoveExn.is_set ()) then Kernel.RemoveExn.on ();
       Convert_link.register_transformation ();
       (* Current implementation of VMT is not compatible with this warning. *)
-      Kernel.set_warn_status Kernel.wkey_incompatible_types_call Log.Winactive
+      Kernel.set_warn_status Kernel.wkey_incompatible_types_call Log.Winactive ;
+      (* C++ allows this *)
+      Cil.set_acceptEmptyCompinfo ()
     end
       
 let parse_cxx file =
