@@ -1,5 +1,5 @@
 /* run.config
-   OPT: @EVA@ -slice-assert ::f -slice-callers -slice-print -journal-disable
+   OPT: @MACHDEP@ @EVA@ -slice-assert ::f -slice-callers -slice-print -journal-disable
 */
 struct A {
   int x;

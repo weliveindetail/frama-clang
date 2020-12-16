@@ -1,5 +1,5 @@
 /* run.config
-OPT: @CXX@ -print
+OPT: @MACHDEP@ @CXX@ -print
 COMMENT: test handling of built-in nullptr_t
 */
 

@@ -1,5 +1,5 @@
 /* run.config
- OPT: @CXX@ -pp-annot -journal-disable -print
+ OPT: @MACHDEP@ @CXX@ -pp-annot -journal-disable -print
 */
 /*@ axiom foo: \true;
 // just a test for the lexer of annotations

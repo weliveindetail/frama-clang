@@ -1,5 +1,5 @@
 /* run.config
-OPT: @CXX@ -check -print -cxx-keep-mangling
+OPT: @MACHDEP@ @CXX@ -check -print -cxx-keep-mangling
 */
 
 namespace Foo {

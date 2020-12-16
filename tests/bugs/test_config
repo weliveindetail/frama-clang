@@ -1,1 +1,1 @@
-OPT:-print @CXX@ @WP@
+OPT:@MACHDEP@ -print @CXX@ @WP@

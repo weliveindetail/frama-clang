@@ -1,9 +1,9 @@
 /* run.config
-OPT: @CXX@ -main A::f @EVA@
-OPT: @CXX@ -main="A::g(int x)" @EVA@
-OPT: @CXX@ -main="::real_main" @EVA@
-OPT: @CXX@ -main="real_main" @EVA@
-OPT: @CXX@ @EVA@ -main A::h -eva-slevel-function="A::h:3,A::g(int):3" -eva-split-return-function="A::g:-1:1"
+OPT: @MACHDEP@ @CXX@ -main A::f @EVA@
+OPT: @MACHDEP@ @CXX@ -main="A::g(int x)" @EVA@
+OPT: @MACHDEP@ @CXX@ -main="::real_main" @EVA@
+OPT: @MACHDEP@ @CXX@ -main="real_main" @EVA@
+OPT: @MACHDEP@ @CXX@ @EVA@ -main A::h -eva-slevel-function="A::h:3,A::g(int):3" -eva-split-return-function="A::g:-1:1"
 */
 
 namespace A {

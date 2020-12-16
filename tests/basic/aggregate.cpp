@@ -1,5 +1,5 @@
 /* run.config
-OPT: @CXX@ @EVA@ -print
+OPT: @MACHDEP@ @CXX@ @EVA@ -print
 */
 
 struct A {

@@ -1,5 +1,5 @@
 /* run.config
-   OPT: @CXX@ @ALLOC@ -eva-slevel 12 @EVA@ -out -journal-disable -no-annot
+   OPT: @MACHDEP@ @CXX@ @ALLOC@ -eva-slevel 12 @EVA@ -out -journal-disable -no-annot
 */
 class A {
   int val;

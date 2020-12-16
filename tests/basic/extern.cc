@@ -1,5 +1,5 @@
 /* run.config
-   OPT: @CXX@ -check -print -cxx-demangling-full
+   OPT: @MACHDEP@ @CXX@ -check -print -cxx-demangling-full
 */
 
 extern "C" {

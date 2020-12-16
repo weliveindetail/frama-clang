@@ -1,6 +1,6 @@
 /* run.config
-OPT: -cpp-extra-args="-DFOO" -print
-OPT: -cxx-clang-command="bin/framaCIRGen -DFOO" -print 
+OPT: @MACHDEP@ -cpp-extra-args="-DFOO" -print
+OPT: @MACHDEP@ -cxx-clang-command="bin/framaCIRGen -DFOO" -print 
 */
 
 #ifdef FOO

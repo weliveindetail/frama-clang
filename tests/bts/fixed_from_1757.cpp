@@ -1,5 +1,5 @@
 /* run.config
-OPT: -deps -check -print
+OPT: @MACHDEP@ -deps -check -print
 */
 
 //@ assigns \nothing;

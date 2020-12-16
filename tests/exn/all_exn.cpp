@@ -1,5 +1,5 @@
 /* run.config
-   OPT: @CXX@ -check -print
+   OPT: @MACHDEP@ @CXX@ -check -print
 */
 
 

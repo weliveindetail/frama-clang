@@ -1,2 +1,2 @@
-OPT: @CXX@ @EVA@ -journal-disable
+OPT: @MACHDEP@ @CXX@ @EVA@ -journal-disable
 MACRO: ALLOC -eva-builtin malloc:Frama_C_alloc_size -eva-builtin free:Frama_C_free

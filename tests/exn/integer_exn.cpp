@@ -1,7 +1,7 @@
 /* run.config
-   OPT: @CXX@ -no-remove-exn -print -check
-   OPT: @CXX@ -check -print
-   OPT: @CXX@ @EVA@
+   OPT: @MACHDEP@ @CXX@ -no-remove-exn -print -check
+   OPT: @MACHDEP@ @CXX@ -check -print
+   OPT: @MACHDEP@ @CXX@ @EVA@
  */
 enum foo { BAR = 2 };
 

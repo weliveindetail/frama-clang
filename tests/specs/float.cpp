@@ -1,5 +1,5 @@
 /* run.config
-OPT: -check -print -float-hex @CXX@
+OPT: @MACHDEP@ -check -print -float-hex @CXX@
 */
 
 //@ ensures \result == 0.4;

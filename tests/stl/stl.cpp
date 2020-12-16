@@ -1,5 +1,5 @@
 /* run.config
- OPT: @CXX@ -print
+ OPT: @MACHDEP@ @CXX@ -print
  DONTRUN: Not yet fully working
  */
 #include <bitset>

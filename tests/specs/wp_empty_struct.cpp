@@ -1,5 +1,5 @@
 /* run.config
-OPT: @CXX@ @WP@
+OPT: @MACHDEP@ @CXX@ @WP@
 */
 class Point2
 {

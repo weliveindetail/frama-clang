@@ -1,5 +1,5 @@
 /* run.config
-OPT: @CXX@ @EVA@ -out -journal-disable -print
+OPT: @MACHDEP@ @CXX@ @EVA@ -out -journal-disable -print
 */
 /*@ behavior default:
     assigns p \from q,p;
