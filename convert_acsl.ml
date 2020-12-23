@@ -336,11 +336,11 @@ and convert_logic_expr_node env = function
   | TComprehension (t,quants,pred) ->
     let quants = List.map (convert_var_decl env) quants in
     let t = convert_logic_expr env t in
-    let pred = Extlib.opt_map (convert_pred_named env) pred in
+    let pred = Option.map (convert_pred_named env) pred in
     PLcomprehension (t,quants,pred)
   | TRange(l,h) ->
-    let l = Extlib.opt_map (convert_logic_expr env) l in
-    let h = Extlib.opt_map (convert_logic_expr env) h in
+    let l = Option.map (convert_logic_expr env) l in
+    let h = Option.map (convert_logic_expr env) h in
     PLrange(l,h)
   | TLet(info,t) ->
     let body = convert_inner_body env info in
@@ -623,9 +623,9 @@ let convert_variant env v = convert_logic_expr env v.vbody, v.vname
 
 let convert_function_contract env contract =
   let spec_behavior = List.map (convert_behavior env) contract.behavior in
-  let spec_variant = Extlib.opt_map (convert_variant env) contract.variant in
+  let spec_variant = Option.map (convert_variant env) contract.variant in
   let spec_terminates =
-    Extlib.opt_map (convert_pred_named env) contract.terminates
+    Option.map (convert_pred_named env) contract.terminates
   in
   let spec_complete_behaviors =
     List.map (fun c -> c.behaviors) contract.complete_behaviors
@@ -698,7 +698,7 @@ let rec convert_annot env annot =
             Mangling.mangle info_name t None
         in
         let labels = List.map convert_logic_label info.arg_labels in
-        let rt = Extlib.opt_map (convert_logic_type env) info.returned_type in
+        let rt = Option.map (convert_logic_type env) info.returned_type in
         let params = List.map (convert_logic_param env) info.profile in
         (match info.fun_body,rt with
           | LBnone, None ->
@@ -741,9 +741,9 @@ let rec convert_annot env annot =
         let mangle name signature =
           let name, t = Convert_env.typedef_normalize env name TStandard in
           Mangling.mangle name t signature in
-        let read = Extlib.opt_map (Extlib.swap mangle None)
+        let read = Option.map (Extlib.swap mangle None)
                    read in
-        let write = Extlib.opt_map (Extlib.swap mangle None)
+        let write = Option.map (Extlib.swap mangle None)
                     write in
         LDvolatile(mem,(read,write)), env
       | Daxiomatic(loc,s,annots) ->
@@ -760,7 +760,7 @@ let rec convert_annot env annot =
                   env lt_info.type_name TStandard in
             Mangling.mangle info_name t None
         in
-        let def = Extlib.opt_map (convert_logic_type_def env)
+        let def = Option.map (convert_logic_type_def env)
                     lt_info.definition in
         LDtype(name, lt_info.params, def), env
       | Dlemma(loc,name,is_axiom,labs,params,body) ->

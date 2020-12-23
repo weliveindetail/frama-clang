@@ -44,7 +44,7 @@ let capture_name_type env =
     let typ = if is_ref then Cxx_utils.obj_lvref typ else typ in (s, typ)
   | Cap_this(is_ref) ->
     let (name,tkind as cname) =
-      Extlib.the (Convert_env.get_current_class env)
+      Option.get (Convert_env.get_current_class env)
     in
     let typ =
       if is_ref then Cxx_utils.unqual_type (Struct (name, tkind))
@@ -674,13 +674,13 @@ let rec convert_base_type env spec decl typ does_remove_virtual =
         env
         (fun d ->
           let dim =
-            Extlib.may_map
-              (fun e ->
-                 let _,_,ce =
-                   convert_expr env empty_aux e does_remove_virtual
-                 in
-                 ce.expr_node)
-              ~dft:NOTHING
+            Option.fold
+              ~some:(fun e ->
+                  let _,_,ce =
+                    convert_expr env empty_aux e does_remove_virtual
+                  in
+                  ce.expr_node)
+              ~none:NOTHING
               a.dimension
           in
           let exp =
@@ -2125,7 +2125,7 @@ and convert_init_statement env init does_remove_virtual =
     let l = List.rev l in
     if l = [] then
       Convert_env.fatal env "Empty list of local variable declarations";
-    let base = Extlib.the base in
+    let base = Option.get base in
     let decl = DECDEF (None,(base,l),loc) in
     match def with
     | [] ->
@@ -2864,7 +2864,7 @@ let rec implicit_op_call op env most_derived (s, t) dst src =
        and in another class that inherits from it).
     *)
     let op_class_name =
-      Extlib.the
+      Option.get
         (Convert_env.class_name_from_qualifications env opname.prequalification)
     in
     match op.get_op env most_derived op_class_name with
@@ -3358,7 +3358,7 @@ let is_assign_operator s = s = "operator="
 
 let add_special_member env name kind rt args =
   let (class_name, tc) =
-    Extlib.the
+    Option.get
       (Convert_env.class_name_from_qualifications env name.prequalification)
   in
   let signature args =
@@ -3448,7 +3448,7 @@ and convert_class_component (env, implicits, types, fields, others) meth =
               has_further_definition,_(*throws*),spec) ->
       let qname = Convert_env.qualify env name in
       let class_name =
-        Extlib.the
+        Option.get
           (Convert_env.class_name_from_qualifications
              env qname.prequalification)
       in
@@ -3467,7 +3467,7 @@ and convert_class_component (env, implicits, types, fields, others) meth =
       let signature = {result= return_type; parameter= args_sig; variadic } in
       let signature = Convert_env.signature_normalize env signature in
       let name = Mangling.mangle qname tkind (Some(kind,signature)) in
-      let spec = Extlib.opt_map (convert_contract benv) spec in
+      let spec = Option.map (convert_contract benv) spec in
       let extern_c = false in
       let spec =
         if has_further_definition
@@ -3544,7 +3544,7 @@ and convert_class_component (env, implicits, types, fields, others) meth =
       in
       let subothers = my_implicits @ subothers in
       Class.add_class (qualified_name,tkind);
-      Extlib.may
+      Option.iter
         (List.iter (Class.add_inheritance_relation(qualified_name, tkind)))
         inherits;
       Convert_env.reset_current_class new_env,
@@ -3583,7 +3583,7 @@ and convert_class_component (env, implicits, types, fields, others) meth =
         ::others
       end else begin
         (* no need to mangle names: they can be shared by various structures *)
-        let bf_length = Extlib.opt_map (convert_bitfield_info env) bf_info in
+        let bf_length = Option.map (convert_bitfield_info env) bf_info in
         (env,implicits,
          types,
          (FIELD(base,[(name,decl JUSTBASE,[],cloc),bf_length]), typ) ::fields,
@@ -3617,7 +3617,7 @@ and convert_class_component (env, implicits, types, fields, others) meth =
             (Convert_env.qualify env name) TStandard in
       let name = Mangling.mangle name TStandard None
       in
-      let tags = Extlib.opt_map (convert_enum_constants env ikind) body in
+      let tags = Option.map (convert_enum_constants env ikind) body in
       (env, implicits,
        ONLYTYPEDEF([SpecType (Tenum(name,tags,[]))],cloc) :: types,
        fields, others)
@@ -3671,7 +3671,7 @@ let rec convert_pod_field (cfields, typs, env) field =
         SpecAttr (add_attr env Cil.frama_c_mutable []) :: base
       else base
     in
-    let bf_length = Extlib.opt_map (convert_bitfield_info env) bf_info in
+    let bf_length = Option.map (convert_bitfield_info env) bf_info in
     FIELD(base, [(name,decl JUSTBASE,[],cloc),bf_length])::cfields,
     (name, typ) :: typs, env
   | CCompound(_, name, kind, _, body, tn, _) ->
@@ -3827,7 +3827,7 @@ let rec convert_global env glob =
           let signature = Convert_env.signature_normalize env signature in
           Mangling.mangle qualified_name tkind (Some (kind, signature))
       in
-      let spec = Extlib.opt_map (convert_contract benv) spec in
+      let spec = Option.map (convert_contract benv) spec in
       let implicit = false in
       let spec =
         if has_further_definition then spec
@@ -3902,7 +3902,7 @@ let rec convert_global env glob =
         Convert_env.typedef_normalize env qualified_name tc
       in
       Class.add_class (qualified_name,tc);
-      Extlib.may
+      Option.iter
         (List.iter (Class.add_inheritance_relation(qualified_name,tc)))
         inherits;
       let env = convert_class env name tc kind inherits body has_virtual in
@@ -4025,7 +4025,7 @@ let rec convert_global env glob =
                 qualified_name TStandard in
           Mangling.mangle qualified_name t None
       in
-      let tags = Extlib.opt_map (convert_enum_constants env ikind) body in
+      let tags = Option.map (convert_enum_constants env ikind) body in
       let glob = ONLYTYPEDEF([SpecType (Tenum(name,tags,[]))],cloc) in
       let env = Convert_env.add_c_global env glob in
       let env = Convert_env.set_ghost env old_ghost in

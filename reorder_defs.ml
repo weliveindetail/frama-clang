@@ -291,7 +291,7 @@ end = struct
                      Frama_Clang_option.debug
                        ~dkey "Need to move %a before %a"
                        print_node n print_node node;
-                     (false, Extlib.the n.glob, Some n))
+                     (false, Option.get n.glob, Some n))
                   preds
               in
               add_dep res (defs @ wlist)
@@ -338,7 +338,7 @@ class compute_deps =
     val mutable current_def = None
 
     method private add_deps node =
-      Dependencies.add_dependency node (Extlib.the current_def)
+      Dependencies.add_dependency node (Option.get current_def)
 
     method! vtypespec = function
       | Tstruct (s,_,_) ->
@@ -373,7 +373,7 @@ class compute_deps =
         (match find_type_specifier l with
          | Tenum(_, Some tags,_) ->
            let process_tag (name,_,_) =
-             Dependencies.set_symbol Id name false (Extlib.the current_def)
+             Dependencies.set_symbol Id name false (Option.get current_def)
            in
            List.iter process_tag tags
          | Tstruct(_, Some l, _) | Tunion(_, Some l, _) ->
@@ -381,7 +381,7 @@ class compute_deps =
              function
              | FIELD(_,l) ->
                let process_name ((n,_,_,_),_) =
-                 Dependencies.set_symbol Field n false (Extlib.the current_def)
+                 Dependencies.set_symbol Field n false (Option.get current_def)
                in
                List.iter process_name l
              | TYPE_ANNOT _ -> ()

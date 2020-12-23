@@ -131,7 +131,7 @@ class clean =
           let c =
             List.map
               (fun (bind, body) ->
-                add_subtypes (Extlib.the self#current_kf) bind, body)
+                add_subtypes (Option.get self#current_kf) bind, body)
               c
           in
           s.skind <- TryCatch(t,c,l);

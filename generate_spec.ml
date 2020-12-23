@@ -80,7 +80,7 @@ let add_separated_arg env acc arg =
     match typ, Convert_env.current_struct_or_union env with
       | (Struct (name,ts), (CClass | CStruct)) | Union (name,ts), CUnion
         when Fclang_datatype.Qualified_name.equal
-            (name,ts) (Extlib.the (Convert_env.get_current_class env))
+            (name,ts) (Option.get (Convert_env.get_current_class env))
         ->
         let lexpr_loc = Cil_datatype.Location.of_lexing_loc arg.arg_loc in
         let p =
