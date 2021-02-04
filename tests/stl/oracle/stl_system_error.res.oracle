@@ -2196,6 +2196,14 @@ int *fgetws(int * __restrict ws, int n, FILE * __restrict stream);
       }
 
 */
+/*@ requires valid_wstring_ws1: valid_read_wstring(ws1);
+    requires valid_wstring_ws2: valid_read_wstring(ws2);
+    assigns \result;
+    assigns \result
+      \from (indirect: *(ws1 + (0 ..))), (indirect: *(ws2 + (0 ..)));
+ */
+int wcscasecmp(int const *ws1, int const *ws2);
+
 struct _frama_c_vmt _frama_c_vmt_header;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
 
