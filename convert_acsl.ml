@@ -313,7 +313,7 @@ and convert_logic_expr_node env = function
     let l = convert_logic_label_opt l in
     let t = convert_logic_expr env t in
     PLoffset(l,t)
-  | TBlock_length(l,t) -> 
+  | TBlock_length(l,t) ->
     let l = convert_logic_label_opt l in
     let t = convert_logic_expr env t in
     PLblock_length(l,t)
@@ -403,7 +403,7 @@ and convert_logic_offset env base = function
 
 and path_of_offset env = function
   | TNoOffset -> []
-  | TField(s,o) | TModel(s,o) -> 
+  | TField(s,o) | TModel(s,o) ->
     let path = path_of_offset env o in
     PLpathField s :: path
   | TBase(b,t,o) ->
@@ -529,7 +529,7 @@ and convert_pred env = function
     let t1 = convert_logic_expr env t1 in
     let t2 = convert_logic_expr env t2 in
     PLfresh (None,t1,t2)
-  | Pfresh(_,_,_,_) -> Frama_Clang_option.fatal 
+  | Pfresh(_,_,_,_) -> Frama_Clang_option.fatal
       "zero or two labels needed in fresh construct"
   | Psubtype _ -> Frama_Clang_option.not_yet_implemented "subtyping relation"
 
@@ -593,10 +593,10 @@ let convert_assigns env = function
   | Intermediate_format.Writes l ->
       Logic_ptree.Writes (List.map (convert_from env) l)
 
-let convert_pred_tp env p =
+let convert_pred_tp env ?(kind=Cil_types.Assert) p =
   (* TODO: support check and admit in ACSL++. *)
   let tp_statement = convert_pred_named env p in
-  { tp_kind = Assert; tp_statement }
+  { tp_kind = kind; tp_statement }
 
 let convert_termination_kind = function
   | Intermediate_format.Normal -> Cil_types.Normal
@@ -766,8 +766,9 @@ let rec convert_annot env annot =
       | Dlemma(loc,name,is_axiom,labs,params,body) ->
         let env = Convert_env.set_loc env loc in
         let labs = List.map convert_logic_label labs in
-        let body = convert_pred_tp env body in
-        LDlemma(name,is_axiom,labs,params,body), env
+        let kind = if is_axiom then Cil_types.Admit else Assert in
+        let body = convert_pred_tp env ~kind body in
+        LDlemma(name,labs,params,body), env
       | Dinvariant(loc,body) ->
         let env = Convert_env.set_loc env loc in
         let name =
@@ -778,7 +779,7 @@ let rec convert_annot env annot =
                   env body.li_name TStandard in
             Mangling.mangle body_name t None
         in
-        let body = 
+        let body =
           match body.fun_body with
             | LBpred p ->
               convert_pred_named env p
