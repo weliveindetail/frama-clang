@@ -1581,6 +1581,21 @@ Lexer::readMain(const std::string& buffer, size_t& position, location loc) {
       advanceChar2(buffer,position,loc);
       _litState = LeadZero;
       return readNumberToken(buffer,position,loc);
+    case '"':
+      size_t i, n;
+      for (i = 1, n = buffer.length();
+           i < n && buffer[position+i] != '"' && buffer[position+i-1] != '\\';
+           i++);
+      if (position + i >= n) {
+        std::cerr << "no closing double quotes before EOF" << std::endl;
+        break;
+      }
+      std::string literal(buffer, position, i+1);
+      DLexer::StringLiteralToken* result =
+        new DLexer::StringLiteralToken(literal);
+      _token = DLexer::Token(result);
+      position += i+1;
+      return RRHasToken;
   };
   if (isalpha(ch) || ch == '_') {
     ReadResult res = readIdentifierToken(buffer, position, loc);
