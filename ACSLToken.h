@@ -486,7 +486,7 @@ protected:
 
 public:
   StringLiteralToken(const std::string& content)
-      : _content(content) { inherited::setLiteral(); }
+      : _content(content) { inherited::setString(); }
   StringLiteralToken(const StringLiteralToken& source)
       : inherited(source), _content(source._content) {}
   DefineStandardTokenMethods(StringLiteralToken)
