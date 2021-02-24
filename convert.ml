@@ -2710,8 +2710,71 @@ let extract_decl = function
             has_further_definition,None,None)
   | c -> c
 
+let implicit_kind = function
+  | CMethod(_,_,kind,_,args,_,_,_,_,_,_,_) ->
+    (match kind, args with
+     | FKConstructor false, [_] -> 1 (* default constructor, plain. *)
+     | FKConstructor true, [_] -> 2 (* default constructor, derived. *)
+     | FKConstructor false,
+       [_; { arg_type = { plain_type = LVReference _; qualifier }}]
+       when List.mem Const qualifier -> 3 (* copy constructor, const, plain. *)
+     | FKConstructor false,
+       [_; { arg_type = { plain_type = LVReference _; }}] ->
+       (* copy constructor, non-const, plain. *)
+       4
+     | FKConstructor true,
+       [_; { arg_type = { plain_type = LVReference _; qualifier }}]
+       when List.mem Const qualifier -> 5 (* copy constructor, const,derived. *)
+     | FKConstructor true,
+       [_; { arg_type = { plain_type = LVReference _; }}] ->
+       (* copy constructor, non-const, derived. *)
+       6
+     | FKConstructor false,
+       [_; { arg_type = { plain_type = RVReference _; qualifier }}]
+       when List.mem Const qualifier -> 7 (* move constructor, const, plain. *)
+     | FKConstructor false,
+       [_; { arg_type = { plain_type = RVReference _; }}] ->
+       (* move constructor, non-const, plain. *)
+       8
+     | FKConstructor true,
+       [_; { arg_type = { plain_type = RVReference _; qualifier }}]
+       when List.mem Const qualifier -> 9 (* move constructor, const,derived. *)
+     | FKConstructor true,
+       [_; { arg_type = { plain_type = RVReference _; }}] ->
+       (* move constructor, non-const, derived. *)
+       10
+     | FKMethod _,
+       [ _; { arg_type = { plain_type = (Struct _ | Union _); qualifier } }]
+       when List.mem Const qualifier -> 11 (*assign operator, const *)
+     | FKMethod _,
+       [ _; { arg_type = { plain_type = (Struct _ | Union _); } }] ->
+       12 (*assign operator, non const *)
+     | FKMethod _,
+       [ _; { arg_type = { plain_type = LVReference _; qualifier } }]
+       when List.mem Const qualifier -> 13 (* assign operator, const *)
+     | FKMethod _,
+       [ _; { arg_type = { plain_type = LVReference _; } }] ->
+       14 (* assign operator, non-const *)
+     | FKMethod _,
+       [ _; { arg_type = { plain_type = RVReference _; qualifier } }]
+       when List.mem Const qualifier -> 15 (* move operator, const *)
+     | FKMethod _,
+       [ _; { arg_type = { plain_type = RVReference _; } }] ->
+       16 (* move operator, non-const *)
+     | FKDestructor false, [ _ ] -> 17 (* destructor, plain. *)
+     | FKDestructor true, [ _ ] -> 18 (* destructor, derived. *)
+     | _ -> 0 (* unknown implicit operator, don't try to sort it. *)
+    )
+  | _ -> 0 (* unknown declaration, don't try to sort it. *)
+
+let cmp_implicit i1 i2 =
+  let n1 = implicit_kind i1 in
+  let n2 = implicit_kind i2 in
+  compare n1 n2
+
 let reorder_implicit l =
   let implicit = Extlib.filter_map is_implicit_func extract_decl l in
+  let implicit = List.stable_sort cmp_implicit implicit in
   implicit @ l
 
 let iter_on_array ?(incr=true) env idx length mk_body =

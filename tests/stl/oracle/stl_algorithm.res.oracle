@@ -2217,10 +2217,10 @@ struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info =
    .pvmt = (struct _frama_c_vmt *)0};
 void __bool_binop<int,std::__equal_to>::Ctor(struct __bool_binop<int,std::__equal_to> const *this);
 
-void __bool_binop<int,std::__equal_to>::Dtor(struct __bool_binop<int,std::__equal_to> const *this);
-
 void __bool_binop<int,std::__equal_to>::Ctor(struct __bool_binop<int,std::__equal_to> const *this,
                                              struct __bool_binop<int,std::__equal_to> const *__frama_c_arg_0);
+
+void __bool_binop<int,std::__equal_to>::Dtor(struct __bool_binop<int,std::__equal_to> const *this);
 
 struct _frama_c_vmt _frama_c_vmt_header;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;

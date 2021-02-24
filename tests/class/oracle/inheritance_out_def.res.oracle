@@ -32,9 +32,9 @@ struct B {
    struct A _frama_c__Z1A ;
    int y ;
 };
-void A::Dtor(struct A const *this);
-
 void A::Ctor(struct A const *this);
+
+void A::Dtor(struct A const *this);
 
 struct _frama_c_vmt _frama_c_vmt_header;
 

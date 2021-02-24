@@ -1979,10 +1979,10 @@ struct reference_wrapper<int*,<abst>> ref<int*,<abst>>(int (**t)(int ))
 
 void __binop<int,std::__minus>::Ctor(struct __binop<int,std::__minus> const *this);
 
-void __binop<int,std::__minus>::Dtor(struct __binop<int,std::__minus> const *this);
-
 void __binop<int,std::__minus>::Ctor(struct __binop<int,std::__minus> const *this,
                                      struct __binop<int,std::__minus> *__frama_c_arg_0);
+
+void __binop<int,std::__minus>::Dtor(struct __binop<int,std::__minus> const *this);
 
 struct _frama_c_vmt _frama_c_vmt_header;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
@@ -2026,10 +2026,10 @@ struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info =
    .pvmt = (struct _frama_c_vmt *)0};
 void __binop<int,std::__plus>::Ctor(struct __binop<int,std::__plus> const *this);
 
-void __binop<int,std::__plus>::Dtor(struct __binop<int,std::__plus> const *this);
-
 void __binop<int,std::__plus>::Ctor(struct __binop<int,std::__plus> const *this,
                                     struct __binop<int,std::__plus> *__frama_c_arg_0);
+
+void __binop<int,std::__plus>::Dtor(struct __binop<int,std::__plus> const *this);
 
 struct _frama_c_vmt _frama_c_vmt_header;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
