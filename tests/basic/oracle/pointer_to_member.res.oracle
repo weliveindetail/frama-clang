@@ -51,14 +51,14 @@ void m(struct Foo *this, int i)
 }
 
 /*@ requires \valid_read(this); */
-void Foo::Dtor(struct Foo const *this)
+void Foo::Ctor(struct Foo const *this)
 {
   *((struct _frama_c_vmt **)this) = & _frama_c_vmt_header;
   return;
 }
 
 /*@ requires \valid_read(this); */
-void Foo::Ctor(struct Foo const *this)
+void Foo::Dtor(struct Foo const *this)
 {
   *((struct _frama_c_vmt **)this) = & _frama_c_vmt_header;
   return;
@@ -309,18 +309,18 @@ void m(struct Bar *this, int i)
 }
 
 /*@ requires \valid_read(this); */
-void Bar::Dtor(struct Bar const *this)
-{
-  *((struct _frama_c_vmt **)this) = & _frama_c_vmt_header;
-  Foo::Dtor(& this->_frama_c__Z3Foo);
-  return;
-}
-
-/*@ requires \valid_read(this); */
 void Bar::Ctor(struct Bar const *this)
 {
   Foo::Ctor(& this->_frama_c__Z3Foo);
   *((struct _frama_c_vmt **)this) = & _frama_c_vmt_header;
+  return;
+}
+
+/*@ requires \valid_read(this); */
+void Bar::Dtor(struct Bar const *this)
+{
+  *((struct _frama_c_vmt **)this) = & _frama_c_vmt_header;
+  Foo::Dtor(& this->_frama_c__Z3Foo);
   return;
 }
 

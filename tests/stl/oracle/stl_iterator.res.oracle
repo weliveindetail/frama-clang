@@ -336,7 +336,7 @@ struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
 
 struct _frama_c_vmt_content _frama_c_vmt[1];
 /*@ requires \valid_read(this); */
-void iterator<std::random_access_iterator_tag,int,int,int*,int&>::Dtor
+void iterator<std::random_access_iterator_tag,int,int,int*,int&>::Ctor
 (struct iterator<std::random_access_iterator_tag,int,int,int*,int&> const *this)
 {
   return;
@@ -354,7 +354,7 @@ void iterator<std::random_access_iterator_tag,int,int,int*,int&>::Ctor
 }
 
 /*@ requires \valid_read(this); */
-void iterator<std::random_access_iterator_tag,int,int,int*,int&>::Ctor
+void iterator<std::random_access_iterator_tag,int,int,int*,int&>::Dtor
 (struct iterator<std::random_access_iterator_tag,int,int,int*,int&> const *this)
 {
   return;
@@ -430,13 +430,6 @@ _Bool operator<<int*,void>(struct reverse_iterator<int*> *this,
   return __retres;
 }
 
-/*@ requires \valid_read(this); */
-void reverse_iterator<int*>::Dtor(struct reverse_iterator<int*> const *this)
-{
-  iterator<std::random_access_iterator_tag,int,int,int*,int&>::Dtor(& this->_frama_c__ZN3stdE8iteratorIN3stdE26random_access_iterator_tagiiPKiRKiE);
-  return;
-}
-
 /*@ requires \separated(this, __frama_c_arg_0);
     requires \valid_read(this);
     requires \valid_read(__frama_c_arg_0);
@@ -448,6 +441,13 @@ void reverse_iterator<int*>::Ctor(struct reverse_iterator<int*> const *this,
                                                                     & __frama_c_arg_0->_frama_c__ZN3stdE8iteratorIN3stdE26random_access_iterator_tagiiPKiRKiE);
   this->current = __frama_c_arg_0->current;
   this->deref_tmp = __frama_c_arg_0->deref_tmp;
+  return;
+}
+
+/*@ requires \valid_read(this); */
+void reverse_iterator<int*>::Dtor(struct reverse_iterator<int*> const *this)
+{
+  iterator<std::random_access_iterator_tag,int,int,int*,int&>::Dtor(& this->_frama_c__ZN3stdE8iteratorIN3stdE26random_access_iterator_tagiiPKiRKiE);
   return;
 }
 

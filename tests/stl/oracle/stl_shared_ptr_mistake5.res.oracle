@@ -1811,14 +1811,14 @@ void *get_deleter(struct __shared_ref_base *this)
 }
 
 /*@ requires \valid_read(this); */
-void __shared_ref_base::Dtor(struct __shared_ref_base const *this)
+void __shared_ref_base::Ctor(struct __shared_ref_base const *this)
 {
   *((struct _frama_c_vmt **)this) = & _frama_c_vmt_header;
   return;
 }
 
 /*@ requires \valid_read(this); */
-void __shared_ref_base::Ctor(struct __shared_ref_base const *this)
+void __shared_ref_base::Dtor(struct __shared_ref_base const *this)
 {
   *((struct _frama_c_vmt **)this) = & _frama_c_vmt_header;
   return;

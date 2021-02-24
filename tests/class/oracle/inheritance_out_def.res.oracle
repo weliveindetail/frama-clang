@@ -51,14 +51,14 @@ int get_sum(struct A *this)
 }
 
 /*@ requires \valid_read(this); */
-void A::Dtor(struct A const *this)
+void A::Ctor(struct A const *this)
 {
   *((struct _frama_c_vmt **)this) = & _frama_c_vmt_header;
   return;
 }
 
 /*@ requires \valid_read(this); */
-void A::Ctor(struct A const *this)
+void A::Dtor(struct A const *this)
 {
   *((struct _frama_c_vmt **)this) = & _frama_c_vmt_header;
   return;

@@ -2702,14 +2702,6 @@ let is_implicit_func = function
   | CMethod(_,_,_,_,_,_,_,b,_,_,_,_) -> b
   | _ -> false
 
-let extract_decl = function
-  | CMethod(loc,name, kind,rt,args,variadic,_,_,tkind,has_further_definition,
-      _,_) ->
-    (* If any, the spec will still be ported by the original declaration. *)
-    CMethod(loc,name,kind,rt,args,variadic,None,false,tkind,
-            has_further_definition,None,None)
-  | c -> c
-
 let implicit_kind = function
   | CMethod(_,_,kind,_,args,_,_,_,_,_,_,_) ->
     (match kind, args with
@@ -2773,9 +2765,9 @@ let cmp_implicit i1 i2 =
   compare n1 n2
 
 let reorder_implicit l =
-  let implicit = Extlib.filter_map is_implicit_func extract_decl l in
+  let implicit,others = List.partition is_implicit_func l in
   let implicit = List.stable_sort cmp_implicit implicit in
-  implicit @ l
+  implicit @ others
 
 let iter_on_array ?(incr=true) env idx length mk_body =
   let loc = Convert_env.get_loc env in

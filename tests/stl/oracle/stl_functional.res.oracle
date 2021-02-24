@@ -2003,18 +2003,18 @@ void __binop<int,std::__minus>::Ctor(struct __binop<int,std::__minus> const *thi
   return;
 }
 
-/*@ requires \valid_read(this); */
-void __binop<int,std::__minus>::Dtor(struct __binop<int,std::__minus> const *this)
-{
-  return;
-}
-
 /*@ requires \separated(this, __frama_c_arg_0);
     requires \valid_read(this);
     requires \valid(__frama_c_arg_0);
  */
 void __binop<int,std::__minus>::Ctor(struct __binop<int,std::__minus> const *this,
                                      struct __binop<int,std::__minus> *__frama_c_arg_0)
+{
+  return;
+}
+
+/*@ requires \valid_read(this); */
+void __binop<int,std::__minus>::Dtor(struct __binop<int,std::__minus> const *this)
 {
   return;
 }
@@ -2050,18 +2050,18 @@ void __binop<int,std::__plus>::Ctor(struct __binop<int,std::__plus> const *this)
   return;
 }
 
-/*@ requires \valid_read(this); */
-void __binop<int,std::__plus>::Dtor(struct __binop<int,std::__plus> const *this)
-{
-  return;
-}
-
 /*@ requires \separated(this, __frama_c_arg_0);
     requires \valid_read(this);
     requires \valid(__frama_c_arg_0);
  */
 void __binop<int,std::__plus>::Ctor(struct __binop<int,std::__plus> const *this,
                                     struct __binop<int,std::__plus> *__frama_c_arg_0)
+{
+  return;
+}
+
+/*@ requires \valid_read(this); */
+void __binop<int,std::__plus>::Dtor(struct __binop<int,std::__plus> const *this)
 {
   return;
 }

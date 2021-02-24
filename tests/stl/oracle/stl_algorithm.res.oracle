@@ -2238,18 +2238,18 @@ void __bool_binop<int,std::__equal_to>::Ctor(struct __bool_binop<int,std::__equa
   return;
 }
 
-/*@ requires \valid_read(this); */
-void __bool_binop<int,std::__equal_to>::Dtor(struct __bool_binop<int,std::__equal_to> const *this)
-{
-  return;
-}
-
 /*@ requires \separated(this, __frama_c_arg_0);
     requires \valid_read(this);
     requires \valid_read(__frama_c_arg_0);
  */
 void __bool_binop<int,std::__equal_to>::Ctor(struct __bool_binop<int,std::__equal_to> const *this,
                                              struct __bool_binop<int,std::__equal_to> const *__frama_c_arg_0)
+{
+  return;
+}
+
+/*@ requires \valid_read(this); */
+void __bool_binop<int,std::__equal_to>::Dtor(struct __bool_binop<int,std::__equal_to> const *this)
 {
   return;
 }

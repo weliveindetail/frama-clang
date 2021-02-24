@@ -41,12 +41,6 @@ void Foo::Ctor(struct Foo const *this, int a)
   return;
 }
 
-/*@ requires \valid_read(this); */
-void Foo::Dtor(struct Foo const *this)
-{
-  return;
-}
-
 /*@ requires \valid(this);
     requires \valid(__frama_c_arg_0);
     ensures \valid(\result);
@@ -55,6 +49,12 @@ struct Foo *operator=(struct Foo *this, struct Foo *__frama_c_arg_0)
 {
   this->x = __frama_c_arg_0->x;
   return this;
+}
+
+/*@ requires \valid_read(this); */
+void Foo::Dtor(struct Foo const *this)
+{
+  return;
 }
 
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info =
