@@ -3,10 +3,7 @@ Now output intermediate result
 [kernel] Warning: Assuming declared function exception::Dtor can't throw any exception
 [kernel] Warning: Assuming declared function free can't throw any exception
 [kernel] Warning: Assuming declared function exception::Ctor can't throw any exception
-[kernel] Warning: Assuming declared function exception::Ctor can't throw any exception
-[kernel] Warning: Assuming declared function operator= can't throw any exception
 [kernel] Warning: Assuming declared function exception::Dtor can't throw any exception
-[kernel] Warning: Assuming declared function weak_ptr<Aircraft>::Ctor can't throw any exception
 [kernel] Warning: Assuming declared function malloc can't throw any exception
 [kernel] Warning: Assuming declared function free can't throw any exception
 [kernel] Warning: Assuming declared function free can't throw any exception
@@ -281,12 +278,6 @@ void swap<std::__shared_ref_base*>(struct __shared_ref_base **a,
 
 void piecewise_construct_t::Ctor(struct piecewise_construct_t const *this);
 
-void piecewise_construct_t::Ctor(struct piecewise_construct_t const *this,
-                                 struct piecewise_construct_t const *__frama_c_arg_0);
-
-void piecewise_construct_t::Ctor(struct piecewise_construct_t const *this,
-                                 struct piecewise_construct_t *__frama_c_arg_0);
-
 void piecewise_construct_t::Dtor(struct piecewise_construct_t const *this);
 
 struct _frama_c_vmt _frama_c_vmt_header;
@@ -295,26 +286,6 @@ struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
 struct _frama_c_vmt_content _frama_c_vmt[1];
 /*@ requires \valid_read(this); */
 void piecewise_construct_t::Ctor(struct piecewise_construct_t const *this)
-{
-  return;
-}
-
-/*@ requires \separated(this, __frama_c_arg_0);
-    requires \valid_read(this);
-    requires \valid_read(__frama_c_arg_0);
- */
-void piecewise_construct_t::Ctor(struct piecewise_construct_t const *this,
-                                 struct piecewise_construct_t const *__frama_c_arg_0)
-{
-  return;
-}
-
-/*@ requires \separated(this, __frama_c_arg_0);
-    requires \valid_read(this);
-    requires \valid(__frama_c_arg_0);
- */
-void piecewise_construct_t::Ctor(struct piecewise_construct_t const *this,
-                                 struct piecewise_construct_t *__frama_c_arg_0)
 {
   return;
 }
@@ -1803,19 +1774,7 @@ struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info =
    .base_classes = (struct _frama_c_rtti_name_info_content *)0,
    .number_of_base_classes = 0,
    .pvmt = (struct _frama_c_vmt *)0};
-struct __shared_ref_base *operator=(struct __shared_ref_base *this,
-                                    struct __shared_ref_base const *__frama_c_arg_0);
-
-struct __shared_ref_base *operator=(struct __shared_ref_base *this,
-                                    struct __shared_ref_base *__frama_c_arg_0);
-
 void __shared_ref_base::Dtor(struct __shared_ref_base const *this);
-
-void __shared_ref_base::Ctor(struct __shared_ref_base const *this,
-                             struct __shared_ref_base const *__frama_c_arg_0);
-
-void __shared_ref_base::Ctor(struct __shared_ref_base const *this,
-                             struct __shared_ref_base *__frama_c_arg_0);
 
 void __shared_ref_base::Ctor(struct __shared_ref_base const *this);
 
@@ -1851,54 +1810,10 @@ void *get_deleter(struct __shared_ref_base *this)
   return __retres;
 }
 
-/*@ requires \valid(this);
-    requires \valid_read(__frama_c_arg_0);
-    ensures \valid(\result);
- */
-struct __shared_ref_base *operator=(struct __shared_ref_base *this,
-                                    struct __shared_ref_base const *__frama_c_arg_0)
-{
-  this->pvmt = __frama_c_arg_0->pvmt;
-  return this;
-}
-
-/*@ requires \valid(this);
-    requires \valid(__frama_c_arg_0);
-    ensures \valid(\result);
- */
-struct __shared_ref_base *operator=(struct __shared_ref_base *this,
-                                    struct __shared_ref_base *__frama_c_arg_0)
-{
-  this->pvmt = __frama_c_arg_0->pvmt;
-  return this;
-}
-
 /*@ requires \valid_read(this); */
 void __shared_ref_base::Dtor(struct __shared_ref_base const *this)
 {
   *((struct _frama_c_vmt **)this) = & _frama_c_vmt_header;
-  return;
-}
-
-/*@ requires \separated(this, __frama_c_arg_0);
-    requires \valid_read(this);
-    requires \valid_read(__frama_c_arg_0);
- */
-void __shared_ref_base::Ctor(struct __shared_ref_base const *this,
-                             struct __shared_ref_base const *__frama_c_arg_0)
-{
-  this->pvmt = __frama_c_arg_0->pvmt;
-  return;
-}
-
-/*@ requires \separated(this, __frama_c_arg_0);
-    requires \valid_read(this);
-    requires \valid(__frama_c_arg_0);
- */
-void __shared_ref_base::Ctor(struct __shared_ref_base const *this,
-                             struct __shared_ref_base *__frama_c_arg_0)
-{
-  this->pvmt = __frama_c_arg_0->pvmt;
   return;
 }
 
@@ -1938,20 +1853,6 @@ struct _frama_c_vmt _frama_c_vmt_header =
   {.table = _frama_c_vmt,
    .table_size = 7,
    .rtti_info = & _frama_c_rtti_name_info};
-struct __shared_ref<void> *operator=(struct __shared_ref<void> *this,
-                                     struct __shared_ref<void> const *__frama_c_arg_0);
-
-struct __shared_ref<void> *operator=(struct __shared_ref<void> *this,
-                                     struct __shared_ref<void> *__frama_c_arg_0);
-
-void __shared_ref<void>::Dtor(struct __shared_ref<void> const *this);
-
-void __shared_ref<void>::Ctor(struct __shared_ref<void> const *this,
-                              struct __shared_ref<void> const *__frama_c_arg_0);
-
-void __shared_ref<void>::Ctor(struct __shared_ref<void> const *this,
-                              struct __shared_ref<void> *__frama_c_arg_0);
-
 struct _frama_c_vmt _frama_c_vmt_header;
 
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
@@ -1981,74 +1882,6 @@ void weak_link(struct __shared_ref<void> *this);
 /*@ requires \valid(this); */
 struct __shared_ref_base *ref(struct __shared_ref<void> *this);
 
-/*@ requires \valid(this);
-    requires \valid_read(__frama_c_arg_0);
-    ensures \valid(\result);
- */
-struct __shared_ref<void> *operator=(struct __shared_ref<void> *this,
-                                     struct __shared_ref<void> const *__frama_c_arg_0)
-{
-  operator=(& this->_frama_c__ZN3stdE17__shared_ref_base,
-            & __frama_c_arg_0->_frama_c__ZN3stdE17__shared_ref_base);
-  this->__ptr = __frama_c_arg_0->__ptr;
-  this->_n = __frama_c_arg_0->_n;
-  this->_w = __frama_c_arg_0->_w;
-  return this;
-}
-
-/*@ requires \valid(this);
-    requires \valid(__frama_c_arg_0);
-    ensures \valid(\result);
- */
-struct __shared_ref<void> *operator=(struct __shared_ref<void> *this,
-                                     struct __shared_ref<void> *__frama_c_arg_0)
-{
-  operator=(& this->_frama_c__ZN3stdE17__shared_ref_base,
-            & __frama_c_arg_0->_frama_c__ZN3stdE17__shared_ref_base);
-  this->__ptr = __frama_c_arg_0->__ptr;
-  this->_n = __frama_c_arg_0->_n;
-  this->_w = __frama_c_arg_0->_w;
-  return this;
-}
-
-/*@ requires \valid_read(this); */
-void __shared_ref<void>::Dtor(struct __shared_ref<void> const *this)
-{
-  *((struct _frama_c_vmt **)this) = & _frama_c_vmt_header;
-  __shared_ref_base::Dtor(& this->_frama_c__ZN3stdE17__shared_ref_base);
-  return;
-}
-
-/*@ requires \separated(this, __frama_c_arg_0);
-    requires \valid_read(this);
-    requires \valid_read(__frama_c_arg_0);
- */
-void __shared_ref<void>::Ctor(struct __shared_ref<void> const *this,
-                              struct __shared_ref<void> const *__frama_c_arg_0)
-{
-  __shared_ref_base::Ctor(& this->_frama_c__ZN3stdE17__shared_ref_base,
-                          & __frama_c_arg_0->_frama_c__ZN3stdE17__shared_ref_base);
-  this->__ptr = __frama_c_arg_0->__ptr;
-  this->_n = __frama_c_arg_0->_n;
-  this->_w = __frama_c_arg_0->_w;
-  return;
-}
-
-/*@ requires \separated(this, __frama_c_arg_0);
-    requires \valid_read(this);
-    requires \valid(__frama_c_arg_0);
- */
-void __shared_ref<void>::Ctor(struct __shared_ref<void> const *this,
-                              struct __shared_ref<void> *__frama_c_arg_0)
-{
-  __shared_ref_base::Ctor(& this->_frama_c__ZN3stdE17__shared_ref_base,
-                          & __frama_c_arg_0->_frama_c__ZN3stdE17__shared_ref_base);
-  this->__ptr = __frama_c_arg_0->__ptr;
-  this->_n = __frama_c_arg_0->_n;
-  this->_w = __frama_c_arg_0->_w;
-  return;
-}
-
 struct _frama_c_vmt_content _frama_c_vmt[7] =
   {{.method_ptr = (void (*)())(& unlink), .shift_this = 0},
    {.method_ptr = (void (*)())(& link), .shift_this = 0},
@@ -2071,19 +1904,7 @@ struct _frama_c_vmt _frama_c_vmt_header =
   {.table = _frama_c_vmt,
    .table_size = 7,
    .rtti_info = & _frama_c_rtti_name_info};
-struct __shared_ref<Aircraft> *operator=(struct __shared_ref<Aircraft> *this,
-                                         struct __shared_ref<Aircraft> const *__frama_c_arg_0);
-
-struct __shared_ref<Aircraft> *operator=(struct __shared_ref<Aircraft> *this,
-                                         struct __shared_ref<Aircraft> *__frama_c_arg_0);
-
 void __shared_ref<Aircraft>::Dtor(struct __shared_ref<Aircraft> const *this);
-
-void __shared_ref<Aircraft>::Ctor(struct __shared_ref<Aircraft> const *this,
-                                  struct __shared_ref<Aircraft> const *__frama_c_arg_0);
-
-void __shared_ref<Aircraft>::Ctor(struct __shared_ref<Aircraft> const *this,
-                                  struct __shared_ref<Aircraft> *__frama_c_arg_0);
 
 struct _frama_c_vmt _frama_c_vmt_header;
 
@@ -2139,71 +1960,11 @@ struct __shared_ref_base *ref(struct __shared_ref<Aircraft> *this)
   return __retres;
 }
 
-/*@ requires \valid(this);
-    requires \valid_read(__frama_c_arg_0);
-    ensures \valid(\result);
- */
-struct __shared_ref<Aircraft> *operator=(struct __shared_ref<Aircraft> *this,
-                                         struct __shared_ref<Aircraft> const *__frama_c_arg_0)
-{
-  operator=(& this->_frama_c__ZN3stdE17__shared_ref_base,
-            & __frama_c_arg_0->_frama_c__ZN3stdE17__shared_ref_base);
-  this->__ptr = __frama_c_arg_0->__ptr;
-  this->_n = __frama_c_arg_0->_n;
-  this->_w = __frama_c_arg_0->_w;
-  return this;
-}
-
-/*@ requires \valid(this);
-    requires \valid(__frama_c_arg_0);
-    ensures \valid(\result);
- */
-struct __shared_ref<Aircraft> *operator=(struct __shared_ref<Aircraft> *this,
-                                         struct __shared_ref<Aircraft> *__frama_c_arg_0)
-{
-  operator=(& this->_frama_c__ZN3stdE17__shared_ref_base,
-            & __frama_c_arg_0->_frama_c__ZN3stdE17__shared_ref_base);
-  this->__ptr = __frama_c_arg_0->__ptr;
-  this->_n = __frama_c_arg_0->_n;
-  this->_w = __frama_c_arg_0->_w;
-  return this;
-}
-
 /*@ requires \valid_read(this); */
 void __shared_ref<Aircraft>::Dtor(struct __shared_ref<Aircraft> const *this)
 {
   *((struct _frama_c_vmt **)this) = & _frama_c_vmt_header;
   __shared_ref_base::Dtor(& this->_frama_c__ZN3stdE17__shared_ref_base);
-  return;
-}
-
-/*@ requires \separated(this, __frama_c_arg_0);
-    requires \valid_read(this);
-    requires \valid_read(__frama_c_arg_0);
- */
-void __shared_ref<Aircraft>::Ctor(struct __shared_ref<Aircraft> const *this,
-                                  struct __shared_ref<Aircraft> const *__frama_c_arg_0)
-{
-  __shared_ref_base::Ctor(& this->_frama_c__ZN3stdE17__shared_ref_base,
-                          & __frama_c_arg_0->_frama_c__ZN3stdE17__shared_ref_base);
-  this->__ptr = __frama_c_arg_0->__ptr;
-  this->_n = __frama_c_arg_0->_n;
-  this->_w = __frama_c_arg_0->_w;
-  return;
-}
-
-/*@ requires \separated(this, __frama_c_arg_0);
-    requires \valid_read(this);
-    requires \valid(__frama_c_arg_0);
- */
-void __shared_ref<Aircraft>::Ctor(struct __shared_ref<Aircraft> const *this,
-                                  struct __shared_ref<Aircraft> *__frama_c_arg_0)
-{
-  __shared_ref_base::Ctor(& this->_frama_c__ZN3stdE17__shared_ref_base,
-                          & __frama_c_arg_0->_frama_c__ZN3stdE17__shared_ref_base);
-  this->__ptr = __frama_c_arg_0->__ptr;
-  this->_n = __frama_c_arg_0->_n;
-  this->_w = __frama_c_arg_0->_w;
   return;
 }
 
@@ -2279,6 +2040,12 @@ struct weak_ptr<Aircraft> *operator=(struct weak_ptr<Aircraft> *this,
                                      struct weak_ptr<Aircraft> const *r);
 
 /*@ requires \valid(this);
+    requires \valid_read(r);
+    ensures \valid(\result); */
+struct weak_ptr<Aircraft> *operator=<Aircraft,void>(struct weak_ptr<Aircraft> *this,
+                                                    struct weak_ptr<Aircraft> const *r);
+
+/*@ requires \valid(this);
     requires \valid(r); */
 void swap(struct weak_ptr<Aircraft> *this, struct weak_ptr<Aircraft> *r);
 
@@ -2303,18 +2070,6 @@ struct _frama_c_vmt _frama_c_vmt_header;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
 
 struct _frama_c_vmt_content _frama_c_vmt[1];
-void bad_weak_ptr::Ctor(struct bad_weak_ptr const *this,
-                        struct bad_weak_ptr const *__frama_c_arg_0);
-
-void bad_weak_ptr::Ctor(struct bad_weak_ptr const *this,
-                        struct bad_weak_ptr *__frama_c_arg_0);
-
-struct bad_weak_ptr *operator=(struct bad_weak_ptr *this,
-                               struct bad_weak_ptr const *__frama_c_arg_0);
-
-struct bad_weak_ptr *operator=(struct bad_weak_ptr *this,
-                               struct bad_weak_ptr *__frama_c_arg_0);
-
 void bad_weak_ptr::Dtor(struct bad_weak_ptr const *this);
 
 struct _frama_c_vmt _frama_c_vmt_header;
@@ -2331,68 +2086,6 @@ void bad_weak_ptr::Ctor(struct bad_weak_ptr const *this)
   exception::Ctor(& this->_frama_c__ZN3stdE9exception);
   *((struct _frama_c_vmt **)this) = & _frama_c_vmt_header;
   return;
-}
-
-/*@ requires \separated(this, __frama_c_arg_0);
-    requires \valid_read(this);
-    requires \valid_read(__frama_c_arg_0);
- */
-void bad_weak_ptr::Ctor(struct bad_weak_ptr const *this,
-                        struct bad_weak_ptr const *__frama_c_arg_0)
-{
-  exception::Ctor(& this->_frama_c__ZN3stdE9exception,
-                  & __frama_c_arg_0->_frama_c__ZN3stdE9exception);
-  return;
-}
-
-void exception::Ctor(struct exception const *this,
-                     struct exception *__frama_c_arg_0)
-{
-  this->pvmt = __frama_c_arg_0->pvmt;
-  return;
-}
-
-/*@ requires \separated(this, __frama_c_arg_0);
-    requires \valid_read(this);
-    requires \valid(__frama_c_arg_0);
- */
-void bad_weak_ptr::Ctor(struct bad_weak_ptr const *this,
-                        struct bad_weak_ptr *__frama_c_arg_0)
-{
-  exception::Ctor(& this->_frama_c__ZN3stdE9exception,
-                  & __frama_c_arg_0->_frama_c__ZN3stdE9exception);
-  return;
-}
-
-/*@ requires \valid(this);
-    requires \valid_read(__frama_c_arg_0);
-    ensures \valid(\result);
- */
-struct bad_weak_ptr *operator=(struct bad_weak_ptr *this,
-                               struct bad_weak_ptr const *__frama_c_arg_0)
-{
-  operator=(& this->_frama_c__ZN3stdE9exception,
-            & __frama_c_arg_0->_frama_c__ZN3stdE9exception);
-  return this;
-}
-
-struct exception *operator=(struct exception *this,
-                            struct exception *__frama_c_arg_0)
-{
-  this->pvmt = __frama_c_arg_0->pvmt;
-  return this;
-}
-
-/*@ requires \valid(this);
-    requires \valid(__frama_c_arg_0);
-    ensures \valid(\result);
- */
-struct bad_weak_ptr *operator=(struct bad_weak_ptr *this,
-                               struct bad_weak_ptr *__frama_c_arg_0)
-{
-  operator=(& this->_frama_c__ZN3stdE9exception,
-            & __frama_c_arg_0->_frama_c__ZN3stdE9exception);
-  return this;
 }
 
 /*@ requires \valid_read(this); */
@@ -3333,9 +3026,6 @@ int posix_memalign(void **memptr, size_t alignment, size_t size);
  */
 int mkstemp(char *templat);
 
-void Aircraft::Ctor(struct Aircraft const *this,
-                    struct Aircraft const *__frama_c_arg_0);
-
 struct _frama_c_vmt _frama_c_vmt_header;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
 
@@ -3365,19 +3055,6 @@ void Aircraft::Ctor(struct Aircraft const *this)
 /*@ requires \valid_read(this); */
 void Aircraft::Dtor(struct Aircraft const *this)
 {
-  return;
-}
-
-/*@ requires \separated(this, __frama_c_arg_0);
-    requires \valid_read(this);
-    requires \valid_read(__frama_c_arg_0);
- */
-void Aircraft::Ctor(struct Aircraft const *this,
-                    struct Aircraft const *__frama_c_arg_0)
-{
-  this->m_id = __frama_c_arg_0->m_id;
-  this->m_flyCount = __frama_c_arg_0->m_flyCount;
-  weak_ptr<Aircraft>::Ctor(& this->myWingMan,& __frama_c_arg_0->myWingMan);
   return;
 }
 

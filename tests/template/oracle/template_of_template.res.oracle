@@ -30,38 +30,12 @@ struct e<a::c<a::b<char>>> {
 };
 void e<void>::Ctor(struct e<void> const *this);
 
-void e<void>::Ctor(struct e<void> const *this,
-                   struct e<void> const *__frama_c_arg_0);
-
-void e<void>::Ctor(struct e<void> const *this,
-                   struct e<void> *__frama_c_arg_0);
-
 struct _frama_c_vmt _frama_c_vmt_header;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
 
 struct _frama_c_vmt_content _frama_c_vmt[1];
 /*@ requires \valid_read(this); */
 void e<void>::Ctor(struct e<void> const *this)
-{
-  return;
-}
-
-/*@ requires \separated(this, __frama_c_arg_0);
-    requires \valid_read(this);
-    requires \valid_read(__frama_c_arg_0);
- */
-void e<void>::Ctor(struct e<void> const *this,
-                   struct e<void> const *__frama_c_arg_0)
-{
-  return;
-}
-
-/*@ requires \separated(this, __frama_c_arg_0);
-    requires \valid_read(this);
-    requires \valid(__frama_c_arg_0);
- */
-void e<void>::Ctor(struct e<void> const *this,
-                   struct e<void> *__frama_c_arg_0)
 {
   return;
 }
@@ -73,38 +47,12 @@ struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info =
    .pvmt = (struct _frama_c_vmt *)0};
 void e<a::c<a::b<char>>>::Ctor(struct e<a::c<a::b<char>>> const *this);
 
-void e<a::c<a::b<char>>>::Ctor(struct e<a::c<a::b<char>>> const *this,
-                               struct e<a::c<a::b<char>>> const *__frama_c_arg_0);
-
-void e<a::c<a::b<char>>>::Ctor(struct e<a::c<a::b<char>>> const *this,
-                               struct e<a::c<a::b<char>>> *__frama_c_arg_0);
-
 struct _frama_c_vmt _frama_c_vmt_header;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
 
 struct _frama_c_vmt_content _frama_c_vmt[1];
 /*@ requires \valid_read(this); */
 void e<a::c<a::b<char>>>::Ctor(struct e<a::c<a::b<char>>> const *this)
-{
-  return;
-}
-
-/*@ requires \separated(this, __frama_c_arg_0);
-    requires \valid_read(this);
-    requires \valid_read(__frama_c_arg_0);
- */
-void e<a::c<a::b<char>>>::Ctor(struct e<a::c<a::b<char>>> const *this,
-                               struct e<a::c<a::b<char>>> const *__frama_c_arg_0)
-{
-  return;
-}
-
-/*@ requires \separated(this, __frama_c_arg_0);
-    requires \valid_read(this);
-    requires \valid(__frama_c_arg_0);
- */
-void e<a::c<a::b<char>>>::Ctor(struct e<a::c<a::b<char>>> const *this,
-                               struct e<a::c<a::b<char>>> *__frama_c_arg_0)
 {
   return;
 }

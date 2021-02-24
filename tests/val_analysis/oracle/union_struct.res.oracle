@@ -1,9 +1,6 @@
 [kernel] Parsing tests/val_analysis/union_struct.cc (external front-end)
 Now output intermediate result
 [kernel] Warning: Assuming declared function Frama_C_memcpy can't throw any exception
-[kernel] Warning: Assuming declared function Frama_C_memcpy can't throw any exception
-[kernel] Warning: Assuming declared function Frama_C_memcpy can't throw any exception
-[kernel] Warning: Assuming declared function Frama_C_memcpy can't throw any exception
 [kernel:annot:missing-spec] tests/val_analysis/union_struct.cc:17: Warning: 
   Neither code nor specification for function Frama_C_memcpy, generating default assigns from the prototype
 [eva] Analyzing a complete application starting at main

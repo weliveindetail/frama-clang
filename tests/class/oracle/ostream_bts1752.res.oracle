@@ -30,12 +30,6 @@ struct ostream {
 };
 void ostream::Ctor(struct ostream const *this);
 
-void ostream::Ctor(struct ostream const *this,
-                   struct ostream const *__frama_c_arg_0);
-
-void ostream::Ctor(struct ostream const *this,
-                   struct ostream *__frama_c_arg_0);
-
 void ostream::Dtor(struct ostream const *this);
 
 struct _frama_c_vmt _frama_c_vmt_header;
@@ -47,26 +41,6 @@ struct ostream operator<<(struct ostream *this, char const *__frama_c_arg_0);
 
 /*@ requires \valid_read(this); */
 void ostream::Ctor(struct ostream const *this)
-{
-  return;
-}
-
-/*@ requires \separated(this, __frama_c_arg_0);
-    requires \valid_read(this);
-    requires \valid_read(__frama_c_arg_0);
- */
-void ostream::Ctor(struct ostream const *this,
-                   struct ostream const *__frama_c_arg_0)
-{
-  return;
-}
-
-/*@ requires \separated(this, __frama_c_arg_0);
-    requires \valid_read(this);
-    requires \valid(__frama_c_arg_0);
- */
-void ostream::Ctor(struct ostream const *this,
-                   struct ostream *__frama_c_arg_0)
 {
   return;
 }

@@ -26,10 +26,6 @@ struct A;
 struct A {
    int x ;
 };
-void A::Ctor(struct A const *this, struct A const *__frama_c_arg_0);
-
-void A::Ctor(struct A const *this, struct A *__frama_c_arg_0);
-
 struct _frama_c_vmt _frama_c_vmt_header;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
 
@@ -48,26 +44,6 @@ int conversion(int)(struct A *this)
   (this->x) ++;
   __retres = this->x;
   return __retres;
-}
-
-/*@ requires \separated(this, __frama_c_arg_0);
-    requires \valid_read(this);
-    requires \valid_read(__frama_c_arg_0);
- */
-void A::Ctor(struct A const *this, struct A const *__frama_c_arg_0)
-{
-  this->x = __frama_c_arg_0->x;
-  return;
-}
-
-/*@ requires \separated(this, __frama_c_arg_0);
-    requires \valid_read(this);
-    requires \valid(__frama_c_arg_0);
- */
-void A::Ctor(struct A const *this, struct A *__frama_c_arg_0)
-{
-  this->x = __frama_c_arg_0->x;
-  return;
 }
 
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info =

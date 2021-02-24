@@ -22,6 +22,10 @@
 
 open Intermediate_format
 
+(** attribute decorating member functions that are implicitly defined
+    by Frama-Clang. *)
+val fc_implicit_attr: string
+
 (** creates the name of the field corresponding to a direct base class. *)
 val create_base_field_name: Convert_env.env -> qualified_name -> tkind -> string
  

@@ -28,8 +28,6 @@ struct cls {
 };
 void cls::Ctor(struct cls const *this);
 
-void cls::Ctor(struct cls const *this, struct cls const *__frama_c_arg_0);
-
 struct _frama_c_vmt _frama_c_vmt_header;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
 
@@ -50,15 +48,6 @@ _Bool test(struct cls *this)
 
 /*@ requires \valid_read(this); */
 void cls::Ctor(struct cls const *this)
-{
-  return;
-}
-
-/*@ requires \separated(this, __frama_c_arg_0);
-    requires \valid_read(this);
-    requires \valid_read(__frama_c_arg_0);
- */
-void cls::Ctor(struct cls const *this, struct cls const *__frama_c_arg_0)
 {
   return;
 }

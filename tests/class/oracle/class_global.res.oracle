@@ -31,10 +31,6 @@ struct Foo {
    int x ;
    struct Bar y ;
 };
-void Bar::Ctor(struct Bar const *this, struct Bar const *__frama_c_arg_0);
-
-void Bar::Ctor(struct Bar const *this, struct Bar *__frama_c_arg_0);
-
 void Bar::Dtor(struct Bar const *this);
 
 struct _frama_c_vmt _frama_c_vmt_header;
@@ -45,26 +41,6 @@ struct _frama_c_vmt_content _frama_c_vmt[1];
 void Bar::Ctor(struct Bar const *this, int x)
 {
   this->t = x + x;
-  return;
-}
-
-/*@ requires \separated(this, __frama_c_arg_0);
-    requires \valid_read(this);
-    requires \valid_read(__frama_c_arg_0);
- */
-void Bar::Ctor(struct Bar const *this, struct Bar const *__frama_c_arg_0)
-{
-  this->t = __frama_c_arg_0->t;
-  return;
-}
-
-/*@ requires \separated(this, __frama_c_arg_0);
-    requires \valid_read(this);
-    requires \valid(__frama_c_arg_0);
- */
-void Bar::Ctor(struct Bar const *this, struct Bar *__frama_c_arg_0)
-{
-  this->t = __frama_c_arg_0->t;
   return;
 }
 
@@ -79,10 +55,6 @@ struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info =
    .base_classes = (struct _frama_c_rtti_name_info_content *)0,
    .number_of_base_classes = 0,
    .pvmt = (struct _frama_c_vmt *)0};
-void Foo::Ctor(struct Foo const *this, struct Foo const *__frama_c_arg_0);
-
-void Foo::Ctor(struct Foo const *this, struct Foo *__frama_c_arg_0);
-
 void Foo::Dtor(struct Foo const *this);
 
 struct _frama_c_vmt _frama_c_vmt_header;
@@ -96,28 +68,6 @@ void Foo::Ctor(struct Foo const *this)
   Bar::Ctor(& this->y,1);
   this->x = 42;
   this->y.t = 36;
-  return;
-}
-
-/*@ requires \separated(this, __frama_c_arg_0);
-    requires \valid_read(this);
-    requires \valid_read(__frama_c_arg_0);
- */
-void Foo::Ctor(struct Foo const *this, struct Foo const *__frama_c_arg_0)
-{
-  this->x = __frama_c_arg_0->x;
-  Bar::Ctor(& this->y,& __frama_c_arg_0->y);
-  return;
-}
-
-/*@ requires \separated(this, __frama_c_arg_0);
-    requires \valid_read(this);
-    requires \valid(__frama_c_arg_0);
- */
-void Foo::Ctor(struct Foo const *this, struct Foo *__frama_c_arg_0)
-{
-  this->x = __frama_c_arg_0->x;
-  Bar::Ctor(& this->y,& __frama_c_arg_0->y);
   return;
 }
 

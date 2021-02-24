@@ -26,10 +26,6 @@ struct Foo;
 struct Foo {
    int x ;
 };
-void Foo::Ctor(struct Foo const *this, struct Foo const *__frama_c_arg_0);
-
-void Foo::Ctor(struct Foo const *this, struct Foo *__frama_c_arg_0);
-
 void Foo::Dtor(struct Foo const *this);
 
 struct _frama_c_vmt _frama_c_vmt_header;
@@ -40,26 +36,6 @@ struct _frama_c_vmt_content _frama_c_vmt[1];
 void Foo::Ctor(struct Foo const *this, int _x)
 {
   this->x = _x;
-  return;
-}
-
-/*@ requires \separated(this, __frama_c_arg_0);
-    requires \valid_read(this);
-    requires \valid_read(__frama_c_arg_0);
- */
-void Foo::Ctor(struct Foo const *this, struct Foo const *__frama_c_arg_0)
-{
-  this->x = __frama_c_arg_0->x;
-  return;
-}
-
-/*@ requires \separated(this, __frama_c_arg_0);
-    requires \valid_read(this);
-    requires \valid(__frama_c_arg_0);
- */
-void Foo::Ctor(struct Foo const *this, struct Foo *__frama_c_arg_0)
-{
-  this->x = __frama_c_arg_0->x;
   return;
 }
 

@@ -28,12 +28,6 @@ struct Stack<6> {
 };
 void Stack<6>::Ctor(struct Stack<6> const *this);
 
-void Stack<6>::Ctor(struct Stack<6> const *this,
-                    struct Stack<6> const *__frama_c_arg_0);
-
-void Stack<6>::Ctor(struct Stack<6> const *this,
-                    struct Stack<6> *__frama_c_arg_0);
-
 struct _frama_c_vmt _frama_c_vmt_header;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
 
@@ -55,28 +49,6 @@ int size(struct Stack<6> const *this);
 /*@ requires \valid_read(this); */
 void Stack<6>::Ctor(struct Stack<6> const *this)
 {
-  return;
-}
-
-/*@ requires \separated(this, __frama_c_arg_0);
-    requires \valid_read(this);
-    requires \valid_read(__frama_c_arg_0);
- */
-void Stack<6>::Ctor(struct Stack<6> const *this,
-                    struct Stack<6> const *__frama_c_arg_0)
-{
-  this->sz = __frama_c_arg_0->sz;
-  return;
-}
-
-/*@ requires \separated(this, __frama_c_arg_0);
-    requires \valid_read(this);
-    requires \valid(__frama_c_arg_0);
- */
-void Stack<6>::Ctor(struct Stack<6> const *this,
-                    struct Stack<6> *__frama_c_arg_0)
-{
-  this->sz = __frama_c_arg_0->sz;
   return;
 }
 

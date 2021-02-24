@@ -35,65 +35,17 @@ struct A<1> {
 };
 void A<1>::Ctor(struct A<1> const *this);
 
-void A<1>::Ctor(struct A<1> const *this, struct A<1> const *__frama_c_arg_0);
-
-void A<1>::Ctor(struct A<1> const *this, struct A<1> *__frama_c_arg_0);
-
 struct _frama_c_vmt _frama_c_vmt_header;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
 
 struct _frama_c_vmt_content _frama_c_vmt[1];
 void anonymous_class_1::Ctor(struct anonymous_class_1 const *this);
 
-void anonymous_class_1::Dtor(struct anonymous_class_1 const *this);
-
-void anonymous_class_1::Ctor(struct anonymous_class_1 const *this,
-                             struct anonymous_class_1 const *__frama_c_arg_0);
-
-void anonymous_class_1::Ctor(struct anonymous_class_1 const *this,
-                             struct anonymous_class_1 *__frama_c_arg_0);
-
 void anonymous_class_2::Ctor(struct anonymous_class_2 const *this);
-
-void anonymous_class_2::Dtor(struct anonymous_class_2 const *this);
-
-void anonymous_class_2::Ctor(struct anonymous_class_2 const *this,
-                             struct anonymous_class_2 const *__frama_c_arg_0);
-
-void anonymous_class_2::Ctor(struct anonymous_class_2 const *this,
-                             struct anonymous_class_2 *__frama_c_arg_0);
 
 /*@ requires \valid_read(this); */
 void anonymous_class_2::Ctor(struct anonymous_class_2 const *this)
 {
-  return;
-}
-
-/*@ requires \valid_read(this); */
-void anonymous_class_2::Dtor(struct anonymous_class_2 const *this)
-{
-  return;
-}
-
-/*@ requires \separated(this, __frama_c_arg_0);
-    requires \valid_read(this);
-    requires \valid_read(__frama_c_arg_0);
- */
-void anonymous_class_2::Ctor(struct anonymous_class_2 const *this,
-                             struct anonymous_class_2 const *__frama_c_arg_0)
-{
-  this->x = __frama_c_arg_0->x;
-  return;
-}
-
-/*@ requires \separated(this, __frama_c_arg_0);
-    requires \valid_read(this);
-    requires \valid(__frama_c_arg_0);
- */
-void anonymous_class_2::Ctor(struct anonymous_class_2 const *this,
-                             struct anonymous_class_2 *__frama_c_arg_0)
-{
-  this->x = __frama_c_arg_0->x;
   return;
 }
 
@@ -105,58 +57,9 @@ void anonymous_class_1::Ctor(struct anonymous_class_1 const *this)
 }
 
 /*@ requires \valid_read(this); */
-void anonymous_class_1::Dtor(struct anonymous_class_1 const *this)
-{
-  anonymous_class_2::Dtor(& this->s2);
-  return;
-}
-
-/*@ requires \separated(this, __frama_c_arg_0);
-    requires \valid_read(this);
-    requires \valid_read(__frama_c_arg_0);
- */
-void anonymous_class_1::Ctor(struct anonymous_class_1 const *this,
-                             struct anonymous_class_1 const *__frama_c_arg_0)
-{
-  anonymous_class_2::Ctor(& this->s2,& __frama_c_arg_0->s2);
-  return;
-}
-
-/*@ requires \separated(this, __frama_c_arg_0);
-    requires \valid_read(this);
-    requires \valid(__frama_c_arg_0);
- */
-void anonymous_class_1::Ctor(struct anonymous_class_1 const *this,
-                             struct anonymous_class_1 *__frama_c_arg_0)
-{
-  anonymous_class_2::Ctor(& this->s2,& __frama_c_arg_0->s2);
-  return;
-}
-
-/*@ requires \valid_read(this); */
 void A<1>::Ctor(struct A<1> const *this)
 {
   anonymous_class_1::Ctor(& this->s1);
-  return;
-}
-
-/*@ requires \separated(this, __frama_c_arg_0);
-    requires \valid_read(this);
-    requires \valid_read(__frama_c_arg_0);
- */
-void A<1>::Ctor(struct A<1> const *this, struct A<1> const *__frama_c_arg_0)
-{
-  anonymous_class_1::Ctor(& this->s1,& __frama_c_arg_0->s1);
-  return;
-}
-
-/*@ requires \separated(this, __frama_c_arg_0);
-    requires \valid_read(this);
-    requires \valid(__frama_c_arg_0);
- */
-void A<1>::Ctor(struct A<1> const *this, struct A<1> *__frama_c_arg_0)
-{
-  anonymous_class_1::Ctor(& this->s1,& __frama_c_arg_0->s1);
   return;
 }
 

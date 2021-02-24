@@ -132,6 +132,7 @@ let is_initialized = ref false
 let init_cxx_normalization () =
   if not !is_initialized then begin
       is_initialized:=true;
+      Cil_printer.register_shallow_attribute Convert.fc_implicit_attr;
       Printer.update_printer (module Cxx_printer);
       (* enable exception removal unless it has explicitely been set to false
          on the command line.

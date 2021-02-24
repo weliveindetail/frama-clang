@@ -26,41 +26,19 @@ struct iterator;
 struct iterator {
    int a ;
 };
-void iterator::Ctor(struct iterator const *this);
-
 void iterator::Ctor(struct iterator const *this,
                     struct iterator const *__frama_c_arg_0);
-
-void iterator::Ctor(struct iterator const *this,
-                    struct iterator *__frama_c_arg_0);
 
 struct _frama_c_vmt _frama_c_vmt_header;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
 
 struct _frama_c_vmt_content _frama_c_vmt[1];
-/*@ requires \valid_read(this); */
-void iterator::Ctor(struct iterator const *this)
-{
-  return;
-}
-
 /*@ requires \separated(this, __frama_c_arg_0);
     requires \valid_read(this);
     requires \valid_read(__frama_c_arg_0);
  */
 void iterator::Ctor(struct iterator const *this,
                     struct iterator const *__frama_c_arg_0)
-{
-  this->a = __frama_c_arg_0->a;
-  return;
-}
-
-/*@ requires \separated(this, __frama_c_arg_0);
-    requires \valid_read(this);
-    requires \valid(__frama_c_arg_0);
- */
-void iterator::Ctor(struct iterator const *this,
-                    struct iterator *__frama_c_arg_0)
 {
   this->a = __frama_c_arg_0->a;
   return;

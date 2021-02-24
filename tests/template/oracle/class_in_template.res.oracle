@@ -40,14 +40,6 @@ struct sentry {
 struct basic_ostream<char> {
    struct basic_ios<char> _frama_c__ZN3stdE9basic_iosIcE ;
 };
-void ios_base::Dtor(struct ios_base const *this);
-
-void ios_base::Ctor(struct ios_base const *this,
-                    struct ios_base const *__frama_c_arg_0);
-
-void ios_base::Ctor(struct ios_base const *this,
-                    struct ios_base *__frama_c_arg_0);
-
 void ios_base::Ctor(struct ios_base const *this);
 
 struct _frama_c_vmt _frama_c_vmt_header;
@@ -55,32 +47,6 @@ struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
 
 struct _frama_c_vmt_content _frama_c_vmt[1];
 int const bad_bit = 1;
-/*@ requires \valid_read(this); */
-void ios_base::Dtor(struct ios_base const *this)
-{
-  return;
-}
-
-/*@ requires \separated(this, __frama_c_arg_0);
-    requires \valid_read(this);
-    requires \valid_read(__frama_c_arg_0);
- */
-void ios_base::Ctor(struct ios_base const *this,
-                    struct ios_base const *__frama_c_arg_0)
-{
-  return;
-}
-
-/*@ requires \separated(this, __frama_c_arg_0);
-    requires \valid_read(this);
-    requires \valid(__frama_c_arg_0);
- */
-void ios_base::Ctor(struct ios_base const *this,
-                    struct ios_base *__frama_c_arg_0)
-{
-  return;
-}
-
 /*@ requires \valid_read(this); */
 void ios_base::Ctor(struct ios_base const *this)
 {
@@ -92,14 +58,6 @@ struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info =
    .base_classes = (struct _frama_c_rtti_name_info_content *)0,
    .number_of_base_classes = 0,
    .pvmt = (struct _frama_c_vmt *)0};
-void basic_ios<char>::Dtor(struct basic_ios<char> const *this);
-
-void basic_ios<char>::Ctor(struct basic_ios<char> const *this,
-                           struct basic_ios<char> const *__frama_c_arg_0);
-
-void basic_ios<char>::Ctor(struct basic_ios<char> const *this,
-                           struct basic_ios<char> *__frama_c_arg_0);
-
 struct _frama_c_vmt _frama_c_vmt_header;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
 
@@ -115,39 +73,6 @@ void basic_ios<char>::Ctor(struct basic_ios<char> const *this)
 
 /*@ requires \valid(this); */
 void setstate(struct basic_ios<char> *this, int state);
-
-/*@ requires \valid_read(this); */
-void basic_ios<char>::Dtor(struct basic_ios<char> const *this)
-{
-  ios_base::Dtor(& this->_frama_c__ZN3stdE8ios_base);
-  return;
-}
-
-/*@ requires \separated(this, __frama_c_arg_0);
-    requires \valid_read(this);
-    requires \valid_read(__frama_c_arg_0);
- */
-void basic_ios<char>::Ctor(struct basic_ios<char> const *this,
-                           struct basic_ios<char> const *__frama_c_arg_0)
-{
-  ios_base::Ctor(& this->_frama_c__ZN3stdE8ios_base,
-                 & __frama_c_arg_0->_frama_c__ZN3stdE8ios_base);
-  this->_M_tie = __frama_c_arg_0->_M_tie;
-  return;
-}
-
-/*@ requires \separated(this, __frama_c_arg_0);
-    requires \valid_read(this);
-    requires \valid(__frama_c_arg_0);
- */
-void basic_ios<char>::Ctor(struct basic_ios<char> const *this,
-                           struct basic_ios<char> *__frama_c_arg_0)
-{
-  ios_base::Ctor(& this->_frama_c__ZN3stdE8ios_base,
-                 & __frama_c_arg_0->_frama_c__ZN3stdE8ios_base);
-  this->_M_tie = __frama_c_arg_0->_M_tie;
-  return;
-}
 
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info =
   {.name = "basic_ios",
@@ -181,12 +106,6 @@ struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info =
    .pvmt = (struct _frama_c_vmt *)0};
 void basic_ostream<char>::Ctor(struct basic_ostream<char> const *this);
 
-void basic_ostream<char>::Ctor(struct basic_ostream<char> const *this,
-                               struct basic_ostream<char> const *__frama_c_arg_0);
-
-void basic_ostream<char>::Ctor(struct basic_ostream<char> const *this,
-                               struct basic_ostream<char> *__frama_c_arg_0);
-
 struct _frama_c_vmt _frama_c_vmt_header;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
 
@@ -205,30 +124,6 @@ void sentry::Dtor(struct sentry const *this);
 void basic_ostream<char>::Ctor(struct basic_ostream<char> const *this)
 {
   basic_ios<char>::Ctor(& this->_frama_c__ZN3stdE9basic_iosIcE);
-  return;
-}
-
-/*@ requires \separated(this, __frama_c_arg_0);
-    requires \valid_read(this);
-    requires \valid_read(__frama_c_arg_0);
- */
-void basic_ostream<char>::Ctor(struct basic_ostream<char> const *this,
-                               struct basic_ostream<char> const *__frama_c_arg_0)
-{
-  basic_ios<char>::Ctor(& this->_frama_c__ZN3stdE9basic_iosIcE,
-                        & __frama_c_arg_0->_frama_c__ZN3stdE9basic_iosIcE);
-  return;
-}
-
-/*@ requires \separated(this, __frama_c_arg_0);
-    requires \valid_read(this);
-    requires \valid(__frama_c_arg_0);
- */
-void basic_ostream<char>::Ctor(struct basic_ostream<char> const *this,
-                               struct basic_ostream<char> *__frama_c_arg_0)
-{
-  basic_ios<char>::Ctor(& this->_frama_c__ZN3stdE9basic_iosIcE,
-                        & __frama_c_arg_0->_frama_c__ZN3stdE9basic_iosIcE);
   return;
 }
 

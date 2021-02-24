@@ -30,12 +30,6 @@ struct bar {
    int y ;
    int z ;
 };
-void foo<bar>::Ctor(struct foo<bar> const *this,
-                    struct foo<bar> const *__frama_c_arg_0);
-
-void foo<bar>::Ctor(struct foo<bar> const *this,
-                    struct foo<bar> *__frama_c_arg_0);
-
 struct _frama_c_vmt _frama_c_vmt_header;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
 
@@ -58,37 +52,11 @@ struct bar *get_x(struct foo<bar> *this)
 /*@ requires \valid(this); */
 void set_x(struct foo<bar> *this, struct bar *_x);
 
-/*@ requires \separated(this, __frama_c_arg_0);
-    requires \valid_read(this);
-    requires \valid_read(__frama_c_arg_0);
- */
-void foo<bar>::Ctor(struct foo<bar> const *this,
-                    struct foo<bar> const *__frama_c_arg_0)
-{
-  this->x = __frama_c_arg_0->x;
-  return;
-}
-
-/*@ requires \separated(this, __frama_c_arg_0);
-    requires \valid_read(this);
-    requires \valid(__frama_c_arg_0);
- */
-void foo<bar>::Ctor(struct foo<bar> const *this,
-                    struct foo<bar> *__frama_c_arg_0)
-{
-  this->x = __frama_c_arg_0->x;
-  return;
-}
-
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info =
   {.name = "foo",
    .base_classes = (struct _frama_c_rtti_name_info_content *)0,
    .number_of_base_classes = 0,
    .pvmt = (struct _frama_c_vmt *)0};
-void bar::Ctor(struct bar const *this, struct bar const *__frama_c_arg_0);
-
-void bar::Ctor(struct bar const *this, struct bar *__frama_c_arg_0);
-
 struct _frama_c_vmt _frama_c_vmt_header;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
 
@@ -113,28 +81,6 @@ int get_y(struct bar *this)
 void incr(struct bar *this)
 {
   (this->y) ++;
-  return;
-}
-
-/*@ requires \separated(this, __frama_c_arg_0);
-    requires \valid_read(this);
-    requires \valid_read(__frama_c_arg_0);
- */
-void bar::Ctor(struct bar const *this, struct bar const *__frama_c_arg_0)
-{
-  this->y = __frama_c_arg_0->y;
-  this->z = __frama_c_arg_0->z;
-  return;
-}
-
-/*@ requires \separated(this, __frama_c_arg_0);
-    requires \valid_read(this);
-    requires \valid(__frama_c_arg_0);
- */
-void bar::Ctor(struct bar const *this, struct bar *__frama_c_arg_0)
-{
-  this->y = __frama_c_arg_0->y;
-  this->z = __frama_c_arg_0->z;
   return;
 }
 

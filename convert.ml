@@ -3480,8 +3480,13 @@ and convert_class_component (env, implicits, types, fields, others) meth =
             ~variadic ~implicit ~extern_c spec
       in
       let all_args = constify_receiver kind all_args in
-      let env, (rt,name) =
+      let env, (rt,(n,dt,a,loc as name)) =
         make_prototype cloc benv name kind return_type all_args variadic false
+      in
+      let name =
+        if implicit then
+          (n,dt,(fc_implicit_attr,[])::a,loc)
+        else name
       in
       let has_virtual_base = Class.has_virtual_base_class class_name in
       (match body with

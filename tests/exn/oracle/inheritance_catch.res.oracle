@@ -39,12 +39,6 @@ struct D {
    struct B _frama_c__Z1B ;
    struct C _frama_c__Z1C ;
 };
-void A::Ctor(struct A const *this, struct A const *__frama_c_arg_0);
-
-void A::Ctor(struct A const *this, struct A *__frama_c_arg_0);
-
-void A::Dtor(struct A const *this);
-
 enum __fc_exn_enum {
     __fc_exn_kind___fc_S_Z1D = 3,
     __fc_exn_kind___fc_S_Z1C = 2,
@@ -78,43 +72,11 @@ void A::Ctor(struct A const *this, int _x)
   return;
 }
 
-/*@ requires \separated(this, __frama_c_arg_0);
-    requires \valid_read(this);
-    requires \valid_read(__frama_c_arg_0);
- */
-void A::Ctor(struct A const *this, struct A const *__frama_c_arg_0)
-{
-  this->x = __frama_c_arg_0->x;
-  return;
-}
-
-/*@ requires \separated(this, __frama_c_arg_0);
-    requires \valid_read(this);
-    requires \valid(__frama_c_arg_0);
- */
-void A::Ctor(struct A const *this, struct A *__frama_c_arg_0)
-{
-  this->x = __frama_c_arg_0->x;
-  return;
-}
-
-/*@ requires \valid_read(this); */
-void A::Dtor(struct A const *this)
-{
-  return;
-}
-
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info =
   {.name = "A",
    .base_classes = (struct _frama_c_rtti_name_info_content *)0,
    .number_of_base_classes = 0,
    .pvmt = (struct _frama_c_vmt *)0};
-void B::Ctor(struct B const *this, struct B const *__frama_c_arg_0);
-
-void B::Ctor(struct B const *this, struct B *__frama_c_arg_0);
-
-void B::Dtor(struct B const *this);
-
 struct _frama_c_vmt _frama_c_vmt_header;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
 
@@ -127,44 +89,11 @@ void B::Ctor(struct B const *this, int _x)
   return;
 }
 
-/*@ requires \separated(this, __frama_c_arg_0);
-    requires \valid_read(this);
-    requires \valid_read(__frama_c_arg_0);
- */
-void B::Ctor(struct B const *this, struct B const *__frama_c_arg_0)
-{
-  A::Ctor(& this->_frama_c__Z1A,& __frama_c_arg_0->_frama_c__Z1A);
-  return;
-}
-
-/*@ requires \separated(this, __frama_c_arg_0);
-    requires \valid_read(this);
-    requires \valid(__frama_c_arg_0);
- */
-void B::Ctor(struct B const *this, struct B *__frama_c_arg_0)
-{
-  A::Ctor(& this->_frama_c__Z1A,& __frama_c_arg_0->_frama_c__Z1A);
-  return;
-}
-
-/*@ requires \valid_read(this); */
-void B::Dtor(struct B const *this)
-{
-  A::Dtor(& this->_frama_c__Z1A);
-  return;
-}
-
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info =
   {.name = "B",
    .base_classes = (struct _frama_c_rtti_name_info_content *)0,
    .number_of_base_classes = 0,
    .pvmt = (struct _frama_c_vmt *)0};
-void C::Ctor(struct C const *this, struct C const *__frama_c_arg_0);
-
-void C::Ctor(struct C const *this, struct C *__frama_c_arg_0);
-
-void C::Dtor(struct C const *this);
-
 struct _frama_c_vmt _frama_c_vmt_header;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
 
@@ -177,44 +106,11 @@ void C::Ctor(struct C const *this, int _x)
   return;
 }
 
-/*@ requires \separated(this, __frama_c_arg_0);
-    requires \valid_read(this);
-    requires \valid_read(__frama_c_arg_0);
- */
-void C::Ctor(struct C const *this, struct C const *__frama_c_arg_0)
-{
-  A::Ctor(& this->_frama_c__Z1A,& __frama_c_arg_0->_frama_c__Z1A);
-  return;
-}
-
-/*@ requires \separated(this, __frama_c_arg_0);
-    requires \valid_read(this);
-    requires \valid(__frama_c_arg_0);
- */
-void C::Ctor(struct C const *this, struct C *__frama_c_arg_0)
-{
-  A::Ctor(& this->_frama_c__Z1A,& __frama_c_arg_0->_frama_c__Z1A);
-  return;
-}
-
-/*@ requires \valid_read(this); */
-void C::Dtor(struct C const *this)
-{
-  A::Dtor(& this->_frama_c__Z1A);
-  return;
-}
-
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info =
   {.name = "C",
    .base_classes = (struct _frama_c_rtti_name_info_content *)0,
    .number_of_base_classes = 0,
    .pvmt = (struct _frama_c_vmt *)0};
-void D::Ctor(struct D const *this, struct D const *__frama_c_arg_0);
-
-void D::Ctor(struct D const *this, struct D *__frama_c_arg_0);
-
-void D::Dtor(struct D const *this);
-
 struct _frama_c_vmt _frama_c_vmt_header;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
 
@@ -225,36 +121,6 @@ void D::Ctor(struct D const *this, int _x)
 {
   B::Ctor(& this->_frama_c__Z1B,_x - 1);
   C::Ctor(& this->_frama_c__Z1C,_x);
-  return;
-}
-
-/*@ requires \separated(this, __frama_c_arg_0);
-    requires \valid_read(this);
-    requires \valid_read(__frama_c_arg_0);
- */
-void D::Ctor(struct D const *this, struct D const *__frama_c_arg_0)
-{
-  B::Ctor(& this->_frama_c__Z1B,& __frama_c_arg_0->_frama_c__Z1B);
-  C::Ctor(& this->_frama_c__Z1C,& __frama_c_arg_0->_frama_c__Z1C);
-  return;
-}
-
-/*@ requires \separated(this, __frama_c_arg_0);
-    requires \valid_read(this);
-    requires \valid(__frama_c_arg_0);
- */
-void D::Ctor(struct D const *this, struct D *__frama_c_arg_0)
-{
-  B::Ctor(& this->_frama_c__Z1B,& __frama_c_arg_0->_frama_c__Z1B);
-  C::Ctor(& this->_frama_c__Z1C,& __frama_c_arg_0->_frama_c__Z1C);
-  return;
-}
-
-/*@ requires \valid_read(this); */
-void D::Dtor(struct D const *this)
-{
-  C::Dtor(& this->_frama_c__Z1C);
-  B::Dtor(& this->_frama_c__Z1B);
   return;
 }
 

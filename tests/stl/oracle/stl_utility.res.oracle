@@ -901,12 +901,6 @@ type move_if_noexcept<int>(int *x)
 
 void piecewise_construct_t::Ctor(struct piecewise_construct_t const *this);
 
-void piecewise_construct_t::Ctor(struct piecewise_construct_t const *this,
-                                 struct piecewise_construct_t const *__frama_c_arg_0);
-
-void piecewise_construct_t::Ctor(struct piecewise_construct_t const *this,
-                                 struct piecewise_construct_t *__frama_c_arg_0);
-
 void piecewise_construct_t::Dtor(struct piecewise_construct_t const *this);
 
 struct _frama_c_vmt _frama_c_vmt_header;
@@ -915,26 +909,6 @@ struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
 struct _frama_c_vmt_content _frama_c_vmt[1];
 /*@ requires \valid_read(this); */
 void piecewise_construct_t::Ctor(struct piecewise_construct_t const *this)
-{
-  return;
-}
-
-/*@ requires \separated(this, __frama_c_arg_0);
-    requires \valid_read(this);
-    requires \valid_read(__frama_c_arg_0);
- */
-void piecewise_construct_t::Ctor(struct piecewise_construct_t const *this,
-                                 struct piecewise_construct_t const *__frama_c_arg_0)
-{
-  return;
-}
-
-/*@ requires \separated(this, __frama_c_arg_0);
-    requires \valid_read(this);
-    requires \valid(__frama_c_arg_0);
- */
-void piecewise_construct_t::Ctor(struct piecewise_construct_t const *this,
-                                 struct piecewise_construct_t *__frama_c_arg_0)
 {
   return;
 }
@@ -961,12 +935,6 @@ struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info =
    .base_classes = (struct _frama_c_rtti_name_info_content *)0,
    .number_of_base_classes = 0,
    .pvmt = (struct _frama_c_vmt *)0};
-void pair<int&,bool>::Ctor(struct pair<int&,bool> const *this,
-                           struct pair<int&,bool> const *__frama_c_arg_0);
-
-void pair<int&,bool>::Ctor(struct pair<int&,bool> const *this,
-                           struct pair<int&,bool> *__frama_c_arg_0);
-
 struct _frama_c_vmt _frama_c_vmt_header;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
 
@@ -1012,41 +980,11 @@ struct pair<int&,bool> *operator=<int,bool,void>(struct pair<int&,bool> *this,
     requires \valid(p); */
 void swap(struct pair<int&,bool> *this, struct pair<int&,bool> *p);
 
-/*@ requires \separated(this, __frama_c_arg_0);
-    requires \valid_read(this);
-    requires \valid_read(__frama_c_arg_0);
- */
-void pair<int&,bool>::Ctor(struct pair<int&,bool> const *this,
-                           struct pair<int&,bool> const *__frama_c_arg_0)
-{
-  this->first = __frama_c_arg_0->first;
-  this->second = __frama_c_arg_0->second;
-  return;
-}
-
-/*@ requires \separated(this, __frama_c_arg_0);
-    requires \valid_read(this);
-    requires \valid(__frama_c_arg_0);
- */
-void pair<int&,bool>::Ctor(struct pair<int&,bool> const *this,
-                           struct pair<int&,bool> *__frama_c_arg_0)
-{
-  this->first = __frama_c_arg_0->first;
-  this->second = __frama_c_arg_0->second;
-  return;
-}
-
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info =
   {.name = "pair",
    .base_classes = (struct _frama_c_rtti_name_info_content *)0,
    .number_of_base_classes = 0,
    .pvmt = (struct _frama_c_vmt *)0};
-void pair<int,bool>::Ctor(struct pair<int,bool> const *this,
-                          struct pair<int,bool> const *__frama_c_arg_0);
-
-void pair<int,bool>::Ctor(struct pair<int,bool> const *this,
-                          struct pair<int,bool> *__frama_c_arg_0);
-
 void pair<int,bool>::Dtor(struct pair<int,bool> const *this);
 
 struct _frama_c_vmt _frama_c_vmt_header;
@@ -1068,30 +1006,6 @@ void pair<int,bool>::Ctor(struct pair<int,bool> const *this, int const *x,
 /*@ requires \valid(this);
     requires \valid(p); */
 void swap(struct pair<int,bool> *this, struct pair<int,bool> *p);
-
-/*@ requires \separated(this, __frama_c_arg_0);
-    requires \valid_read(this);
-    requires \valid_read(__frama_c_arg_0);
- */
-void pair<int,bool>::Ctor(struct pair<int,bool> const *this,
-                          struct pair<int,bool> const *__frama_c_arg_0)
-{
-  this->first = __frama_c_arg_0->first;
-  this->second = __frama_c_arg_0->second;
-  return;
-}
-
-/*@ requires \separated(this, __frama_c_arg_0);
-    requires \valid_read(this);
-    requires \valid(__frama_c_arg_0);
- */
-void pair<int,bool>::Ctor(struct pair<int,bool> const *this,
-                          struct pair<int,bool> *__frama_c_arg_0)
-{
-  this->first = __frama_c_arg_0->first;
-  this->second = __frama_c_arg_0->second;
-  return;
-}
 
 /*@ requires \valid_read(this); */
 void pair<int,bool>::Dtor(struct pair<int,bool> const *this)
@@ -1119,12 +1033,6 @@ struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info =
    .base_classes = (struct _frama_c_rtti_name_info_content *)0,
    .number_of_base_classes = 0,
    .pvmt = (struct _frama_c_vmt *)0};
-void pair<int,double>::Ctor(struct pair<int,double> const *this,
-                            struct pair<int,double> const *__frama_c_arg_0);
-
-void pair<int,double>::Ctor(struct pair<int,double> const *this,
-                            struct pair<int,double> *__frama_c_arg_0);
-
 struct _frama_c_vmt _frama_c_vmt_header;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
 
@@ -1155,30 +1063,6 @@ void swap(struct pair<int,double> *this, struct pair<int,double> *p)
 {
   swap<int>(& this->first,& p->first);
   swap<double>(& this->second,& p->second);
-  return;
-}
-
-/*@ requires \separated(this, __frama_c_arg_0);
-    requires \valid_read(this);
-    requires \valid_read(__frama_c_arg_0);
- */
-void pair<int,double>::Ctor(struct pair<int,double> const *this,
-                            struct pair<int,double> const *__frama_c_arg_0)
-{
-  this->first = __frama_c_arg_0->first;
-  this->second = __frama_c_arg_0->second;
-  return;
-}
-
-/*@ requires \separated(this, __frama_c_arg_0);
-    requires \valid_read(this);
-    requires \valid(__frama_c_arg_0);
- */
-void pair<int,double>::Ctor(struct pair<int,double> const *this,
-                            struct pair<int,double> *__frama_c_arg_0)
-{
-  this->first = __frama_c_arg_0->first;
-  this->second = __frama_c_arg_0->second;
   return;
 }
 
@@ -1304,10 +1188,6 @@ type const *get<0,int,double>(struct pair<int,double> const *p);
     ensures \valid_read(\result); */
 type const *get<1,int,double>(struct pair<int,double> const *p);
 
-void S::Ctor(struct S const *this, struct S const *__frama_c_arg_0);
-
-void S::Ctor(struct S const *this, struct S *__frama_c_arg_0);
-
 struct _frama_c_vmt _frama_c_vmt_header;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
 
@@ -1316,26 +1196,6 @@ struct _frama_c_vmt_content _frama_c_vmt[1];
 void S::Ctor(struct S const *this, int y)
 {
   this->x = y;
-  return;
-}
-
-/*@ requires \separated(this, __frama_c_arg_0);
-    requires \valid_read(this);
-    requires \valid_read(__frama_c_arg_0);
- */
-void S::Ctor(struct S const *this, struct S const *__frama_c_arg_0)
-{
-  this->x = __frama_c_arg_0->x;
-  return;
-}
-
-/*@ requires \separated(this, __frama_c_arg_0);
-    requires \valid_read(this);
-    requires \valid(__frama_c_arg_0);
- */
-void S::Ctor(struct S const *this, struct S *__frama_c_arg_0)
-{
-  this->x = __frama_c_arg_0->x;
   return;
 }
 

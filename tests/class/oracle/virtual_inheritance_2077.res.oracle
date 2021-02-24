@@ -39,105 +39,31 @@ struct C {
    struct A _frama_c__Z1A ;
 };
 struct D;
-struct D_frama_c_bare {
-   struct B _frama_c__Z1B ;
-   struct C_frama_c_bare _frama_c__Z1C ;
-   struct _frama_c_vmt *pvmt ;
-};
 struct D {
    struct B _frama_c__Z1B ;
    struct C_frama_c_bare _frama_c__Z1C ;
    struct _frama_c_vmt *pvmt ;
    struct A _frama_c__Z1A ;
 };
-struct A *operator=(struct A *this, struct A const *__frama_c_arg_0);
-
-struct A *operator=(struct A *this, struct A *__frama_c_arg_0);
-
-void A::Dtor(struct A const *this);
-
 struct _frama_c_vmt _frama_c_vmt_header;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
 
 struct _frama_c_vmt_content _frama_c_vmt[1];
-/*@ requires \valid(this);
-    requires \valid_read(__frama_c_arg_0);
-    ensures \valid(\result);
- */
-struct A *operator=(struct A *this, struct A const *__frama_c_arg_0)
-{
-  return this;
-}
-
-/*@ requires \valid(this);
-    requires \valid(__frama_c_arg_0);
-    ensures \valid(\result);
- */
-struct A *operator=(struct A *this, struct A *__frama_c_arg_0)
-{
-  return this;
-}
-
-/*@ requires \valid_read(this); */
-void A::Dtor(struct A const *this)
-{
-  return;
-}
-
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info =
   {.name = "A",
    .base_classes = (struct _frama_c_rtti_name_info_content *)0,
    .number_of_base_classes = 0,
    .pvmt = (struct _frama_c_vmt *)0};
-struct B *operator=(struct B *this, struct B const *__frama_c_arg_0);
-
-struct B *operator=(struct B *this, struct B *__frama_c_arg_0);
-
-void B::Dtor(struct B const *this);
-
 struct _frama_c_vmt _frama_c_vmt_header;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
 
 struct _frama_c_rtti_name_info_content _frama_c_base_classes[1];
 struct _frama_c_vmt_content _frama_c_vmt[1];
-/*@ requires \valid(this);
-    requires \valid_read(__frama_c_arg_0);
-    ensures \valid(\result);
- */
-struct B *operator=(struct B *this, struct B const *__frama_c_arg_0)
-{
-  operator=(& this->_frama_c__Z1A,& __frama_c_arg_0->_frama_c__Z1A);
-  return this;
-}
-
-/*@ requires \valid(this);
-    requires \valid(__frama_c_arg_0);
-    ensures \valid(\result);
- */
-struct B *operator=(struct B *this, struct B *__frama_c_arg_0)
-{
-  operator=(& this->_frama_c__Z1A,& __frama_c_arg_0->_frama_c__Z1A);
-  return this;
-}
-
-/*@ requires \valid_read(this); */
-void B::Dtor(struct B const *this)
-{
-  A::Dtor(& this->_frama_c__Z1A);
-  return;
-}
-
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info =
   {.name = "B",
    .base_classes = (struct _frama_c_rtti_name_info_content *)0,
    .number_of_base_classes = 0,
    .pvmt = (struct _frama_c_vmt *)0};
-struct C *operator=(struct C *this, struct C const *__frama_c_arg_0);
-
-struct C *operator=(struct C *this, struct C *__frama_c_arg_0);
-
-void C::Dtor(struct C const *this);
-
 struct _frama_c_vmt _frama_c_vmt_header;
 
 struct _frama_c_vmt _frama_c_vmt_header_for_shift_0;
@@ -146,57 +72,6 @@ struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
 struct _frama_c_rtti_name_info_content _frama_c_base_classes[1];
 
 struct _frama_c_vmt_content _frama_c_vmt[1];
-
-struct C_frama_c_bare *operator=(struct C_frama_c_bare *this,
-                                 struct C_frama_c_bare const *__frama_c_arg_0)
-{
-  this->pvmt = __frama_c_arg_0->pvmt;
-  return this;
-}
-
-/*@ requires \valid(this);
-    requires \valid_read(__frama_c_arg_0);
-    ensures \valid(\result);
- */
-struct C *operator=(struct C *this, struct C const *__frama_c_arg_0)
-{
-  operator=(& this->_frama_c__Z1A,& __frama_c_arg_0->_frama_c__Z1A);
-  operator=((struct C_frama_c_bare *)this,
-            (struct C_frama_c_bare const *)__frama_c_arg_0);
-  return this;
-}
-
-struct C_frama_c_bare *operator=(struct C_frama_c_bare *this,
-                                 struct C_frama_c_bare *__frama_c_arg_0)
-{
-  this->pvmt = __frama_c_arg_0->pvmt;
-  return this;
-}
-
-/*@ requires \valid(this);
-    requires \valid(__frama_c_arg_0);
-    ensures \valid(\result);
- */
-struct C *operator=(struct C *this, struct C *__frama_c_arg_0)
-{
-  operator=(& this->_frama_c__Z1A,& __frama_c_arg_0->_frama_c__Z1A);
-  operator=((struct C_frama_c_bare *)this,
-            (struct C_frama_c_bare *)__frama_c_arg_0);
-  return this;
-}
-
-void C::Dtor(struct C_frama_c_bare const *this)
-{
-  return;
-}
-
-/*@ requires \valid_read(this); */
-void C::Dtor(struct C const *this)
-{
-  C::Dtor((struct C_frama_c_bare const *)this);
-  A::Dtor(& this->_frama_c__Z1A);
-  return;
-}
 
 int _frama_c_find_dynamic_cast_aux(struct _frama_c_rtti_name_info_node *target_info,
                                    struct _frama_c_rtti_name_info_content *concrete_base,
@@ -440,12 +315,6 @@ struct _frama_c_vmt _frama_c_vmt_header =
   {.table = _frama_c_vmt,
    .table_size = 1,
    .rtti_info = & _frama_c_rtti_name_info};
-struct D *operator=(struct D *this, struct D const *__frama_c_arg_0);
-
-struct D *operator=(struct D *this, struct D *__frama_c_arg_0);
-
-void D::Dtor(struct D const *this);
-
 struct _frama_c_vmt _frama_c_vmt_header;
 
 struct _frama_c_vmt _frama_c_vmt_header_for_shift_0;
@@ -454,63 +323,6 @@ struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
 struct _frama_c_rtti_name_info_content _frama_c_base_classes[3];
 
 struct _frama_c_vmt_content _frama_c_vmt[1];
-
-struct D_frama_c_bare *operator=(struct D_frama_c_bare *this,
-                                 struct D_frama_c_bare const *__frama_c_arg_0)
-{
-  operator=(& this->_frama_c__Z1B,& __frama_c_arg_0->_frama_c__Z1B);
-  operator=(& this->_frama_c__Z1C,& __frama_c_arg_0->_frama_c__Z1C);
-  this->pvmt = __frama_c_arg_0->pvmt;
-  return this;
-}
-
-/*@ requires \valid(this);
-    requires \valid_read(__frama_c_arg_0);
-    ensures \valid(\result);
- */
-struct D *operator=(struct D *this, struct D const *__frama_c_arg_0)
-{
-  operator=(& this->_frama_c__Z1A,& __frama_c_arg_0->_frama_c__Z1A);
-  operator=((struct D_frama_c_bare *)this,
-            (struct D_frama_c_bare const *)__frama_c_arg_0);
-  return this;
-}
-
-struct D_frama_c_bare *operator=(struct D_frama_c_bare *this,
-                                 struct D_frama_c_bare *__frama_c_arg_0)
-{
-  operator=(& this->_frama_c__Z1B,& __frama_c_arg_0->_frama_c__Z1B);
-  operator=(& this->_frama_c__Z1C,& __frama_c_arg_0->_frama_c__Z1C);
-  this->pvmt = __frama_c_arg_0->pvmt;
-  return this;
-}
-
-/*@ requires \valid(this);
-    requires \valid(__frama_c_arg_0);
-    ensures \valid(\result);
- */
-struct D *operator=(struct D *this, struct D *__frama_c_arg_0)
-{
-  operator=(& this->_frama_c__Z1A,& __frama_c_arg_0->_frama_c__Z1A);
-  operator=((struct D_frama_c_bare *)this,
-            (struct D_frama_c_bare *)__frama_c_arg_0);
-  return this;
-}
-
-void D::Dtor(struct D_frama_c_bare const *this)
-{
-  C::Dtor(& this->_frama_c__Z1C);
-  B::Dtor(& this->_frama_c__Z1B);
-  return;
-}
-
-/*@ requires \valid_read(this); */
-void D::Dtor(struct D const *this)
-{
-  D::Dtor((struct D_frama_c_bare const *)this);
-  A::Dtor(& this->_frama_c__Z1A);
-  return;
-}
 
 struct _frama_c_vmt_content _frama_c_vmt[1] =
   {{.method_ptr = (void (*)())0,

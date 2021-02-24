@@ -57,10 +57,6 @@ struct B {
    int x ;
    int y ;
 };
-void A::Ctor(struct A const *this, struct A const *__frama_c_arg_0);
-
-void A::Ctor(struct A const *this, struct A *__frama_c_arg_0);
-
 void A::Dtor(struct A const *this);
 
 struct _frama_c_vmt _frama_c_vmt_header;
@@ -75,28 +71,6 @@ void A::Ctor(struct A const *this, int _x, int _y)
   return;
 }
 
-/*@ requires \separated(this, __frama_c_arg_0);
-    requires \valid_read(this);
-    requires \valid_read(__frama_c_arg_0);
- */
-void A::Ctor(struct A const *this, struct A const *__frama_c_arg_0)
-{
-  this->x = __frama_c_arg_0->x;
-  this->y = __frama_c_arg_0->y;
-  return;
-}
-
-/*@ requires \separated(this, __frama_c_arg_0);
-    requires \valid_read(this);
-    requires \valid(__frama_c_arg_0);
- */
-void A::Ctor(struct A const *this, struct A *__frama_c_arg_0)
-{
-  this->x = __frama_c_arg_0->x;
-  this->y = __frama_c_arg_0->y;
-  return;
-}
-
 /*@ requires \valid_read(this); */
 void A::Dtor(struct A const *this)
 {
@@ -108,18 +82,10 @@ struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info =
    .base_classes = (struct _frama_c_rtti_name_info_content *)0,
    .number_of_base_classes = 0,
    .pvmt = (struct _frama_c_vmt *)0};
-void B::Dtor(struct B const *this);
-
 struct _frama_c_vmt _frama_c_vmt_header;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
 
 struct _frama_c_vmt_content _frama_c_vmt[1];
-/*@ requires \valid_read(this); */
-void B::Dtor(struct B const *this)
-{
-  return;
-}
-
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info =
   {.name = "B",
    .base_classes = (struct _frama_c_rtti_name_info_content *)0,

@@ -42,8 +42,6 @@ struct D {
    struct C _frama_c__Z1C ;
    struct C _origin ;
 };
-void A::Ctor(struct A const *this, struct A const *__frama_c_arg_0);
-
 struct _frama_c_vmt _frama_c_vmt_header;
 
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
@@ -113,17 +111,6 @@ struct A *operator=(struct A *this, struct A const *source)
   (*((void (*)(struct A *, struct A const *))__virtual_tmp_0->method_ptr))
   ((struct A *)((char *)this - __virtual_tmp_0->shift_this),source);
   return this;
-}
-
-/*@ requires \separated(this, __frama_c_arg_0);
-    requires \valid_read(this);
-    requires \valid_read(__frama_c_arg_0);
- */
-void A::Ctor(struct A const *this, struct A const *__frama_c_arg_0)
-{
-  this->pvmt = __frama_c_arg_0->pvmt;
-  this->_count = __frama_c_arg_0->_count;
-  return;
 }
 
 int _frama_c_find_dynamic_cast_aux(struct _frama_c_rtti_name_info_node *target_info,
@@ -353,8 +340,6 @@ struct _frama_c_vmt _frama_c_vmt_header =
   {.table = _frama_c_vmt,
    .table_size = 3,
    .rtti_info = & _frama_c_rtti_name_info};
-void B::Ctor(struct B const *this, struct B const *__frama_c_arg_0);
-
 void B::Dtor(struct B const *this);
 
 struct _frama_c_vmt _frama_c_vmt_header;
@@ -399,17 +384,6 @@ struct B *operator=(struct B *this, struct B const *source)
   return this;
 }
 
-/*@ requires \separated(this, __frama_c_arg_0);
-    requires \valid_read(this);
-    requires \valid_read(__frama_c_arg_0);
- */
-void B::Ctor(struct B const *this, struct B const *__frama_c_arg_0)
-{
-  A::Ctor(& this->_frama_c__Z1A,& __frama_c_arg_0->_frama_c__Z1A);
-  this->_ch = __frama_c_arg_0->_ch;
-  return;
-}
-
 /*@ requires \valid_read(this); */
 void B::Dtor(struct B const *this)
 {
@@ -437,8 +411,6 @@ struct _frama_c_vmt _frama_c_vmt_header =
    .table_size = 3,
    .rtti_info = & _frama_c_rtti_name_info};
 void C::Dtor(struct C const *this);
-
-void C::Ctor(struct C const *this, struct C const *__frama_c_arg_0);
 
 struct _frama_c_vmt _frama_c_vmt_header;
 
@@ -492,17 +464,6 @@ void C::Dtor(struct C const *this)
   return;
 }
 
-/*@ requires \separated(this, __frama_c_arg_0);
-    requires \valid_read(this);
-    requires \valid_read(__frama_c_arg_0);
- */
-void C::Ctor(struct C const *this, struct C const *__frama_c_arg_0)
-{
-  B::Ctor(& this->_frama_c__Z1B,& __frama_c_arg_0->_frama_c__Z1B);
-  this->_value = __frama_c_arg_0->_value;
-  return;
-}
-
 struct _frama_c_vmt_content _frama_c_vmt[3] =
   {{.method_ptr = (void (*)())(& C::Dtor), .shift_this = 0},
    {.method_ptr = (void (*)())(& assign), .shift_this = 0},
@@ -522,8 +483,6 @@ struct _frama_c_vmt _frama_c_vmt_header =
    .table_size = 3,
    .rtti_info = & _frama_c_rtti_name_info};
 void D::Dtor(struct D const *this);
-
-void D::Ctor(struct D const *this, struct D const *__frama_c_arg_0);
 
 struct _frama_c_vmt _frama_c_vmt_header;
 
@@ -578,17 +537,6 @@ void D::Dtor(struct D const *this)
   *((struct _frama_c_vmt **)this) = & _frama_c_vmt_header;
   C::Dtor(& this->_frama_c__Z1C);
   C::Dtor(& this->_origin);
-  return;
-}
-
-/*@ requires \separated(this, __frama_c_arg_0);
-    requires \valid_read(this);
-    requires \valid_read(__frama_c_arg_0);
- */
-void D::Ctor(struct D const *this, struct D const *__frama_c_arg_0)
-{
-  C::Ctor(& this->_frama_c__Z1C,& __frama_c_arg_0->_frama_c__Z1C);
-  C::Ctor(& this->_origin,& __frama_c_arg_0->_origin);
   return;
 }
 

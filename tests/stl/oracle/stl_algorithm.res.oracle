@@ -4,8 +4,6 @@ Now output intermediate result
 [kernel] Warning: Assuming declared function exception::Dtor can't throw any exception
 [kernel] Warning: Assuming declared function exception::Dtor can't throw any exception
 [kernel] Warning: Assuming declared function exception::Ctor can't throw any exception
-[kernel] Warning: Assuming declared function exception::Ctor can't throw any exception
-[kernel] Warning: Assuming declared function operator= can't throw any exception
 [kernel] Warning: Assuming declared function exception::Dtor can't throw any exception
 [kernel] Warning: Assuming declared function initializer_list<int>::Ctor can't throw any exception
 [kernel] Warning: Assuming declared function initializer_list<int>::Ctor can't throw any exception
@@ -159,12 +157,6 @@ struct array<int,2> {
 };
 void initializer_list<int>::Dtor(struct initializer_list<int> const *this);
 
-void initializer_list<int>::Ctor(struct initializer_list<int> const *this,
-                                 struct initializer_list<int> const *__frama_c_arg_0);
-
-void initializer_list<int>::Ctor(struct initializer_list<int> const *this,
-                                 struct initializer_list<int> *__frama_c_arg_0);
-
 struct _frama_c_vmt _frama_c_vmt_header;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
 
@@ -203,30 +195,6 @@ int const *end(struct initializer_list<int> const *this);
 /*@ requires \valid_read(this); */
 void initializer_list<int>::Dtor(struct initializer_list<int> const *this)
 {
-  return;
-}
-
-/*@ requires \separated(this, __frama_c_arg_0);
-    requires \valid_read(this);
-    requires \valid_read(__frama_c_arg_0);
- */
-void initializer_list<int>::Ctor(struct initializer_list<int> const *this,
-                                 struct initializer_list<int> const *__frama_c_arg_0)
-{
-  this->base = __frama_c_arg_0->base;
-  this->length = __frama_c_arg_0->length;
-  return;
-}
-
-/*@ requires \separated(this, __frama_c_arg_0);
-    requires \valid_read(this);
-    requires \valid(__frama_c_arg_0);
- */
-void initializer_list<int>::Ctor(struct initializer_list<int> const *this,
-                                 struct initializer_list<int> *__frama_c_arg_0)
-{
-  this->base = __frama_c_arg_0->base;
-  this->length = __frama_c_arg_0->length;
   return;
 }
 
@@ -542,12 +510,6 @@ type *move<void*&,<abst>>(void (**t)(int ))
 
 void piecewise_construct_t::Ctor(struct piecewise_construct_t const *this);
 
-void piecewise_construct_t::Ctor(struct piecewise_construct_t const *this,
-                                 struct piecewise_construct_t const *__frama_c_arg_0);
-
-void piecewise_construct_t::Ctor(struct piecewise_construct_t const *this,
-                                 struct piecewise_construct_t *__frama_c_arg_0);
-
 void piecewise_construct_t::Dtor(struct piecewise_construct_t const *this);
 
 struct _frama_c_vmt _frama_c_vmt_header;
@@ -556,26 +518,6 @@ struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
 struct _frama_c_vmt_content _frama_c_vmt[1];
 /*@ requires \valid_read(this); */
 void piecewise_construct_t::Ctor(struct piecewise_construct_t const *this)
-{
-  return;
-}
-
-/*@ requires \separated(this, __frama_c_arg_0);
-    requires \valid_read(this);
-    requires \valid_read(__frama_c_arg_0);
- */
-void piecewise_construct_t::Ctor(struct piecewise_construct_t const *this,
-                                 struct piecewise_construct_t const *__frama_c_arg_0)
-{
-  return;
-}
-
-/*@ requires \separated(this, __frama_c_arg_0);
-    requires \valid_read(this);
-    requires \valid(__frama_c_arg_0);
- */
-void piecewise_construct_t::Ctor(struct piecewise_construct_t const *this,
-                                 struct piecewise_construct_t *__frama_c_arg_0)
 {
   return;
 }
@@ -602,12 +544,6 @@ struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info =
    .base_classes = (struct _frama_c_rtti_name_info_content *)0,
    .number_of_base_classes = 0,
    .pvmt = (struct _frama_c_vmt *)0};
-void pair<int*,int*>::Ctor(struct pair<int*,int*> const *this,
-                           struct pair<int*,int*> const *__frama_c_arg_0);
-
-void pair<int*,int*>::Ctor(struct pair<int*,int*> const *this,
-                           struct pair<int*,int*> *__frama_c_arg_0);
-
 void pair<int*,int*>::Dtor(struct pair<int*,int*> const *this);
 
 struct _frama_c_vmt _frama_c_vmt_header;
@@ -629,30 +565,6 @@ void pair<int*,int*>::Ctor(struct pair<int*,int*> const *this,
 /*@ requires \valid(this);
     requires \valid(p); */
 void swap(struct pair<int*,int*> *this, struct pair<int*,int*> *p);
-
-/*@ requires \separated(this, __frama_c_arg_0);
-    requires \valid_read(this);
-    requires \valid_read(__frama_c_arg_0);
- */
-void pair<int*,int*>::Ctor(struct pair<int*,int*> const *this,
-                           struct pair<int*,int*> const *__frama_c_arg_0)
-{
-  this->first = __frama_c_arg_0->first;
-  this->second = __frama_c_arg_0->second;
-  return;
-}
-
-/*@ requires \separated(this, __frama_c_arg_0);
-    requires \valid_read(this);
-    requires \valid(__frama_c_arg_0);
- */
-void pair<int*,int*>::Ctor(struct pair<int*,int*> const *this,
-                           struct pair<int*,int*> *__frama_c_arg_0)
-{
-  this->first = __frama_c_arg_0->first;
-  this->second = __frama_c_arg_0->second;
-  return;
-}
 
 /*@ requires \valid_read(this); */
 void pair<int*,int*>::Dtor(struct pair<int*,int*> const *this)
@@ -2204,12 +2116,6 @@ struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info =
    .base_classes = (struct _frama_c_rtti_name_info_content *)0,
    .number_of_base_classes = 0,
    .pvmt = (struct _frama_c_vmt *)0};
-void reference_wrapper<bool&,<abst>>::Ctor(struct reference_wrapper<bool&,<abst>> const *this,
-                                           struct reference_wrapper<bool&,<abst>> const *__frama_c_arg_0);
-
-void reference_wrapper<bool&,<abst>>::Ctor(struct reference_wrapper<bool&,<abst>> const *this,
-                                           struct reference_wrapper<bool&,<abst>> *__frama_c_arg_0);
-
 void reference_wrapper<bool&,<abst>>::Dtor(struct reference_wrapper<bool&,<abst>> const *this);
 
 struct _frama_c_vmt _frama_c_vmt_header;
@@ -2257,28 +2163,6 @@ _Bool operator()(struct reference_wrapper<bool&,<abst>> const *this, int arg)
   return tmp;
 }
 
-/*@ requires \separated(this, __frama_c_arg_0);
-    requires \valid_read(this);
-    requires \valid_read(__frama_c_arg_0);
- */
-void reference_wrapper<bool&,<abst>>::Ctor(struct reference_wrapper<bool&,<abst>> const *this,
-                                           struct reference_wrapper<bool&,<abst>> const *__frama_c_arg_0)
-{
-  this->obj = __frama_c_arg_0->obj;
-  return;
-}
-
-/*@ requires \separated(this, __frama_c_arg_0);
-    requires \valid_read(this);
-    requires \valid(__frama_c_arg_0);
- */
-void reference_wrapper<bool&,<abst>>::Ctor(struct reference_wrapper<bool&,<abst>> const *this,
-                                           struct reference_wrapper<bool&,<abst>> *__frama_c_arg_0)
-{
-  this->obj = __frama_c_arg_0->obj;
-  return;
-}
-
 /*@ requires \valid_read(this); */
 void reference_wrapper<bool&,<abst>>::Dtor(struct reference_wrapper<bool&,<abst>> const *this)
 {
@@ -2304,12 +2188,6 @@ void __bool_binop<int,std::__less>::Ctor(struct __bool_binop<int,std::__less> co
 
 void __bool_binop<int,std::__less>::Dtor(struct __bool_binop<int,std::__less> const *this);
 
-void __bool_binop<int,std::__less>::Ctor(struct __bool_binop<int,std::__less> const *this,
-                                         struct __bool_binop<int,std::__less> const *__frama_c_arg_0);
-
-void __bool_binop<int,std::__less>::Ctor(struct __bool_binop<int,std::__less> const *this,
-                                         struct __bool_binop<int,std::__less> *__frama_c_arg_0);
-
 struct _frama_c_vmt _frama_c_vmt_header;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
 
@@ -2332,26 +2210,6 @@ void __bool_binop<int,std::__less>::Dtor(struct __bool_binop<int,std::__less> co
   return;
 }
 
-/*@ requires \separated(this, __frama_c_arg_0);
-    requires \valid_read(this);
-    requires \valid_read(__frama_c_arg_0);
- */
-void __bool_binop<int,std::__less>::Ctor(struct __bool_binop<int,std::__less> const *this,
-                                         struct __bool_binop<int,std::__less> const *__frama_c_arg_0)
-{
-  return;
-}
-
-/*@ requires \separated(this, __frama_c_arg_0);
-    requires \valid_read(this);
-    requires \valid(__frama_c_arg_0);
- */
-void __bool_binop<int,std::__less>::Ctor(struct __bool_binop<int,std::__less> const *this,
-                                         struct __bool_binop<int,std::__less> *__frama_c_arg_0)
-{
-  return;
-}
-
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info =
   {.name = "__bool_binop",
    .base_classes = (struct _frama_c_rtti_name_info_content *)0,
@@ -2363,9 +2221,6 @@ void __bool_binop<int,std::__equal_to>::Dtor(struct __bool_binop<int,std::__equa
 
 void __bool_binop<int,std::__equal_to>::Ctor(struct __bool_binop<int,std::__equal_to> const *this,
                                              struct __bool_binop<int,std::__equal_to> const *__frama_c_arg_0);
-
-void __bool_binop<int,std::__equal_to>::Ctor(struct __bool_binop<int,std::__equal_to> const *this,
-                                             struct __bool_binop<int,std::__equal_to> *__frama_c_arg_0);
 
 struct _frama_c_vmt _frama_c_vmt_header;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
@@ -2395,16 +2250,6 @@ void __bool_binop<int,std::__equal_to>::Dtor(struct __bool_binop<int,std::__equa
  */
 void __bool_binop<int,std::__equal_to>::Ctor(struct __bool_binop<int,std::__equal_to> const *this,
                                              struct __bool_binop<int,std::__equal_to> const *__frama_c_arg_0)
-{
-  return;
-}
-
-/*@ requires \separated(this, __frama_c_arg_0);
-    requires \valid_read(this);
-    requires \valid(__frama_c_arg_0);
- */
-void __bool_binop<int,std::__equal_to>::Ctor(struct __bool_binop<int,std::__equal_to> const *this,
-                                             struct __bool_binop<int,std::__equal_to> *__frama_c_arg_0)
 {
   return;
 }
@@ -2440,9 +2285,6 @@ void equal_to<int>::Ctor(struct equal_to<int> const *this);
 void equal_to<int>::Ctor(struct equal_to<int> const *this,
                          struct equal_to<int> const *__frama_c_arg_0);
 
-void equal_to<int>::Ctor(struct equal_to<int> const *this,
-                         struct equal_to<int> *__frama_c_arg_0);
-
 void equal_to<int>::Dtor(struct equal_to<int> const *this);
 
 struct _frama_c_vmt _frama_c_vmt_header;
@@ -2463,18 +2305,6 @@ void equal_to<int>::Ctor(struct equal_to<int> const *this)
  */
 void equal_to<int>::Ctor(struct equal_to<int> const *this,
                          struct equal_to<int> const *__frama_c_arg_0)
-{
-  __bool_binop<int,std::__equal_to>::Ctor(& this->_frama_c__ZN3stdE12__bool_binopIiN3stdE10__equal_toE,
-                                          & __frama_c_arg_0->_frama_c__ZN3stdE12__bool_binopIiN3stdE10__equal_toE);
-  return;
-}
-
-/*@ requires \separated(this, __frama_c_arg_0);
-    requires \valid_read(this);
-    requires \valid(__frama_c_arg_0);
- */
-void equal_to<int>::Ctor(struct equal_to<int> const *this,
-                         struct equal_to<int> *__frama_c_arg_0)
 {
   __bool_binop<int,std::__equal_to>::Ctor(& this->_frama_c__ZN3stdE12__bool_binopIiN3stdE10__equal_toE,
                                           & __frama_c_arg_0->_frama_c__ZN3stdE12__bool_binopIiN3stdE10__equal_toE);
@@ -2516,12 +2346,6 @@ _Bool operator()(struct __bool_binop<int,std::__less> const *this,
 
 void less<int>::Ctor(struct less<int> const *this);
 
-void less<int>::Ctor(struct less<int> const *this,
-                     struct less<int> const *__frama_c_arg_0);
-
-void less<int>::Ctor(struct less<int> const *this,
-                     struct less<int> *__frama_c_arg_0);
-
 void less<int>::Dtor(struct less<int> const *this);
 
 struct _frama_c_vmt _frama_c_vmt_header;
@@ -2533,30 +2357,6 @@ struct _frama_c_vmt_content _frama_c_vmt[1];
 void less<int>::Ctor(struct less<int> const *this)
 {
   __bool_binop<int,std::__less>::Ctor(& this->_frama_c__ZN3stdE12__bool_binopIiN3stdE6__lessE);
-  return;
-}
-
-/*@ requires \separated(this, __frama_c_arg_0);
-    requires \valid_read(this);
-    requires \valid_read(__frama_c_arg_0);
- */
-void less<int>::Ctor(struct less<int> const *this,
-                     struct less<int> const *__frama_c_arg_0)
-{
-  __bool_binop<int,std::__less>::Ctor(& this->_frama_c__ZN3stdE12__bool_binopIiN3stdE6__lessE,
-                                      & __frama_c_arg_0->_frama_c__ZN3stdE12__bool_binopIiN3stdE6__lessE);
-  return;
-}
-
-/*@ requires \separated(this, __frama_c_arg_0);
-    requires \valid_read(this);
-    requires \valid(__frama_c_arg_0);
- */
-void less<int>::Ctor(struct less<int> const *this,
-                     struct less<int> *__frama_c_arg_0)
-{
-  __bool_binop<int,std::__less>::Ctor(& this->_frama_c__ZN3stdE12__bool_binopIiN3stdE6__lessE,
-                                      & __frama_c_arg_0->_frama_c__ZN3stdE12__bool_binopIiN3stdE6__lessE);
   return;
 }
 
@@ -2573,12 +2373,6 @@ struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info =
    .number_of_base_classes = 0,
    .pvmt = (struct _frama_c_vmt *)0};
 void unary_negate<bool*,<abst>>::Dtor(struct unary_negate<bool*,<abst>> const *this);
-
-void unary_negate<bool*,<abst>>::Ctor(struct unary_negate<bool*,<abst>> const *this,
-                                      struct unary_negate<bool*,<abst>> const *__frama_c_arg_0);
-
-void unary_negate<bool*,<abst>>::Ctor(struct unary_negate<bool*,<abst>> const *this,
-                                      struct unary_negate<bool*,<abst>> *__frama_c_arg_0);
 
 struct _frama_c_vmt _frama_c_vmt_header;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
@@ -2613,40 +2407,12 @@ void unary_negate<bool*,<abst>>::Dtor(struct unary_negate<bool*,<abst>> const *t
   return;
 }
 
-/*@ requires \separated(this, __frama_c_arg_0);
-    requires \valid_read(this);
-    requires \valid_read(__frama_c_arg_0);
- */
-void unary_negate<bool*,<abst>>::Ctor(struct unary_negate<bool*,<abst>> const *this,
-                                      struct unary_negate<bool*,<abst>> const *__frama_c_arg_0)
-{
-  this->__predicate = __frama_c_arg_0->__predicate;
-  return;
-}
-
-/*@ requires \separated(this, __frama_c_arg_0);
-    requires \valid_read(this);
-    requires \valid(__frama_c_arg_0);
- */
-void unary_negate<bool*,<abst>>::Ctor(struct unary_negate<bool*,<abst>> const *this,
-                                      struct unary_negate<bool*,<abst>> *__frama_c_arg_0)
-{
-  this->__predicate = __frama_c_arg_0->__predicate;
-  return;
-}
-
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info =
   {.name = "unary_negate",
    .base_classes = (struct _frama_c_rtti_name_info_content *)0,
    .number_of_base_classes = 0,
    .pvmt = (struct _frama_c_vmt *)0};
 void unary_negate<std::reference_wrapper<bool&,<abst>>>::Dtor(struct unary_negate<std::reference_wrapper<bool&,<abst>>> const *this);
-
-void unary_negate<std::reference_wrapper<bool&,<abst>>>::Ctor(struct unary_negate<std::reference_wrapper<bool&,<abst>>> const *this,
-                                                              struct unary_negate<std::reference_wrapper<bool&,<abst>>> const *__frama_c_arg_0);
-
-void unary_negate<std::reference_wrapper<bool&,<abst>>>::Ctor(struct unary_negate<std::reference_wrapper<bool&,<abst>>> const *this,
-                                                              struct unary_negate<std::reference_wrapper<bool&,<abst>>> *__frama_c_arg_0);
 
 struct _frama_c_vmt _frama_c_vmt_header;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
@@ -2681,28 +2447,6 @@ void unary_negate<std::reference_wrapper<bool&,<abst>>>::Dtor(struct unary_negat
   return;
 }
 
-/*@ requires \separated(this, __frama_c_arg_0);
-    requires \valid_read(this);
-    requires \valid_read(__frama_c_arg_0);
- */
-void unary_negate<std::reference_wrapper<bool&,<abst>>>::Ctor(struct unary_negate<std::reference_wrapper<bool&,<abst>>> const *this,
-                                                              struct unary_negate<std::reference_wrapper<bool&,<abst>>> const *__frama_c_arg_0)
-{
-  this->__predicate = __frama_c_arg_0->__predicate;
-  return;
-}
-
-/*@ requires \separated(this, __frama_c_arg_0);
-    requires \valid_read(this);
-    requires \valid(__frama_c_arg_0);
- */
-void unary_negate<std::reference_wrapper<bool&,<abst>>>::Ctor(struct unary_negate<std::reference_wrapper<bool&,<abst>>> const *this,
-                                                              struct unary_negate<std::reference_wrapper<bool&,<abst>>> *__frama_c_arg_0)
-{
-  this->__predicate = __frama_c_arg_0->__predicate;
-  return;
-}
-
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info =
   {.name = "unary_negate",
    .base_classes = (struct _frama_c_rtti_name_info_content *)0,
@@ -2726,18 +2470,6 @@ struct unary_negate<std::reference_wrapper<bool&,<abst>>> not1<std::reference_wr
   return __fc_tmp_3;
 }
 
-void bad_function_call::Ctor(struct bad_function_call const *this,
-                             struct bad_function_call const *__frama_c_arg_0);
-
-void bad_function_call::Ctor(struct bad_function_call const *this,
-                             struct bad_function_call *__frama_c_arg_0);
-
-struct bad_function_call *operator=(struct bad_function_call *this,
-                                    struct bad_function_call const *__frama_c_arg_0);
-
-struct bad_function_call *operator=(struct bad_function_call *this,
-                                    struct bad_function_call *__frama_c_arg_0);
-
 void bad_function_call::Dtor(struct bad_function_call const *this);
 
 struct _frama_c_vmt _frama_c_vmt_header;
@@ -2754,68 +2486,6 @@ void bad_function_call::Ctor(struct bad_function_call const *this)
   exception::Ctor(& this->_frama_c__ZN3stdE9exception);
   *((struct _frama_c_vmt **)this) = & _frama_c_vmt_header;
   return;
-}
-
-/*@ requires \separated(this, __frama_c_arg_0);
-    requires \valid_read(this);
-    requires \valid_read(__frama_c_arg_0);
- */
-void bad_function_call::Ctor(struct bad_function_call const *this,
-                             struct bad_function_call const *__frama_c_arg_0)
-{
-  exception::Ctor(& this->_frama_c__ZN3stdE9exception,
-                  & __frama_c_arg_0->_frama_c__ZN3stdE9exception);
-  return;
-}
-
-void exception::Ctor(struct exception const *this,
-                     struct exception *__frama_c_arg_0)
-{
-  this->pvmt = __frama_c_arg_0->pvmt;
-  return;
-}
-
-/*@ requires \separated(this, __frama_c_arg_0);
-    requires \valid_read(this);
-    requires \valid(__frama_c_arg_0);
- */
-void bad_function_call::Ctor(struct bad_function_call const *this,
-                             struct bad_function_call *__frama_c_arg_0)
-{
-  exception::Ctor(& this->_frama_c__ZN3stdE9exception,
-                  & __frama_c_arg_0->_frama_c__ZN3stdE9exception);
-  return;
-}
-
-/*@ requires \valid(this);
-    requires \valid_read(__frama_c_arg_0);
-    ensures \valid(\result);
- */
-struct bad_function_call *operator=(struct bad_function_call *this,
-                                    struct bad_function_call const *__frama_c_arg_0)
-{
-  operator=(& this->_frama_c__ZN3stdE9exception,
-            & __frama_c_arg_0->_frama_c__ZN3stdE9exception);
-  return this;
-}
-
-struct exception *operator=(struct exception *this,
-                            struct exception *__frama_c_arg_0)
-{
-  this->pvmt = __frama_c_arg_0->pvmt;
-  return this;
-}
-
-/*@ requires \valid(this);
-    requires \valid(__frama_c_arg_0);
-    ensures \valid(\result);
- */
-struct bad_function_call *operator=(struct bad_function_call *this,
-                                    struct bad_function_call *__frama_c_arg_0)
-{
-  operator=(& this->_frama_c__ZN3stdE9exception,
-            & __frama_c_arg_0->_frama_c__ZN3stdE9exception);
-  return this;
 }
 
 /*@ requires \valid_read(this); */
@@ -3418,12 +3088,6 @@ int *copy<int*,int*>(int *first, int *last, int *result)
   return result;
 }
 
-void array<int,5>::Ctor(struct array<int,5> const *this,
-                        struct array<int,5> const *__frama_c_arg_0);
-
-void array<int,5>::Ctor(struct array<int,5> const *this,
-                        struct array<int,5> *__frama_c_arg_0);
-
 struct _frama_c_vmt _frama_c_vmt_header;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
 
@@ -3552,51 +3216,11 @@ int *data(struct array<int,5> *this);
 /*@ requires \valid_read(this); */
 int const *data(struct array<int,5> const *this);
 
-/*@ requires \separated(this, __frama_c_arg_0);
-    requires \valid_read(this);
-    requires \valid_read(__frama_c_arg_0);
- */
-void array<int,5>::Ctor(struct array<int,5> const *this,
-                        struct array<int,5> const *__frama_c_arg_0)
-{
-  {
-    unsigned int idx = (unsigned int)0;
-    while (idx < (unsigned int)5) {
-      this->elems[idx] = __frama_c_arg_0->elems[idx];
-      idx ++;
-    }
-  }
-  return;
-}
-
-/*@ requires \separated(this, __frama_c_arg_0);
-    requires \valid_read(this);
-    requires \valid(__frama_c_arg_0);
- */
-void array<int,5>::Ctor(struct array<int,5> const *this,
-                        struct array<int,5> *__frama_c_arg_0)
-{
-  {
-    unsigned int idx = (unsigned int)0;
-    while (idx < (unsigned int)5) {
-      this->elems[idx] = __frama_c_arg_0->elems[idx];
-      idx ++;
-    }
-  }
-  return;
-}
-
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info =
   {.name = "array",
    .base_classes = (struct _frama_c_rtti_name_info_content *)0,
    .number_of_base_classes = 0,
    .pvmt = (struct _frama_c_vmt *)0};
-void array<int,2>::Ctor(struct array<int,2> const *this,
-                        struct array<int,2> const *__frama_c_arg_0);
-
-void array<int,2>::Ctor(struct array<int,2> const *this,
-                        struct array<int,2> *__frama_c_arg_0);
-
 struct _frama_c_vmt _frama_c_vmt_header;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
 
@@ -3724,40 +3348,6 @@ int *data(struct array<int,2> *this);
 
 /*@ requires \valid_read(this); */
 int const *data(struct array<int,2> const *this);
-
-/*@ requires \separated(this, __frama_c_arg_0);
-    requires \valid_read(this);
-    requires \valid_read(__frama_c_arg_0);
- */
-void array<int,2>::Ctor(struct array<int,2> const *this,
-                        struct array<int,2> const *__frama_c_arg_0)
-{
-  {
-    unsigned int idx = (unsigned int)0;
-    while (idx < (unsigned int)2) {
-      this->elems[idx] = __frama_c_arg_0->elems[idx];
-      idx ++;
-    }
-  }
-  return;
-}
-
-/*@ requires \separated(this, __frama_c_arg_0);
-    requires \valid_read(this);
-    requires \valid(__frama_c_arg_0);
- */
-void array<int,2>::Ctor(struct array<int,2> const *this,
-                        struct array<int,2> *__frama_c_arg_0)
-{
-  {
-    unsigned int idx = (unsigned int)0;
-    while (idx < (unsigned int)2) {
-      this->elems[idx] = __frama_c_arg_0->elems[idx];
-      idx ++;
-    }
-  }
-  return;
-}
 
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info =
   {.name = "array",

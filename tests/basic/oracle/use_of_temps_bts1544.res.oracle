@@ -26,11 +26,7 @@ struct cl;
 struct cl {
    
 };
-void cl::Ctor(struct cl const *this);
-
 void cl::Ctor(struct cl const *this, struct cl const *__frama_c_arg_0);
-
-void cl::Ctor(struct cl const *this, struct cl *__frama_c_arg_0);
 
 void cl::Dtor(struct cl const *this);
 
@@ -38,26 +34,11 @@ struct _frama_c_vmt _frama_c_vmt_header;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
 
 struct _frama_c_vmt_content _frama_c_vmt[1];
-/*@ requires \valid_read(this); */
-void cl::Ctor(struct cl const *this)
-{
-  return;
-}
-
 /*@ requires \separated(this, __frama_c_arg_0);
     requires \valid_read(this);
     requires \valid_read(__frama_c_arg_0);
  */
 void cl::Ctor(struct cl const *this, struct cl const *__frama_c_arg_0)
-{
-  return;
-}
-
-/*@ requires \separated(this, __frama_c_arg_0);
-    requires \valid_read(this);
-    requires \valid(__frama_c_arg_0);
- */
-void cl::Ctor(struct cl const *this, struct cl *__frama_c_arg_0)
 {
   return;
 }

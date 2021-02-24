@@ -26,8 +26,6 @@ struct Point;
 struct Point {
    
 };
-void Point::Ctor(struct Point const *this);
-
 void Point::Ctor(struct Point const *this,
                  struct Point const *__frama_c_arg_0);
 
@@ -48,12 +46,6 @@ void foo(struct Point *this, struct Point p)
 }
 
 void bar(struct Point *this, struct Point p);
-
-/*@ requires \valid_read(this); */
-void Point::Ctor(struct Point const *this)
-{
-  return;
-}
 
 /*@ requires \separated(this, __frama_c_arg_0);
     requires \valid_read(this);

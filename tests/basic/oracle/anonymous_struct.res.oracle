@@ -30,71 +30,11 @@ struct anonymous_class_1 {
 struct A {
    struct anonymous_class_1 anonymous_2 ;
 };
-void A::Ctor(struct A const *this, struct A const *__frama_c_arg_0);
-
-void A::Ctor(struct A const *this, struct A *__frama_c_arg_0);
-
 struct _frama_c_vmt _frama_c_vmt_header;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
 
 struct _frama_c_vmt_content _frama_c_vmt[1];
-void anonymous_class_1::Ctor(struct anonymous_class_1 const *this,
-                             struct anonymous_class_1 const *__frama_c_arg_0);
-
-void anonymous_class_1::Ctor(struct anonymous_class_1 const *this,
-                             struct anonymous_class_1 *__frama_c_arg_0);
-
-void anonymous_class_1::Dtor(struct anonymous_class_1 const *this);
-
-/*@ requires \separated(this, __frama_c_arg_0);
-    requires \valid_read(this);
-    requires \valid_read(__frama_c_arg_0);
- */
-void anonymous_class_1::Ctor(struct anonymous_class_1 const *this,
-                             struct anonymous_class_1 const *__frama_c_arg_0)
-{
-  this->n = __frama_c_arg_0->n;
-  return;
-}
-
-/*@ requires \separated(this, __frama_c_arg_0);
-    requires \valid_read(this);
-    requires \valid(__frama_c_arg_0);
- */
-void anonymous_class_1::Ctor(struct anonymous_class_1 const *this,
-                             struct anonymous_class_1 *__frama_c_arg_0)
-{
-  this->n = __frama_c_arg_0->n;
-  return;
-}
-
-/*@ requires \valid_read(this); */
-void anonymous_class_1::Dtor(struct anonymous_class_1 const *this)
-{
-  return;
-}
-
 void A::Ctor(struct A const *this);
-
-/*@ requires \separated(this, __frama_c_arg_0);
-    requires \valid_read(this);
-    requires \valid_read(__frama_c_arg_0);
- */
-void A::Ctor(struct A const *this, struct A const *__frama_c_arg_0)
-{
-  anonymous_class_1::Ctor(& this->anonymous_2,& __frama_c_arg_0->anonymous_2);
-  return;
-}
-
-/*@ requires \separated(this, __frama_c_arg_0);
-    requires \valid_read(this);
-    requires \valid(__frama_c_arg_0);
- */
-void A::Ctor(struct A const *this, struct A *__frama_c_arg_0)
-{
-  anonymous_class_1::Ctor(& this->anonymous_2,& __frama_c_arg_0->anonymous_2);
-  return;
-}
 
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info =
   {.name = "A",

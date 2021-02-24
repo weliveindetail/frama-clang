@@ -15,8 +15,6 @@ Now output intermediate result
 [kernel] Warning: Assuming declared function forward<std::default_delete<int[]>> can't throw any exception
 [kernel] Warning: Assuming declared function forward<std::default_delete<int[]>> can't throw any exception
 [kernel] Warning: Assuming declared function exception::Ctor can't throw any exception
-[kernel] Warning: Assuming declared function exception::Ctor can't throw any exception
-[kernel] Warning: Assuming declared function operator= can't throw any exception
 [kernel] Warning: Assuming declared function exception::Dtor can't throw any exception
 [kernel] Warning: Assuming declared function malloc can't throw any exception
 [kernel] Warning: Assuming declared function malloc can't throw any exception
@@ -350,12 +348,6 @@ struct default_delete<int[]> *forward<std::default_delete<int[]>>(type *t);
 
 void piecewise_construct_t::Ctor(struct piecewise_construct_t const *this);
 
-void piecewise_construct_t::Ctor(struct piecewise_construct_t const *this,
-                                 struct piecewise_construct_t const *__frama_c_arg_0);
-
-void piecewise_construct_t::Ctor(struct piecewise_construct_t const *this,
-                                 struct piecewise_construct_t *__frama_c_arg_0);
-
 void piecewise_construct_t::Dtor(struct piecewise_construct_t const *this);
 
 struct _frama_c_vmt _frama_c_vmt_header;
@@ -364,26 +356,6 @@ struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
 struct _frama_c_vmt_content _frama_c_vmt[1];
 /*@ requires \valid_read(this); */
 void piecewise_construct_t::Ctor(struct piecewise_construct_t const *this)
-{
-  return;
-}
-
-/*@ requires \separated(this, __frama_c_arg_0);
-    requires \valid_read(this);
-    requires \valid_read(__frama_c_arg_0);
- */
-void piecewise_construct_t::Ctor(struct piecewise_construct_t const *this,
-                                 struct piecewise_construct_t const *__frama_c_arg_0)
-{
-  return;
-}
-
-/*@ requires \separated(this, __frama_c_arg_0);
-    requires \valid_read(this);
-    requires \valid(__frama_c_arg_0);
- */
-void piecewise_construct_t::Ctor(struct piecewise_construct_t const *this,
-                                 struct piecewise_construct_t *__frama_c_arg_0)
 {
   return;
 }
@@ -1757,14 +1729,8 @@ void default_delete<int>::Ctor(struct default_delete<int> const *this);
 void default_delete<int>::Ctor(struct default_delete<int> const *this,
                                struct default_delete<int> const *__frama_c_arg_0);
 
-void default_delete<int>::Ctor(struct default_delete<int> const *this,
-                               struct default_delete<int> *__frama_c_arg_0);
-
 struct default_delete<int> *operator=(struct default_delete<int> *this,
                                       struct default_delete<int> const *__frama_c_arg_0);
-
-struct default_delete<int> *operator=(struct default_delete<int> *this,
-                                      struct default_delete<int> *__frama_c_arg_0);
 
 void default_delete<int>::Dtor(struct default_delete<int> const *this);
 
@@ -1795,32 +1761,12 @@ void default_delete<int>::Ctor(struct default_delete<int> const *this,
   return;
 }
 
-/*@ requires \separated(this, __frama_c_arg_0);
-    requires \valid_read(this);
-    requires \valid(__frama_c_arg_0);
- */
-void default_delete<int>::Ctor(struct default_delete<int> const *this,
-                               struct default_delete<int> *__frama_c_arg_0)
-{
-  return;
-}
-
 /*@ requires \valid(this);
     requires \valid_read(__frama_c_arg_0);
     ensures \valid(\result);
  */
 struct default_delete<int> *operator=(struct default_delete<int> *this,
                                       struct default_delete<int> const *__frama_c_arg_0)
-{
-  return this;
-}
-
-/*@ requires \valid(this);
-    requires \valid(__frama_c_arg_0);
-    ensures \valid(\result);
- */
-struct default_delete<int> *operator=(struct default_delete<int> *this,
-                                      struct default_delete<int> *__frama_c_arg_0)
 {
   return this;
 }
@@ -1854,18 +1800,10 @@ struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info =
 void default_delete<int[]>::Ctor(struct default_delete<int[]> const *this);
 
 void default_delete<int[]>::Ctor(struct default_delete<int[]> const *this,
-                                 struct default_delete<int[]> const *__frama_c_arg_0);
-
-void default_delete<int[]>::Ctor(struct default_delete<int[]> const *this,
                                  struct default_delete<int[]> *__frama_c_arg_0);
 
 struct default_delete<int[]> *operator=(struct default_delete<int[]> *this,
-                                        struct default_delete<int[]> const *__frama_c_arg_0);
-
-struct default_delete<int[]> *operator=(struct default_delete<int[]> *this,
                                         struct default_delete<int[]> *__frama_c_arg_0);
-
-void default_delete<int[]>::Dtor(struct default_delete<int[]> const *this);
 
 struct _frama_c_vmt _frama_c_vmt_header;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
@@ -1886,32 +1824,12 @@ void default_delete<int[]>::Ctor(struct default_delete<int[]> const *this)
 
 /*@ requires \separated(this, __frama_c_arg_0);
     requires \valid_read(this);
-    requires \valid_read(__frama_c_arg_0);
- */
-void default_delete<int[]>::Ctor(struct default_delete<int[]> const *this,
-                                 struct default_delete<int[]> const *__frama_c_arg_0)
-{
-  return;
-}
-
-/*@ requires \separated(this, __frama_c_arg_0);
-    requires \valid_read(this);
     requires \valid(__frama_c_arg_0);
  */
 void default_delete<int[]>::Ctor(struct default_delete<int[]> const *this,
                                  struct default_delete<int[]> *__frama_c_arg_0)
 {
   return;
-}
-
-/*@ requires \valid(this);
-    requires \valid_read(__frama_c_arg_0);
-    ensures \valid(\result);
- */
-struct default_delete<int[]> *operator=(struct default_delete<int[]> *this,
-                                        struct default_delete<int[]> const *__frama_c_arg_0)
-{
-  return this;
 }
 
 /*@ requires \valid(this);
@@ -1922,12 +1840,6 @@ struct default_delete<int[]> *operator=(struct default_delete<int[]> *this,
                                         struct default_delete<int[]> *__frama_c_arg_0)
 {
   return this;
-}
-
-/*@ requires \valid_read(this); */
-void default_delete<int[]>::Dtor(struct default_delete<int[]> const *this)
-{
-  return;
 }
 
 /*@ requires \valid(t);
@@ -2025,20 +1937,6 @@ struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info =
    .base_classes = (struct _frama_c_rtti_name_info_content *)0,
    .number_of_base_classes = 0,
    .pvmt = (struct _frama_c_vmt *)0};
-struct __shared_ref_base *operator=(struct __shared_ref_base *this,
-                                    struct __shared_ref_base const *__frama_c_arg_0);
-
-struct __shared_ref_base *operator=(struct __shared_ref_base *this,
-                                    struct __shared_ref_base *__frama_c_arg_0);
-
-void __shared_ref_base::Dtor(struct __shared_ref_base const *this);
-
-void __shared_ref_base::Ctor(struct __shared_ref_base const *this,
-                             struct __shared_ref_base const *__frama_c_arg_0);
-
-void __shared_ref_base::Ctor(struct __shared_ref_base const *this,
-                             struct __shared_ref_base *__frama_c_arg_0);
-
 struct _frama_c_vmt _frama_c_vmt_header;
 
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
@@ -2071,57 +1969,6 @@ void *get_deleter(struct __shared_ref_base *this)
   return __retres;
 }
 
-/*@ requires \valid(this);
-    requires \valid_read(__frama_c_arg_0);
-    ensures \valid(\result);
- */
-struct __shared_ref_base *operator=(struct __shared_ref_base *this,
-                                    struct __shared_ref_base const *__frama_c_arg_0)
-{
-  this->pvmt = __frama_c_arg_0->pvmt;
-  return this;
-}
-
-/*@ requires \valid(this);
-    requires \valid(__frama_c_arg_0);
-    ensures \valid(\result);
- */
-struct __shared_ref_base *operator=(struct __shared_ref_base *this,
-                                    struct __shared_ref_base *__frama_c_arg_0)
-{
-  this->pvmt = __frama_c_arg_0->pvmt;
-  return this;
-}
-
-/*@ requires \valid_read(this); */
-void __shared_ref_base::Dtor(struct __shared_ref_base const *this)
-{
-  *((struct _frama_c_vmt **)this) = & _frama_c_vmt_header;
-  return;
-}
-
-/*@ requires \separated(this, __frama_c_arg_0);
-    requires \valid_read(this);
-    requires \valid_read(__frama_c_arg_0);
- */
-void __shared_ref_base::Ctor(struct __shared_ref_base const *this,
-                             struct __shared_ref_base const *__frama_c_arg_0)
-{
-  this->pvmt = __frama_c_arg_0->pvmt;
-  return;
-}
-
-/*@ requires \separated(this, __frama_c_arg_0);
-    requires \valid_read(this);
-    requires \valid(__frama_c_arg_0);
- */
-void __shared_ref_base::Ctor(struct __shared_ref_base const *this,
-                             struct __shared_ref_base *__frama_c_arg_0)
-{
-  this->pvmt = __frama_c_arg_0->pvmt;
-  return;
-}
-
 struct _frama_c_vmt_content _frama_c_vmt[7] =
   {{.method_ptr = (void (*)())(& unlink), .shift_this = 0},
    {.method_ptr = (void (*)())(& link), .shift_this = 0},
@@ -2139,20 +1986,6 @@ struct _frama_c_vmt _frama_c_vmt_header =
   {.table = _frama_c_vmt,
    .table_size = 7,
    .rtti_info = & _frama_c_rtti_name_info};
-struct __shared_ref<void> *operator=(struct __shared_ref<void> *this,
-                                     struct __shared_ref<void> const *__frama_c_arg_0);
-
-struct __shared_ref<void> *operator=(struct __shared_ref<void> *this,
-                                     struct __shared_ref<void> *__frama_c_arg_0);
-
-void __shared_ref<void>::Dtor(struct __shared_ref<void> const *this);
-
-void __shared_ref<void>::Ctor(struct __shared_ref<void> const *this,
-                              struct __shared_ref<void> const *__frama_c_arg_0);
-
-void __shared_ref<void>::Ctor(struct __shared_ref<void> const *this,
-                              struct __shared_ref<void> *__frama_c_arg_0);
-
 struct _frama_c_vmt _frama_c_vmt_header;
 
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
@@ -2181,74 +2014,6 @@ void weak_link(struct __shared_ref<void> *this);
 
 /*@ requires \valid(this); */
 struct __shared_ref_base *ref(struct __shared_ref<void> *this);
-
-/*@ requires \valid(this);
-    requires \valid_read(__frama_c_arg_0);
-    ensures \valid(\result);
- */
-struct __shared_ref<void> *operator=(struct __shared_ref<void> *this,
-                                     struct __shared_ref<void> const *__frama_c_arg_0)
-{
-  operator=(& this->_frama_c__ZN3stdE17__shared_ref_base,
-            & __frama_c_arg_0->_frama_c__ZN3stdE17__shared_ref_base);
-  this->__ptr = __frama_c_arg_0->__ptr;
-  this->_n = __frama_c_arg_0->_n;
-  this->_w = __frama_c_arg_0->_w;
-  return this;
-}
-
-/*@ requires \valid(this);
-    requires \valid(__frama_c_arg_0);
-    ensures \valid(\result);
- */
-struct __shared_ref<void> *operator=(struct __shared_ref<void> *this,
-                                     struct __shared_ref<void> *__frama_c_arg_0)
-{
-  operator=(& this->_frama_c__ZN3stdE17__shared_ref_base,
-            & __frama_c_arg_0->_frama_c__ZN3stdE17__shared_ref_base);
-  this->__ptr = __frama_c_arg_0->__ptr;
-  this->_n = __frama_c_arg_0->_n;
-  this->_w = __frama_c_arg_0->_w;
-  return this;
-}
-
-/*@ requires \valid_read(this); */
-void __shared_ref<void>::Dtor(struct __shared_ref<void> const *this)
-{
-  *((struct _frama_c_vmt **)this) = & _frama_c_vmt_header;
-  __shared_ref_base::Dtor(& this->_frama_c__ZN3stdE17__shared_ref_base);
-  return;
-}
-
-/*@ requires \separated(this, __frama_c_arg_0);
-    requires \valid_read(this);
-    requires \valid_read(__frama_c_arg_0);
- */
-void __shared_ref<void>::Ctor(struct __shared_ref<void> const *this,
-                              struct __shared_ref<void> const *__frama_c_arg_0)
-{
-  __shared_ref_base::Ctor(& this->_frama_c__ZN3stdE17__shared_ref_base,
-                          & __frama_c_arg_0->_frama_c__ZN3stdE17__shared_ref_base);
-  this->__ptr = __frama_c_arg_0->__ptr;
-  this->_n = __frama_c_arg_0->_n;
-  this->_w = __frama_c_arg_0->_w;
-  return;
-}
-
-/*@ requires \separated(this, __frama_c_arg_0);
-    requires \valid_read(this);
-    requires \valid(__frama_c_arg_0);
- */
-void __shared_ref<void>::Ctor(struct __shared_ref<void> const *this,
-                              struct __shared_ref<void> *__frama_c_arg_0)
-{
-  __shared_ref_base::Ctor(& this->_frama_c__ZN3stdE17__shared_ref_base,
-                          & __frama_c_arg_0->_frama_c__ZN3stdE17__shared_ref_base);
-  this->__ptr = __frama_c_arg_0->__ptr;
-  this->_n = __frama_c_arg_0->_n;
-  this->_w = __frama_c_arg_0->_w;
-  return;
-}
 
 struct _frama_c_vmt_content _frama_c_vmt[7] =
   {{.method_ptr = (void (*)())(& unlink), .shift_this = 0},
@@ -2540,18 +2305,6 @@ struct _frama_c_vmt _frama_c_vmt_header;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
 
 struct _frama_c_vmt_content _frama_c_vmt[1];
-void bad_weak_ptr::Ctor(struct bad_weak_ptr const *this,
-                        struct bad_weak_ptr const *__frama_c_arg_0);
-
-void bad_weak_ptr::Ctor(struct bad_weak_ptr const *this,
-                        struct bad_weak_ptr *__frama_c_arg_0);
-
-struct bad_weak_ptr *operator=(struct bad_weak_ptr *this,
-                               struct bad_weak_ptr const *__frama_c_arg_0);
-
-struct bad_weak_ptr *operator=(struct bad_weak_ptr *this,
-                               struct bad_weak_ptr *__frama_c_arg_0);
-
 void bad_weak_ptr::Dtor(struct bad_weak_ptr const *this);
 
 struct _frama_c_vmt _frama_c_vmt_header;
@@ -2568,68 +2321,6 @@ void bad_weak_ptr::Ctor(struct bad_weak_ptr const *this)
   exception::Ctor(& this->_frama_c__ZN3stdE9exception);
   *((struct _frama_c_vmt **)this) = & _frama_c_vmt_header;
   return;
-}
-
-/*@ requires \separated(this, __frama_c_arg_0);
-    requires \valid_read(this);
-    requires \valid_read(__frama_c_arg_0);
- */
-void bad_weak_ptr::Ctor(struct bad_weak_ptr const *this,
-                        struct bad_weak_ptr const *__frama_c_arg_0)
-{
-  exception::Ctor(& this->_frama_c__ZN3stdE9exception,
-                  & __frama_c_arg_0->_frama_c__ZN3stdE9exception);
-  return;
-}
-
-void exception::Ctor(struct exception const *this,
-                     struct exception *__frama_c_arg_0)
-{
-  this->pvmt = __frama_c_arg_0->pvmt;
-  return;
-}
-
-/*@ requires \separated(this, __frama_c_arg_0);
-    requires \valid_read(this);
-    requires \valid(__frama_c_arg_0);
- */
-void bad_weak_ptr::Ctor(struct bad_weak_ptr const *this,
-                        struct bad_weak_ptr *__frama_c_arg_0)
-{
-  exception::Ctor(& this->_frama_c__ZN3stdE9exception,
-                  & __frama_c_arg_0->_frama_c__ZN3stdE9exception);
-  return;
-}
-
-/*@ requires \valid(this);
-    requires \valid_read(__frama_c_arg_0);
-    ensures \valid(\result);
- */
-struct bad_weak_ptr *operator=(struct bad_weak_ptr *this,
-                               struct bad_weak_ptr const *__frama_c_arg_0)
-{
-  operator=(& this->_frama_c__ZN3stdE9exception,
-            & __frama_c_arg_0->_frama_c__ZN3stdE9exception);
-  return this;
-}
-
-struct exception *operator=(struct exception *this,
-                            struct exception *__frama_c_arg_0)
-{
-  this->pvmt = __frama_c_arg_0->pvmt;
-  return this;
-}
-
-/*@ requires \valid(this);
-    requires \valid(__frama_c_arg_0);
-    ensures \valid(\result);
- */
-struct bad_weak_ptr *operator=(struct bad_weak_ptr *this,
-                               struct bad_weak_ptr *__frama_c_arg_0)
-{
-  operator=(& this->_frama_c__ZN3stdE9exception,
-            & __frama_c_arg_0->_frama_c__ZN3stdE9exception);
-  return this;
 }
 
 /*@ requires \valid_read(this); */

@@ -35,13 +35,7 @@ struct Bar {
 };
 void Foo::Ctor(struct Foo const *this);
 
-void Foo::Ctor(struct Foo const *this, struct Foo const *__frama_c_arg_0);
-
-void Foo::Ctor(struct Foo const *this, struct Foo *__frama_c_arg_0);
-
 void Foo::Dtor(struct Foo const *this);
-
-struct Foo *operator=(struct Foo *this, struct Foo const *__frama_c_arg_0);
 
 struct Foo *operator=(struct Foo *this, struct Foo *__frama_c_arg_0);
 
@@ -55,40 +49,10 @@ void Foo::Ctor(struct Foo const *this)
   return;
 }
 
-/*@ requires \separated(this, __frama_c_arg_0);
-    requires \valid_read(this);
-    requires \valid_read(__frama_c_arg_0);
- */
-void Foo::Ctor(struct Foo const *this, struct Foo const *__frama_c_arg_0)
-{
-  this->x = __frama_c_arg_0->x;
-  return;
-}
-
-/*@ requires \separated(this, __frama_c_arg_0);
-    requires \valid_read(this);
-    requires \valid(__frama_c_arg_0);
- */
-void Foo::Ctor(struct Foo const *this, struct Foo *__frama_c_arg_0)
-{
-  this->x = __frama_c_arg_0->x;
-  return;
-}
-
 /*@ requires \valid_read(this); */
 void Foo::Dtor(struct Foo const *this)
 {
   return;
-}
-
-/*@ requires \valid(this);
-    requires \valid_read(__frama_c_arg_0);
-    ensures \valid(\result);
- */
-struct Foo *operator=(struct Foo *this, struct Foo const *__frama_c_arg_0)
-{
-  this->x = __frama_c_arg_0->x;
-  return this;
 }
 
 /*@ requires \valid(this);
@@ -110,8 +74,6 @@ void Bar::Ctor(struct Bar const *this);
 
 void Bar::Ctor(struct Bar const *this, struct Bar const *__frama_c_arg_0);
 
-void Bar::Ctor(struct Bar const *this, struct Bar *__frama_c_arg_0);
-
 void Bar::Dtor(struct Bar const *this);
 
 struct _frama_c_vmt _frama_c_vmt_header;
@@ -129,17 +91,6 @@ void Bar::Ctor(struct Bar const *this)
     requires \valid_read(__frama_c_arg_0);
  */
 void Bar::Ctor(struct Bar const *this, struct Bar const *__frama_c_arg_0)
-{
-  this->y = __frama_c_arg_0->y;
-  this->z = __frama_c_arg_0->z;
-  return;
-}
-
-/*@ requires \separated(this, __frama_c_arg_0);
-    requires \valid_read(this);
-    requires \valid(__frama_c_arg_0);
- */
-void Bar::Ctor(struct Bar const *this, struct Bar *__frama_c_arg_0)
 {
   this->y = __frama_c_arg_0->y;
   this->z = __frama_c_arg_0->z;

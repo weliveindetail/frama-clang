@@ -29,10 +29,6 @@ struct Foo {
    int c ;
    int t[3] ;
 };
-void Foo::Ctor(struct Foo const *this, struct Foo const *__frama_c_arg_0);
-
-void Foo::Ctor(struct Foo const *this, struct Foo *__frama_c_arg_0);
-
 struct _frama_c_vmt _frama_c_vmt_header;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
 
@@ -46,44 +42,6 @@ void Foo::Ctor(struct Foo const *this, int x)
   this->t[0UL] = 3;
   this->t[1UL] = 4;
   this->t[2UL] = -1;
-  return;
-}
-
-/*@ requires \separated(this, __frama_c_arg_0);
-    requires \valid_read(this);
-    requires \valid_read(__frama_c_arg_0);
- */
-void Foo::Ctor(struct Foo const *this, struct Foo const *__frama_c_arg_0)
-{
-  this->a = __frama_c_arg_0->a;
-  this->b = __frama_c_arg_0->b;
-  this->c = __frama_c_arg_0->c;
-  {
-    unsigned int idx = (unsigned int)0;
-    while (idx < (unsigned int)3) {
-      this->t[idx] = __frama_c_arg_0->t[idx];
-      idx ++;
-    }
-  }
-  return;
-}
-
-/*@ requires \separated(this, __frama_c_arg_0);
-    requires \valid_read(this);
-    requires \valid(__frama_c_arg_0);
- */
-void Foo::Ctor(struct Foo const *this, struct Foo *__frama_c_arg_0)
-{
-  this->a = __frama_c_arg_0->a;
-  this->b = __frama_c_arg_0->b;
-  this->c = __frama_c_arg_0->c;
-  {
-    unsigned int idx = (unsigned int)0;
-    while (idx < (unsigned int)3) {
-      this->t[idx] = __frama_c_arg_0->t[idx];
-      idx ++;
-    }
-  }
   return;
 }
 

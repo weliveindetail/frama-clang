@@ -4,8 +4,6 @@ Now output intermediate result
 [kernel] Warning: Assuming declared function exception::Dtor can't throw any exception
 [kernel] Warning: Assuming declared function exception::Dtor can't throw any exception
 [kernel] Warning: Assuming declared function exception::Ctor can't throw any exception
-[kernel] Warning: Assuming declared function exception::Ctor can't throw any exception
-[kernel] Warning: Assuming declared function operator= can't throw any exception
 [kernel] Warning: Assuming declared function exception::Dtor can't throw any exception
 [kernel] Warning: Assuming declared function forward<std::minus<int>> can't throw any exception
 [kernel] Warning: Assuming declared function forward<std::plus<int>> can't throw any exception
@@ -347,12 +345,6 @@ int const *forward<int&>(type *t)
 
 void piecewise_construct_t::Ctor(struct piecewise_construct_t const *this);
 
-void piecewise_construct_t::Ctor(struct piecewise_construct_t const *this,
-                                 struct piecewise_construct_t const *__frama_c_arg_0);
-
-void piecewise_construct_t::Ctor(struct piecewise_construct_t const *this,
-                                 struct piecewise_construct_t *__frama_c_arg_0);
-
 void piecewise_construct_t::Dtor(struct piecewise_construct_t const *this);
 
 struct _frama_c_vmt _frama_c_vmt_header;
@@ -361,26 +353,6 @@ struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
 struct _frama_c_vmt_content _frama_c_vmt[1];
 /*@ requires \valid_read(this); */
 void piecewise_construct_t::Ctor(struct piecewise_construct_t const *this)
-{
-  return;
-}
-
-/*@ requires \separated(this, __frama_c_arg_0);
-    requires \valid_read(this);
-    requires \valid_read(__frama_c_arg_0);
- */
-void piecewise_construct_t::Ctor(struct piecewise_construct_t const *this,
-                                 struct piecewise_construct_t const *__frama_c_arg_0)
-{
-  return;
-}
-
-/*@ requires \separated(this, __frama_c_arg_0);
-    requires \valid_read(this);
-    requires \valid(__frama_c_arg_0);
- */
-void piecewise_construct_t::Ctor(struct piecewise_construct_t const *this,
-                                 struct piecewise_construct_t *__frama_c_arg_0)
 {
   return;
 }
@@ -2010,9 +1982,6 @@ void __binop<int,std::__minus>::Ctor(struct __binop<int,std::__minus> const *thi
 void __binop<int,std::__minus>::Dtor(struct __binop<int,std::__minus> const *this);
 
 void __binop<int,std::__minus>::Ctor(struct __binop<int,std::__minus> const *this,
-                                     struct __binop<int,std::__minus> const *__frama_c_arg_0);
-
-void __binop<int,std::__minus>::Ctor(struct __binop<int,std::__minus> const *this,
                                      struct __binop<int,std::__minus> *__frama_c_arg_0);
 
 struct _frama_c_vmt _frama_c_vmt_header;
@@ -2042,16 +2011,6 @@ void __binop<int,std::__minus>::Dtor(struct __binop<int,std::__minus> const *thi
 
 /*@ requires \separated(this, __frama_c_arg_0);
     requires \valid_read(this);
-    requires \valid_read(__frama_c_arg_0);
- */
-void __binop<int,std::__minus>::Ctor(struct __binop<int,std::__minus> const *this,
-                                     struct __binop<int,std::__minus> const *__frama_c_arg_0)
-{
-  return;
-}
-
-/*@ requires \separated(this, __frama_c_arg_0);
-    requires \valid_read(this);
     requires \valid(__frama_c_arg_0);
  */
 void __binop<int,std::__minus>::Ctor(struct __binop<int,std::__minus> const *this,
@@ -2068,9 +2027,6 @@ struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info =
 void __binop<int,std::__plus>::Ctor(struct __binop<int,std::__plus> const *this);
 
 void __binop<int,std::__plus>::Dtor(struct __binop<int,std::__plus> const *this);
-
-void __binop<int,std::__plus>::Ctor(struct __binop<int,std::__plus> const *this,
-                                    struct __binop<int,std::__plus> const *__frama_c_arg_0);
 
 void __binop<int,std::__plus>::Ctor(struct __binop<int,std::__plus> const *this,
                                     struct __binop<int,std::__plus> *__frama_c_arg_0);
@@ -2096,16 +2052,6 @@ void __binop<int,std::__plus>::Ctor(struct __binop<int,std::__plus> const *this)
 
 /*@ requires \valid_read(this); */
 void __binop<int,std::__plus>::Dtor(struct __binop<int,std::__plus> const *this)
-{
-  return;
-}
-
-/*@ requires \separated(this, __frama_c_arg_0);
-    requires \valid_read(this);
-    requires \valid_read(__frama_c_arg_0);
- */
-void __binop<int,std::__plus>::Ctor(struct __binop<int,std::__plus> const *this,
-                                    struct __binop<int,std::__plus> const *__frama_c_arg_0)
 {
   return;
 }
@@ -2145,9 +2091,6 @@ __funtype __funtype)(struct __binop<int,std::__plus> *this)
 void plus<int>::Ctor(struct plus<int> const *this);
 
 void plus<int>::Ctor(struct plus<int> const *this,
-                     struct plus<int> const *__frama_c_arg_0);
-
-void plus<int>::Ctor(struct plus<int> const *this,
                      struct plus<int> *__frama_c_arg_0);
 
 void plus<int>::Dtor(struct plus<int> const *this);
@@ -2161,18 +2104,6 @@ struct _frama_c_vmt_content _frama_c_vmt[1];
 void plus<int>::Ctor(struct plus<int> const *this)
 {
   __binop<int,std::__plus>::Ctor(& this->_frama_c__ZN3stdE7__binopIiN3stdE6__plusE);
-  return;
-}
-
-/*@ requires \separated(this, __frama_c_arg_0);
-    requires \valid_read(this);
-    requires \valid_read(__frama_c_arg_0);
- */
-void plus<int>::Ctor(struct plus<int> const *this,
-                     struct plus<int> const *__frama_c_arg_0)
-{
-  __binop<int,std::__plus>::Ctor(& this->_frama_c__ZN3stdE7__binopIiN3stdE6__plusE,
-                                 & __frama_c_arg_0->_frama_c__ZN3stdE7__binopIiN3stdE6__plusE);
   return;
 }
 
@@ -2227,9 +2158,6 @@ __funtype __funtype)(struct __binop<int,std::__minus> *this)
 void minus<int>::Ctor(struct minus<int> const *this);
 
 void minus<int>::Ctor(struct minus<int> const *this,
-                      struct minus<int> const *__frama_c_arg_0);
-
-void minus<int>::Ctor(struct minus<int> const *this,
                       struct minus<int> *__frama_c_arg_0);
 
 void minus<int>::Dtor(struct minus<int> const *this);
@@ -2243,18 +2171,6 @@ struct _frama_c_vmt_content _frama_c_vmt[1];
 void minus<int>::Ctor(struct minus<int> const *this)
 {
   __binop<int,std::__minus>::Ctor(& this->_frama_c__ZN3stdE7__binopIiN3stdE7__minusE);
-  return;
-}
-
-/*@ requires \separated(this, __frama_c_arg_0);
-    requires \valid_read(this);
-    requires \valid_read(__frama_c_arg_0);
- */
-void minus<int>::Ctor(struct minus<int> const *this,
-                      struct minus<int> const *__frama_c_arg_0)
-{
-  __binop<int,std::__minus>::Ctor(& this->_frama_c__ZN3stdE7__binopIiN3stdE7__minusE,
-                                  & __frama_c_arg_0->_frama_c__ZN3stdE7__binopIiN3stdE7__minusE);
   return;
 }
 
@@ -2291,14 +2207,6 @@ struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info =
    .pvmt = (struct _frama_c_vmt *)0};
 void __bool_binop<int,std::__less>::Ctor(struct __bool_binop<int,std::__less> const *this);
 
-void __bool_binop<int,std::__less>::Dtor(struct __bool_binop<int,std::__less> const *this);
-
-void __bool_binop<int,std::__less>::Ctor(struct __bool_binop<int,std::__less> const *this,
-                                         struct __bool_binop<int,std::__less> const *__frama_c_arg_0);
-
-void __bool_binop<int,std::__less>::Ctor(struct __bool_binop<int,std::__less> const *this,
-                                         struct __bool_binop<int,std::__less> *__frama_c_arg_0);
-
 struct _frama_c_vmt _frama_c_vmt_header;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
 
@@ -2311,32 +2219,6 @@ __funtype __funtype)(struct __bool_binop<int,std::__less> *this);
 
 /*@ requires \valid_read(this); */
 void __bool_binop<int,std::__less>::Ctor(struct __bool_binop<int,std::__less> const *this)
-{
-  return;
-}
-
-/*@ requires \valid_read(this); */
-void __bool_binop<int,std::__less>::Dtor(struct __bool_binop<int,std::__less> const *this)
-{
-  return;
-}
-
-/*@ requires \separated(this, __frama_c_arg_0);
-    requires \valid_read(this);
-    requires \valid_read(__frama_c_arg_0);
- */
-void __bool_binop<int,std::__less>::Ctor(struct __bool_binop<int,std::__less> const *this,
-                                         struct __bool_binop<int,std::__less> const *__frama_c_arg_0)
-{
-  return;
-}
-
-/*@ requires \separated(this, __frama_c_arg_0);
-    requires \valid_read(this);
-    requires \valid(__frama_c_arg_0);
- */
-void __bool_binop<int,std::__less>::Ctor(struct __bool_binop<int,std::__less> const *this,
-                                         struct __bool_binop<int,std::__less> *__frama_c_arg_0)
 {
   return;
 }
@@ -2369,12 +2251,6 @@ _Bool operator()(struct __bool_binop<int,std::__less> const *this,
 
 void less<int>::Ctor(struct less<int> const *this);
 
-void less<int>::Ctor(struct less<int> const *this,
-                     struct less<int> const *__frama_c_arg_0);
-
-void less<int>::Ctor(struct less<int> const *this,
-                     struct less<int> *__frama_c_arg_0);
-
 struct _frama_c_vmt _frama_c_vmt_header;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
 
@@ -2387,47 +2263,11 @@ void less<int>::Ctor(struct less<int> const *this)
   return;
 }
 
-/*@ requires \separated(this, __frama_c_arg_0);
-    requires \valid_read(this);
-    requires \valid_read(__frama_c_arg_0);
- */
-void less<int>::Ctor(struct less<int> const *this,
-                     struct less<int> const *__frama_c_arg_0)
-{
-  __bool_binop<int,std::__less>::Ctor(& this->_frama_c__ZN3stdE12__bool_binopIiN3stdE6__lessE,
-                                      & __frama_c_arg_0->_frama_c__ZN3stdE12__bool_binopIiN3stdE6__lessE);
-  return;
-}
-
-/*@ requires \separated(this, __frama_c_arg_0);
-    requires \valid_read(this);
-    requires \valid(__frama_c_arg_0);
- */
-void less<int>::Ctor(struct less<int> const *this,
-                     struct less<int> *__frama_c_arg_0)
-{
-  __bool_binop<int,std::__less>::Ctor(& this->_frama_c__ZN3stdE12__bool_binopIiN3stdE6__lessE,
-                                      & __frama_c_arg_0->_frama_c__ZN3stdE12__bool_binopIiN3stdE6__lessE);
-  return;
-}
-
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info =
   {.name = "less",
    .base_classes = (struct _frama_c_rtti_name_info_content *)0,
    .number_of_base_classes = 0,
    .pvmt = (struct _frama_c_vmt *)0};
-void bad_function_call::Ctor(struct bad_function_call const *this,
-                             struct bad_function_call const *__frama_c_arg_0);
-
-void bad_function_call::Ctor(struct bad_function_call const *this,
-                             struct bad_function_call *__frama_c_arg_0);
-
-struct bad_function_call *operator=(struct bad_function_call *this,
-                                    struct bad_function_call const *__frama_c_arg_0);
-
-struct bad_function_call *operator=(struct bad_function_call *this,
-                                    struct bad_function_call *__frama_c_arg_0);
-
 void bad_function_call::Dtor(struct bad_function_call const *this);
 
 struct _frama_c_vmt _frama_c_vmt_header;
@@ -2444,68 +2284,6 @@ void bad_function_call::Ctor(struct bad_function_call const *this)
   exception::Ctor(& this->_frama_c__ZN3stdE9exception);
   *((struct _frama_c_vmt **)this) = & _frama_c_vmt_header;
   return;
-}
-
-/*@ requires \separated(this, __frama_c_arg_0);
-    requires \valid_read(this);
-    requires \valid_read(__frama_c_arg_0);
- */
-void bad_function_call::Ctor(struct bad_function_call const *this,
-                             struct bad_function_call const *__frama_c_arg_0)
-{
-  exception::Ctor(& this->_frama_c__ZN3stdE9exception,
-                  & __frama_c_arg_0->_frama_c__ZN3stdE9exception);
-  return;
-}
-
-void exception::Ctor(struct exception const *this,
-                     struct exception *__frama_c_arg_0)
-{
-  this->pvmt = __frama_c_arg_0->pvmt;
-  return;
-}
-
-/*@ requires \separated(this, __frama_c_arg_0);
-    requires \valid_read(this);
-    requires \valid(__frama_c_arg_0);
- */
-void bad_function_call::Ctor(struct bad_function_call const *this,
-                             struct bad_function_call *__frama_c_arg_0)
-{
-  exception::Ctor(& this->_frama_c__ZN3stdE9exception,
-                  & __frama_c_arg_0->_frama_c__ZN3stdE9exception);
-  return;
-}
-
-/*@ requires \valid(this);
-    requires \valid_read(__frama_c_arg_0);
-    ensures \valid(\result);
- */
-struct bad_function_call *operator=(struct bad_function_call *this,
-                                    struct bad_function_call const *__frama_c_arg_0)
-{
-  operator=(& this->_frama_c__ZN3stdE9exception,
-            & __frama_c_arg_0->_frama_c__ZN3stdE9exception);
-  return this;
-}
-
-struct exception *operator=(struct exception *this,
-                            struct exception *__frama_c_arg_0)
-{
-  this->pvmt = __frama_c_arg_0->pvmt;
-  return this;
-}
-
-/*@ requires \valid(this);
-    requires \valid(__frama_c_arg_0);
-    ensures \valid(\result);
- */
-struct bad_function_call *operator=(struct bad_function_call *this,
-                                    struct bad_function_call *__frama_c_arg_0)
-{
-  operator=(& this->_frama_c__ZN3stdE9exception,
-            & __frama_c_arg_0->_frama_c__ZN3stdE9exception);
-  return this;
 }
 
 /*@ requires \valid_read(this); */

@@ -241,12 +241,6 @@ struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info =
    .pvmt = (struct _frama_c_vmt *)0};
 void piecewise_construct_t::Ctor(struct piecewise_construct_t const *this);
 
-void piecewise_construct_t::Ctor(struct piecewise_construct_t const *this,
-                                 struct piecewise_construct_t const *__frama_c_arg_0);
-
-void piecewise_construct_t::Ctor(struct piecewise_construct_t const *this,
-                                 struct piecewise_construct_t *__frama_c_arg_0);
-
 void piecewise_construct_t::Dtor(struct piecewise_construct_t const *this);
 
 struct _frama_c_vmt _frama_c_vmt_header;
@@ -255,26 +249,6 @@ struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
 struct _frama_c_vmt_content _frama_c_vmt[1];
 /*@ requires \valid_read(this); */
 void piecewise_construct_t::Ctor(struct piecewise_construct_t const *this)
-{
-  return;
-}
-
-/*@ requires \separated(this, __frama_c_arg_0);
-    requires \valid_read(this);
-    requires \valid_read(__frama_c_arg_0);
- */
-void piecewise_construct_t::Ctor(struct piecewise_construct_t const *this,
-                                 struct piecewise_construct_t const *__frama_c_arg_0)
-{
-  return;
-}
-
-/*@ requires \separated(this, __frama_c_arg_0);
-    requires \valid_read(this);
-    requires \valid(__frama_c_arg_0);
- */
-void piecewise_construct_t::Ctor(struct piecewise_construct_t const *this,
-                                 struct piecewise_construct_t *__frama_c_arg_0)
 {
   return;
 }
@@ -301,8 +275,6 @@ struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info =
    .base_classes = (struct _frama_c_rtti_name_info_content *)0,
    .number_of_base_classes = 0,
    .pvmt = (struct _frama_c_vmt *)0};
-void atomic<int*>::Ctor(struct atomic<int*> const *this);
-
 struct _frama_c_vmt _frama_c_vmt_header;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
 
@@ -455,21 +427,11 @@ int *operator-=(struct atomic<int*> volatile *this, ptrdiff_t __frama_c_arg_0);
 /*@ requires \valid(this); */
 int *operator-=(struct atomic<int*> *this, ptrdiff_t __frama_c_arg_0);
 
-/*@ requires \valid_read(this); */
-void atomic<int*>::Ctor(struct atomic<int*> const *this)
-{
-  return;
-}
-
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info =
   {.name = "atomic",
    .base_classes = (struct _frama_c_rtti_name_info_content *)0,
    .number_of_base_classes = 0,
    .pvmt = (struct _frama_c_vmt *)0};
-void __atomic<bool>::Ctor(struct __atomic<bool> const *this);
-
-void __atomic<bool>::Dtor(struct __atomic<bool> const *this);
-
 struct _frama_c_vmt _frama_c_vmt_header;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
 
@@ -663,27 +625,11 @@ _Bool operator^=(struct __atomic<bool> volatile *this, _Bool __frama_c_arg_0);
 /*@ requires \valid(this); */
 _Bool operator^=(struct __atomic<bool> *this, _Bool __frama_c_arg_0);
 
-/*@ requires \valid_read(this); */
-void __atomic<bool>::Ctor(struct __atomic<bool> const *this)
-{
-  return;
-}
-
-/*@ requires \valid_read(this); */
-void __atomic<bool>::Dtor(struct __atomic<bool> const *this)
-{
-  return;
-}
-
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info =
   {.name = "__atomic",
    .base_classes = (struct _frama_c_rtti_name_info_content *)0,
    .number_of_base_classes = 0,
    .pvmt = (struct _frama_c_vmt *)0};
-void __atomic<char>::Ctor(struct __atomic<char> const *this);
-
-void __atomic<char>::Dtor(struct __atomic<char> const *this);
-
 struct _frama_c_vmt _frama_c_vmt_header;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
 
@@ -877,27 +823,11 @@ char operator^=(struct __atomic<char> volatile *this, char __frama_c_arg_0);
 /*@ requires \valid(this); */
 char operator^=(struct __atomic<char> *this, char __frama_c_arg_0);
 
-/*@ requires \valid_read(this); */
-void __atomic<char>::Ctor(struct __atomic<char> const *this)
-{
-  return;
-}
-
-/*@ requires \valid_read(this); */
-void __atomic<char>::Dtor(struct __atomic<char> const *this)
-{
-  return;
-}
-
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info =
   {.name = "__atomic",
    .base_classes = (struct _frama_c_rtti_name_info_content *)0,
    .number_of_base_classes = 0,
    .pvmt = (struct _frama_c_vmt *)0};
-void __atomic<signed char>::Ctor(struct __atomic<signed char> const *this);
-
-void __atomic<signed char>::Dtor(struct __atomic<signed char> const *this);
-
 struct _frama_c_vmt _frama_c_vmt_header;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
 
@@ -1129,27 +1059,11 @@ signed char operator^=(struct __atomic<signed char> volatile *this,
 signed char operator^=(struct __atomic<signed char> *this,
                        signed char __frama_c_arg_0);
 
-/*@ requires \valid_read(this); */
-void __atomic<signed char>::Ctor(struct __atomic<signed char> const *this)
-{
-  return;
-}
-
-/*@ requires \valid_read(this); */
-void __atomic<signed char>::Dtor(struct __atomic<signed char> const *this)
-{
-  return;
-}
-
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info =
   {.name = "__atomic",
    .base_classes = (struct _frama_c_rtti_name_info_content *)0,
    .number_of_base_classes = 0,
    .pvmt = (struct _frama_c_vmt *)0};
-void __atomic<unsigned char>::Ctor(struct __atomic<unsigned char> const *this);
-
-void __atomic<unsigned char>::Dtor(struct __atomic<unsigned char> const *this);
-
 struct _frama_c_vmt _frama_c_vmt_header;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
 
@@ -1382,27 +1296,11 @@ unsigned char operator^=(struct __atomic<unsigned char> volatile *this,
 unsigned char operator^=(struct __atomic<unsigned char> *this,
                          unsigned char __frama_c_arg_0);
 
-/*@ requires \valid_read(this); */
-void __atomic<unsigned char>::Ctor(struct __atomic<unsigned char> const *this)
-{
-  return;
-}
-
-/*@ requires \valid_read(this); */
-void __atomic<unsigned char>::Dtor(struct __atomic<unsigned char> const *this)
-{
-  return;
-}
-
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info =
   {.name = "__atomic",
    .base_classes = (struct _frama_c_rtti_name_info_content *)0,
    .number_of_base_classes = 0,
    .pvmt = (struct _frama_c_vmt *)0};
-void __atomic<short>::Ctor(struct __atomic<short> const *this);
-
-void __atomic<short>::Dtor(struct __atomic<short> const *this);
-
 struct _frama_c_vmt _frama_c_vmt_header;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
 
@@ -1596,27 +1494,11 @@ short operator^=(struct __atomic<short> volatile *this, short __frama_c_arg_0);
 /*@ requires \valid(this); */
 short operator^=(struct __atomic<short> *this, short __frama_c_arg_0);
 
-/*@ requires \valid_read(this); */
-void __atomic<short>::Ctor(struct __atomic<short> const *this)
-{
-  return;
-}
-
-/*@ requires \valid_read(this); */
-void __atomic<short>::Dtor(struct __atomic<short> const *this)
-{
-  return;
-}
-
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info =
   {.name = "__atomic",
    .base_classes = (struct _frama_c_rtti_name_info_content *)0,
    .number_of_base_classes = 0,
    .pvmt = (struct _frama_c_vmt *)0};
-void __atomic<unsigned short>::Ctor(struct __atomic<unsigned short> const *this);
-
-void __atomic<unsigned short>::Dtor(struct __atomic<unsigned short> const *this);
-
 struct _frama_c_vmt _frama_c_vmt_header;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
 
@@ -1849,26 +1731,12 @@ unsigned short operator^=(struct __atomic<unsigned short> volatile *this,
 unsigned short operator^=(struct __atomic<unsigned short> *this,
                           unsigned short __frama_c_arg_0);
 
-/*@ requires \valid_read(this); */
-void __atomic<unsigned short>::Ctor(struct __atomic<unsigned short> const *this)
-{
-  return;
-}
-
-/*@ requires \valid_read(this); */
-void __atomic<unsigned short>::Dtor(struct __atomic<unsigned short> const *this)
-{
-  return;
-}
-
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info =
   {.name = "__atomic",
    .base_classes = (struct _frama_c_rtti_name_info_content *)0,
    .number_of_base_classes = 0,
    .pvmt = (struct _frama_c_vmt *)0};
 void __atomic<int>::Ctor(struct __atomic<int> const *this);
-
-void __atomic<int>::Dtor(struct __atomic<int> const *this);
 
 struct _frama_c_vmt _frama_c_vmt_header;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
@@ -2068,21 +1936,11 @@ void __atomic<int>::Ctor(struct __atomic<int> const *this)
   return;
 }
 
-/*@ requires \valid_read(this); */
-void __atomic<int>::Dtor(struct __atomic<int> const *this)
-{
-  return;
-}
-
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info =
   {.name = "__atomic",
    .base_classes = (struct _frama_c_rtti_name_info_content *)0,
    .number_of_base_classes = 0,
    .pvmt = (struct _frama_c_vmt *)0};
-void __atomic<unsigned int>::Ctor(struct __atomic<unsigned int> const *this);
-
-void __atomic<unsigned int>::Dtor(struct __atomic<unsigned int> const *this);
-
 struct _frama_c_vmt _frama_c_vmt_header;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
 
@@ -2315,27 +2173,11 @@ unsigned int operator^=(struct __atomic<unsigned int> volatile *this,
 unsigned int operator^=(struct __atomic<unsigned int> *this,
                         unsigned int __frama_c_arg_0);
 
-/*@ requires \valid_read(this); */
-void __atomic<unsigned int>::Ctor(struct __atomic<unsigned int> const *this)
-{
-  return;
-}
-
-/*@ requires \valid_read(this); */
-void __atomic<unsigned int>::Dtor(struct __atomic<unsigned int> const *this)
-{
-  return;
-}
-
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info =
   {.name = "__atomic",
    .base_classes = (struct _frama_c_rtti_name_info_content *)0,
    .number_of_base_classes = 0,
    .pvmt = (struct _frama_c_vmt *)0};
-void __atomic<long>::Ctor(struct __atomic<long> const *this);
-
-void __atomic<long>::Dtor(struct __atomic<long> const *this);
-
 struct _frama_c_vmt _frama_c_vmt_header;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
 
@@ -2529,27 +2371,11 @@ long operator^=(struct __atomic<long> volatile *this, long __frama_c_arg_0);
 /*@ requires \valid(this); */
 long operator^=(struct __atomic<long> *this, long __frama_c_arg_0);
 
-/*@ requires \valid_read(this); */
-void __atomic<long>::Ctor(struct __atomic<long> const *this)
-{
-  return;
-}
-
-/*@ requires \valid_read(this); */
-void __atomic<long>::Dtor(struct __atomic<long> const *this)
-{
-  return;
-}
-
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info =
   {.name = "__atomic",
    .base_classes = (struct _frama_c_rtti_name_info_content *)0,
    .number_of_base_classes = 0,
    .pvmt = (struct _frama_c_vmt *)0};
-void __atomic<unsigned long>::Ctor(struct __atomic<unsigned long> const *this);
-
-void __atomic<unsigned long>::Dtor(struct __atomic<unsigned long> const *this);
-
 struct _frama_c_vmt _frama_c_vmt_header;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
 
@@ -2782,27 +2608,11 @@ unsigned long operator^=(struct __atomic<unsigned long> volatile *this,
 unsigned long operator^=(struct __atomic<unsigned long> *this,
                          unsigned long __frama_c_arg_0);
 
-/*@ requires \valid_read(this); */
-void __atomic<unsigned long>::Ctor(struct __atomic<unsigned long> const *this)
-{
-  return;
-}
-
-/*@ requires \valid_read(this); */
-void __atomic<unsigned long>::Dtor(struct __atomic<unsigned long> const *this)
-{
-  return;
-}
-
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info =
   {.name = "__atomic",
    .base_classes = (struct _frama_c_rtti_name_info_content *)0,
    .number_of_base_classes = 0,
    .pvmt = (struct _frama_c_vmt *)0};
-void __atomic<long long>::Ctor(struct __atomic<long long> const *this);
-
-void __atomic<long long>::Dtor(struct __atomic<long long> const *this);
-
 struct _frama_c_vmt _frama_c_vmt_header;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
 
@@ -3020,27 +2830,11 @@ long long operator^=(struct __atomic<long long> volatile *this,
 long long operator^=(struct __atomic<long long> *this,
                      long long __frama_c_arg_0);
 
-/*@ requires \valid_read(this); */
-void __atomic<long long>::Ctor(struct __atomic<long long> const *this)
-{
-  return;
-}
-
-/*@ requires \valid_read(this); */
-void __atomic<long long>::Dtor(struct __atomic<long long> const *this)
-{
-  return;
-}
-
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info =
   {.name = "__atomic",
    .base_classes = (struct _frama_c_rtti_name_info_content *)0,
    .number_of_base_classes = 0,
    .pvmt = (struct _frama_c_vmt *)0};
-void __atomic<unsigned long long>::Ctor(struct __atomic<unsigned long long> const *this);
-
-void __atomic<unsigned long long>::Dtor(struct __atomic<unsigned long long> const *this);
-
 struct _frama_c_vmt _frama_c_vmt_header;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
 
@@ -3273,27 +3067,11 @@ unsigned long long operator^=(struct __atomic<unsigned long long> volatile *this
 unsigned long long operator^=(struct __atomic<unsigned long long> *this,
                               unsigned long long __frama_c_arg_0);
 
-/*@ requires \valid_read(this); */
-void __atomic<unsigned long long>::Ctor(struct __atomic<unsigned long long> const *this)
-{
-  return;
-}
-
-/*@ requires \valid_read(this); */
-void __atomic<unsigned long long>::Dtor(struct __atomic<unsigned long long> const *this)
-{
-  return;
-}
-
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info =
   {.name = "__atomic",
    .base_classes = (struct _frama_c_rtti_name_info_content *)0,
    .number_of_base_classes = 0,
    .pvmt = (struct _frama_c_vmt *)0};
-void __atomic<char16_t>::Ctor(struct __atomic<char16_t> const *this);
-
-void __atomic<char16_t>::Dtor(struct __atomic<char16_t> const *this);
-
 struct _frama_c_vmt _frama_c_vmt_header;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
 
@@ -3525,27 +3303,11 @@ unsigned short operator^=(struct __atomic<char16_t> volatile *this,
 unsigned short operator^=(struct __atomic<char16_t> *this,
                           unsigned short __frama_c_arg_0);
 
-/*@ requires \valid_read(this); */
-void __atomic<char16_t>::Ctor(struct __atomic<char16_t> const *this)
-{
-  return;
-}
-
-/*@ requires \valid_read(this); */
-void __atomic<char16_t>::Dtor(struct __atomic<char16_t> const *this)
-{
-  return;
-}
-
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info =
   {.name = "__atomic",
    .base_classes = (struct _frama_c_rtti_name_info_content *)0,
    .number_of_base_classes = 0,
    .pvmt = (struct _frama_c_vmt *)0};
-void __atomic<char32_t>::Ctor(struct __atomic<char32_t> const *this);
-
-void __atomic<char32_t>::Dtor(struct __atomic<char32_t> const *this);
-
 struct _frama_c_vmt _frama_c_vmt_header;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
 
@@ -3775,27 +3537,11 @@ unsigned int operator^=(struct __atomic<char32_t> volatile *this,
 unsigned int operator^=(struct __atomic<char32_t> *this,
                         unsigned int __frama_c_arg_0);
 
-/*@ requires \valid_read(this); */
-void __atomic<char32_t>::Ctor(struct __atomic<char32_t> const *this)
-{
-  return;
-}
-
-/*@ requires \valid_read(this); */
-void __atomic<char32_t>::Dtor(struct __atomic<char32_t> const *this)
-{
-  return;
-}
-
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info =
   {.name = "__atomic",
    .base_classes = (struct _frama_c_rtti_name_info_content *)0,
    .number_of_base_classes = 0,
    .pvmt = (struct _frama_c_vmt *)0};
-void __atomic<wchar_t>::Ctor(struct __atomic<wchar_t> const *this);
-
-void __atomic<wchar_t>::Dtor(struct __atomic<wchar_t> const *this);
-
 struct _frama_c_vmt _frama_c_vmt_header;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
 
@@ -3989,25 +3735,11 @@ int operator^=(struct __atomic<wchar_t> volatile *this, int __frama_c_arg_0);
 /*@ requires \valid(this); */
 int operator^=(struct __atomic<wchar_t> *this, int __frama_c_arg_0);
 
-/*@ requires \valid_read(this); */
-void __atomic<wchar_t>::Ctor(struct __atomic<wchar_t> const *this)
-{
-  return;
-}
-
-/*@ requires \valid_read(this); */
-void __atomic<wchar_t>::Dtor(struct __atomic<wchar_t> const *this)
-{
-  return;
-}
-
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info =
   {.name = "__atomic",
    .base_classes = (struct _frama_c_rtti_name_info_content *)0,
    .number_of_base_classes = 0,
    .pvmt = (struct _frama_c_vmt *)0};
-void atomic<bool>::Ctor(struct atomic<bool> const *this);
-
 struct _frama_c_vmt _frama_c_vmt_header;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
 
@@ -4020,15 +3752,6 @@ void atomic<bool>::Ctor(struct atomic<bool> const *this, _Bool x)
   return;
 }
 
-/*@ requires \valid_read(this); */
-void atomic<bool>::Ctor(struct atomic<bool> const *this)
-{
-  __atomic<bool>::Ctor(& this->_frama_c__ZN3stdE8__atomicIbE);
-  return;
-}
-
-void atomic<char>::Ctor(struct atomic<char> const *this);
-
 struct _frama_c_vmt _frama_c_vmt_header;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
 
@@ -4040,15 +3763,6 @@ void atomic<char>::Ctor(struct atomic<char> const *this, char x)
   __atomic<char>::Ctor(& this->_frama_c__ZN3stdE8__atomicIcE,x);
   return;
 }
-
-/*@ requires \valid_read(this); */
-void atomic<char>::Ctor(struct atomic<char> const *this)
-{
-  __atomic<char>::Ctor(& this->_frama_c__ZN3stdE8__atomicIcE);
-  return;
-}
-
-void atomic<signed char>::Ctor(struct atomic<signed char> const *this);
 
 struct _frama_c_vmt _frama_c_vmt_header;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
@@ -4063,15 +3777,6 @@ void atomic<signed char>::Ctor(struct atomic<signed char> const *this,
   return;
 }
 
-/*@ requires \valid_read(this); */
-void atomic<signed char>::Ctor(struct atomic<signed char> const *this)
-{
-  __atomic<signed char>::Ctor(& this->_frama_c__ZN3stdE8__atomicIaE);
-  return;
-}
-
-void atomic<unsigned char>::Ctor(struct atomic<unsigned char> const *this);
-
 struct _frama_c_vmt _frama_c_vmt_header;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
 
@@ -4085,15 +3790,6 @@ void atomic<unsigned char>::Ctor(struct atomic<unsigned char> const *this,
   return;
 }
 
-/*@ requires \valid_read(this); */
-void atomic<unsigned char>::Ctor(struct atomic<unsigned char> const *this)
-{
-  __atomic<unsigned char>::Ctor(& this->_frama_c__ZN3stdE8__atomicIhE);
-  return;
-}
-
-void atomic<short>::Ctor(struct atomic<short> const *this);
-
 struct _frama_c_vmt _frama_c_vmt_header;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
 
@@ -4106,15 +3802,6 @@ void atomic<short>::Ctor(struct atomic<short> const *this, short x)
   return;
 }
 
-/*@ requires \valid_read(this); */
-void atomic<short>::Ctor(struct atomic<short> const *this)
-{
-  __atomic<short>::Ctor(& this->_frama_c__ZN3stdE8__atomicIsE);
-  return;
-}
-
-void atomic<unsigned short>::Ctor(struct atomic<unsigned short> const *this);
-
 struct _frama_c_vmt _frama_c_vmt_header;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
 
@@ -4125,13 +3812,6 @@ void atomic<unsigned short>::Ctor(struct atomic<unsigned short> const *this,
                                   unsigned short x)
 {
   __atomic<unsigned short>::Ctor(& this->_frama_c__ZN3stdE8__atomicItE,x);
-  return;
-}
-
-/*@ requires \valid_read(this); */
-void atomic<unsigned short>::Ctor(struct atomic<unsigned short> const *this)
-{
-  __atomic<unsigned short>::Ctor(& this->_frama_c__ZN3stdE8__atomicItE);
   return;
 }
 
@@ -4156,8 +3836,6 @@ void atomic<int>::Ctor(struct atomic<int> const *this)
   return;
 }
 
-void atomic<unsigned int>::Ctor(struct atomic<unsigned int> const *this);
-
 struct _frama_c_vmt _frama_c_vmt_header;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
 
@@ -4171,15 +3849,6 @@ void atomic<unsigned int>::Ctor(struct atomic<unsigned int> const *this,
   return;
 }
 
-/*@ requires \valid_read(this); */
-void atomic<unsigned int>::Ctor(struct atomic<unsigned int> const *this)
-{
-  __atomic<unsigned int>::Ctor(& this->_frama_c__ZN3stdE8__atomicIjE);
-  return;
-}
-
-void atomic<long>::Ctor(struct atomic<long> const *this);
-
 struct _frama_c_vmt _frama_c_vmt_header;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
 
@@ -4191,15 +3860,6 @@ void atomic<long>::Ctor(struct atomic<long> const *this, long x)
   __atomic<long>::Ctor(& this->_frama_c__ZN3stdE8__atomicIlE,x);
   return;
 }
-
-/*@ requires \valid_read(this); */
-void atomic<long>::Ctor(struct atomic<long> const *this)
-{
-  __atomic<long>::Ctor(& this->_frama_c__ZN3stdE8__atomicIlE);
-  return;
-}
-
-void atomic<unsigned long>::Ctor(struct atomic<unsigned long> const *this);
 
 struct _frama_c_vmt _frama_c_vmt_header;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
@@ -4214,15 +3874,6 @@ void atomic<unsigned long>::Ctor(struct atomic<unsigned long> const *this,
   return;
 }
 
-/*@ requires \valid_read(this); */
-void atomic<unsigned long>::Ctor(struct atomic<unsigned long> const *this)
-{
-  __atomic<unsigned long>::Ctor(& this->_frama_c__ZN3stdE8__atomicImE);
-  return;
-}
-
-void atomic<long long>::Ctor(struct atomic<long long> const *this);
-
 struct _frama_c_vmt _frama_c_vmt_header;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
 
@@ -4235,15 +3886,6 @@ void atomic<long long>::Ctor(struct atomic<long long> const *this, int x)
                             (long long)x);
   return;
 }
-
-/*@ requires \valid_read(this); */
-void atomic<long long>::Ctor(struct atomic<long long> const *this)
-{
-  __atomic<long long>::Ctor(& this->_frama_c__ZN3stdE8__atomicIxE);
-  return;
-}
-
-void atomic<unsigned long long>::Ctor(struct atomic<unsigned long long> const *this);
 
 struct _frama_c_vmt _frama_c_vmt_header;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
@@ -4258,15 +3900,6 @@ void atomic<unsigned long long>::Ctor(struct atomic<unsigned long long> const *t
   return;
 }
 
-/*@ requires \valid_read(this); */
-void atomic<unsigned long long>::Ctor(struct atomic<unsigned long long> const *this)
-{
-  __atomic<unsigned long long>::Ctor(& this->_frama_c__ZN3stdE8__atomicIyE);
-  return;
-}
-
-void atomic<char16_t>::Ctor(struct atomic<char16_t> const *this);
-
 struct _frama_c_vmt _frama_c_vmt_header;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
 
@@ -4279,15 +3912,6 @@ void atomic<char16_t>::Ctor(struct atomic<char16_t> const *this,
   __atomic<char16_t>::Ctor(& this->_frama_c__ZN3stdE8__atomicIDsE,x);
   return;
 }
-
-/*@ requires \valid_read(this); */
-void atomic<char16_t>::Ctor(struct atomic<char16_t> const *this)
-{
-  __atomic<char16_t>::Ctor(& this->_frama_c__ZN3stdE8__atomicIDsE);
-  return;
-}
-
-void atomic<char32_t>::Ctor(struct atomic<char32_t> const *this);
 
 struct _frama_c_vmt _frama_c_vmt_header;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
@@ -4302,15 +3926,6 @@ void atomic<char32_t>::Ctor(struct atomic<char32_t> const *this,
   return;
 }
 
-/*@ requires \valid_read(this); */
-void atomic<char32_t>::Ctor(struct atomic<char32_t> const *this)
-{
-  __atomic<char32_t>::Ctor(& this->_frama_c__ZN3stdE8__atomicIDiE);
-  return;
-}
-
-void atomic<wchar_t>::Ctor(struct atomic<wchar_t> const *this);
-
 struct _frama_c_vmt _frama_c_vmt_header;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
 
@@ -4322,15 +3937,6 @@ void atomic<wchar_t>::Ctor(struct atomic<wchar_t> const *this, int x)
   __atomic<wchar_t>::Ctor(& this->_frama_c__ZN3stdE8__atomicIwE,x);
   return;
 }
-
-/*@ requires \valid_read(this); */
-void atomic<wchar_t>::Ctor(struct atomic<wchar_t> const *this)
-{
-  __atomic<wchar_t>::Ctor(& this->_frama_c__ZN3stdE8__atomicIwE);
-  return;
-}
-
-void atomic_flag::Ctor(struct atomic_flag const *this);
 
 struct _frama_c_vmt _frama_c_vmt_header;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
@@ -4353,12 +3959,6 @@ void clear(struct atomic_flag *this, memory_order __frama_c_arg_0);
 void atomic_flag::Ctor(struct atomic_flag const *this, _Bool b)
 {
   this->__flag = b;
-  return;
-}
-
-/*@ requires \valid_read(this); */
-void atomic_flag::Ctor(struct atomic_flag const *this)
-{
   return;
 }
 

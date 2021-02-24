@@ -32,46 +32,12 @@ struct vector {
 };
 void allocator::Ctor(struct allocator const *this);
 
-void allocator::Dtor(struct allocator const *this);
-
-void allocator::Ctor(struct allocator const *this,
-                     struct allocator const *__frama_c_arg_0);
-
-void allocator::Ctor(struct allocator const *this,
-                     struct allocator *__frama_c_arg_0);
-
 struct _frama_c_vmt _frama_c_vmt_header;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
 
 struct _frama_c_vmt_content _frama_c_vmt[1];
 /*@ requires \valid_read(this); */
 void allocator::Ctor(struct allocator const *this)
-{
-  return;
-}
-
-/*@ requires \valid_read(this); */
-void allocator::Dtor(struct allocator const *this)
-{
-  return;
-}
-
-/*@ requires \separated(this, __frama_c_arg_0);
-    requires \valid_read(this);
-    requires \valid_read(__frama_c_arg_0);
- */
-void allocator::Ctor(struct allocator const *this,
-                     struct allocator const *__frama_c_arg_0)
-{
-  return;
-}
-
-/*@ requires \separated(this, __frama_c_arg_0);
-    requires \valid_read(this);
-    requires \valid(__frama_c_arg_0);
- */
-void allocator::Ctor(struct allocator const *this,
-                     struct allocator *__frama_c_arg_0)
 {
   return;
 }
@@ -83,11 +49,6 @@ struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info =
    .pvmt = (struct _frama_c_vmt *)0};
 void vector::Ctor(struct vector const *this);
 
-void vector::Ctor(struct vector const *this,
-                  struct vector const *__frama_c_arg_0);
-
-void vector::Ctor(struct vector const *this, struct vector *__frama_c_arg_0);
-
 struct _frama_c_vmt _frama_c_vmt_header;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
 
@@ -98,27 +59,6 @@ void foo(struct vector *this);
 void vector::Ctor(struct vector const *this)
 {
   allocator::Ctor(& this->alloc);
-  return;
-}
-
-/*@ requires \separated(this, __frama_c_arg_0);
-    requires \valid_read(this);
-    requires \valid_read(__frama_c_arg_0);
- */
-void vector::Ctor(struct vector const *this,
-                  struct vector const *__frama_c_arg_0)
-{
-  allocator::Ctor(& this->alloc,& __frama_c_arg_0->alloc);
-  return;
-}
-
-/*@ requires \separated(this, __frama_c_arg_0);
-    requires \valid_read(this);
-    requires \valid(__frama_c_arg_0);
- */
-void vector::Ctor(struct vector const *this, struct vector *__frama_c_arg_0)
-{
-  allocator::Ctor(& this->alloc,& __frama_c_arg_0->alloc);
   return;
 }
 

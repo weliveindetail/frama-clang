@@ -25,12 +25,6 @@ struct _frama_c_rtti_name_info_node {
 struct Foo<int> {
    int *x ;
 };
-void Foo<int>::Ctor(struct Foo<int> const *this,
-                    struct Foo<int> const *__frama_c_arg_0);
-
-void Foo<int>::Ctor(struct Foo<int> const *this,
-                    struct Foo<int> *__frama_c_arg_0);
-
 struct _frama_c_vmt _frama_c_vmt_header;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
 
@@ -39,28 +33,6 @@ struct _frama_c_vmt_content _frama_c_vmt[1];
 void Foo<int>::Ctor(struct Foo<int> const *this, int *_x)
 {
   this->x = _x;
-  return;
-}
-
-/*@ requires \separated(this, __frama_c_arg_0);
-    requires \valid_read(this);
-    requires \valid_read(__frama_c_arg_0);
- */
-void Foo<int>::Ctor(struct Foo<int> const *this,
-                    struct Foo<int> const *__frama_c_arg_0)
-{
-  this->x = __frama_c_arg_0->x;
-  return;
-}
-
-/*@ requires \separated(this, __frama_c_arg_0);
-    requires \valid_read(this);
-    requires \valid(__frama_c_arg_0);
- */
-void Foo<int>::Ctor(struct Foo<int> const *this,
-                    struct Foo<int> *__frama_c_arg_0)
-{
-  this->x = __frama_c_arg_0->x;
   return;
 }
 

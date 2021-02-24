@@ -50,12 +50,6 @@ void free(void *ptr);
 
 char *strdup(char const *__frama_c_arg_0);
 
-void StringRepository::Ctor(struct StringRepository const *this,
-                            struct StringRepository const *__frama_c_arg_0);
-
-void StringRepository::Ctor(struct StringRepository const *this,
-                            struct StringRepository *__frama_c_arg_0);
-
 void StringRepository::Dtor(struct StringRepository const *this);
 
 struct _frama_c_vmt _frama_c_vmt_header;
@@ -85,30 +79,6 @@ _Bool decShared(struct StringRepository *this)
   (this->m_shared) --;
   __retres = (_Bool)(this->m_shared <= 0);
   return __retres;
-}
-
-/*@ requires \separated(this, __frama_c_arg_0);
-    requires \valid_read(this);
-    requires \valid_read(__frama_c_arg_0);
- */
-void StringRepository::Ctor(struct StringRepository const *this,
-                            struct StringRepository const *__frama_c_arg_0)
-{
-  this->m_support = __frama_c_arg_0->m_support;
-  this->m_shared = __frama_c_arg_0->m_shared;
-  return;
-}
-
-/*@ requires \separated(this, __frama_c_arg_0);
-    requires \valid_read(this);
-    requires \valid(__frama_c_arg_0);
- */
-void StringRepository::Ctor(struct StringRepository const *this,
-                            struct StringRepository *__frama_c_arg_0)
-{
-  this->m_support = __frama_c_arg_0->m_support;
-  this->m_shared = __frama_c_arg_0->m_shared;
-  return;
 }
 
 /*@ requires \valid_read(this); */
