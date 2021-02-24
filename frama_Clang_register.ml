@@ -174,6 +174,7 @@ let parse_cxx file =
   Frama_Clang_option.feedback ~dkey "Generated Cabs code:@\n%a"
     Cprint.printFile cabs;
   let cil = Cabs2cil.convFile cabs in
+  Convert.remove_implicit cil;
   (cil, cabs)
 
 let cxx_suffixes = [ ".cpp"; ".C"; ".cxx"; ".c++"; ".cc"; ".ii" ]

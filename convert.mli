@@ -26,3 +26,6 @@ open Intermediate_format
 val create_base_field_name: Convert_env.env -> qualified_name -> tkind -> string
  
 val convert_ast: Intermediate_format.file -> Cabs.file
+
+(** remove unused implicit definitions. *)
+val remove_implicit: Cil_types.file -> unit

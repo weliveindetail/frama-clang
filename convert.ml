@@ -38,6 +38,8 @@ let new_lambda_def_name = fresh_names lambda_def_name
 
 let make_lambda_cons_name s1 = s1 ^ "_cons"
 
+let fc_implicit_attr = "__fc_implicit"
+
 let capture_name_type env =
   function
   | Cap_id (s, typ, is_ref) ->
@@ -2925,11 +2927,12 @@ and create_generic_op op env most_derived class_name =
       Convert_env.fatal
         env "Unexpected number of arguments for an implicit member function"
   in
-  let env, (rt, defname) =
+  let env, (rt, (n,dt,attrs,loc)) =
     make_prototype
       (Convert_env.get_loc env) env cname kind signature.result
       args signature.variadic false
   in
+  let defname = (n,dt,(fc_implicit_attr,[])::attrs,loc) in
   let ret_stmt = op.return () in
   let body, defs, env =
     if is_union then begin
@@ -4085,3 +4088,29 @@ let convert_ast file =
   let dkey = Frama_Clang_option.dkey_reorder in
   Frama_Clang_option.debug ~dkey "Before reordering:@\n%a" Cprint.printFile res;
   Reorder_defs.reorder res
+
+let remove_implicit file =
+  let open Cil_types in
+  let destructors = ref Datatype.String.Set.empty in
+  let rec add_name = function
+    | AAddrOf a -> add_name a
+    | AStr f -> destructors:= Datatype.String.Set.add f !destructors
+    | ACons(f,_) -> destructors:=Datatype.String.Set.add f !destructors
+    | _ -> ()
+  in
+  let collect_destructors = object
+    inherit Cil.nopCilVisitor
+    method! vattr = function
+      | Attr(s,[d]) when s = Cabs2cil.frama_c_destructor ->
+        add_name d; Cil.SkipChildren
+      | _ -> Cil.SkipChildren
+  end
+  in
+  Cil.visitCilFileSameGlobals collect_destructors file;
+  let isRoot = function
+    | GFunDecl(_,v,_) | GFun ({svar = v},_) ->
+      not (Cil.hasAttribute fc_implicit_attr v.vattr)
+      || Datatype.String.Set.mem v.vname !destructors
+    | _ -> true
+  in
+  Rmtmps.removeUnused ~isRoot file
