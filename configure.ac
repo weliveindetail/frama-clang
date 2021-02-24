@@ -87,14 +87,14 @@ LLVM_SHARED_MODE=$($LLVM_CONFIG --shared-mode)
 RUN_TESTS=no
 
 case $LLVM_VERSION in
-  6.0.*) AC_MSG_RESULT([$LLVM_VERSION: Good]);;
-  7.0.*) AC_MSG_RESULT([$LLVM_VERSION: Good]);;
-  8.0.*) AC_MSG_RESULT([$LLVM_VERSION: Good]);;
-  9.0.*) AC_MSG_RESULT([$LLVM_VERSION: Good]); RUN_TESTS=yes;;
-  10.0.*) AC_MSG_RESULT([$LLVM_VERSION: Good]); RUN_TESTS=yes;;
-  11.0.*) AC_MSG_RESULT([$LLVM_VERSION: Good]);;
+  6.*) AC_MSG_RESULT([$LLVM_VERSION: Good]);;
+  7.*) AC_MSG_RESULT([$LLVM_VERSION: Good]);;
+  8.*) AC_MSG_RESULT([$LLVM_VERSION: Good]);;
+  9.*) AC_MSG_RESULT([$LLVM_VERSION: Good]); RUN_TESTS=yes;;
+  10.*) AC_MSG_RESULT([$LLVM_VERSION: Good]); RUN_TESTS=yes;;
+  11.*) AC_MSG_RESULT([$LLVM_VERSION: Good]); RUN_TESTS=yes;;
   *) plugin_disable(frama_clang,
-      [[LLVM Version $LLVM_VERSION is not supported. Please install LLVM 6.0.x, 7.0.x, 8.0.x, 9.0.x, or 10.0.x]]);;
+      [[LLVM Version $LLVM_VERSION is not supported. Please install LLVM 6.x, 7.x, 8.x, 9.x, 10.x, or 11.x]]);;
 esac
 
 LLVM_CONFIG="$LLVM_CONFIG $LLVM_STATIC"
