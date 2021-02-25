@@ -40,6 +40,8 @@ let make_lambda_cons_name s1 = s1 ^ "_cons"
 
 let fc_implicit_attr = "__fc_implicit"
 
+let fc_pure_template_decl_attr = "__fc_pure_template_decl"
+
 let capture_name_type env =
   function
   | Cap_id (s, typ, is_ref) ->
@@ -3494,6 +3496,9 @@ let constify_receiver kind args =
     this :: args
   | _ -> args
 
+let is_pure_templated_decl kind body has_further_definition =
+  kind <> TStandard && body = None && not has_further_definition
+
 let rec collect_class_components env body =
   List.fold_left
     convert_class_component (env,[],[],[],[]) (reorder_implicit body)
@@ -3541,6 +3546,8 @@ and convert_class_component (env, implicits, types, fields, others) meth =
       let name =
         if implicit then
           (n,dt,(fc_implicit_attr,[])::a,loc)
+        else if is_pure_templated_decl tkind body has_further_definition then
+          (n,dt, (fc_pure_template_decl_attr,[])::a,loc)
         else name
       in
       let has_virtual_base = Class.has_virtual_base_class class_name in
@@ -4149,7 +4156,7 @@ let convert_ast file =
   Frama_Clang_option.debug ~dkey "Before reordering:@\n%a" Cprint.printFile res;
   Reorder_defs.reorder res
 
-let remove_implicit file =
+let remove_unneeded file =
   let open Cil_types in
   let destructors = ref Datatype.String.Set.empty in
   let rec add_name = function
@@ -4169,8 +4176,9 @@ let remove_implicit file =
   Cil.visitCilFileSameGlobals collect_destructors file;
   let isRoot = function
     | GFunDecl(_,v,_) | GFun ({svar = v},_) ->
-      not (Cil.hasAttribute fc_implicit_attr v.vattr)
-      || Datatype.String.Set.mem v.vname !destructors
+      not (Cil.hasAttribute fc_pure_template_decl_attr v.vattr) &&
+      (not (Cil.hasAttribute fc_implicit_attr v.vattr)
+       || Datatype.String.Set.mem v.vname !destructors)
     | _ -> true
   in
   Rmtmps.removeUnused ~isRoot file

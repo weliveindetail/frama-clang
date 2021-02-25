@@ -1734,27 +1734,6 @@ void shared_ptr<Aircraft>::Ctor(struct shared_ptr<Aircraft> const *this)
 void shared_ptr<Aircraft>::Ctor(struct shared_ptr<Aircraft> const *this,
                                 struct Aircraft *p);
 
-/*@ requires \separated(this, r);
-    requires \valid_read(this);
-    requires \valid_read(r);
- */
-void shared_ptr<Aircraft>::Ctor(struct shared_ptr<Aircraft> const *this,
-                                struct shared_ptr<Aircraft> const *r);
-
-/*@ requires \separated(this, r);
-    requires \valid_read(this);
-    requires \valid(r);
- */
-void shared_ptr<Aircraft>::Ctor(struct shared_ptr<Aircraft> const *this,
-                                struct shared_ptr<Aircraft> *r)
-{
-  this->__ptr = r->__ptr;
-  this->_ref = r->_ref;
-  r->__ptr = (struct Aircraft *)0;
-  r->_ref = (struct __shared_ref_base *)0;
-  return;
-}
-
 void shared_ptr<Aircraft>::Ctor(struct shared_ptr<Aircraft> const *this,
                                 struct weak_ptr<Aircraft> const *r);
 
@@ -2073,18 +2052,6 @@ void weak_ptr<Aircraft>::Ctor(struct weak_ptr<Aircraft> const *this)
   return;
 }
 
-/*@ requires \valid_read(this);
-    requires \valid_read(r); */
-void weak_ptr<Aircraft>::Ctor(struct weak_ptr<Aircraft> const *this,
-                              struct shared_ptr<Aircraft> const *r);
-
-/*@ requires \separated(this, r);
-    requires \valid_read(this);
-    requires \valid_read(r);
- */
-void weak_ptr<Aircraft>::Ctor(struct weak_ptr<Aircraft> const *this,
-                              struct weak_ptr<Aircraft> const *r);
-
 /*@ requires \valid_read(this); */
 void weak_ptr<Aircraft>::Dtor(struct weak_ptr<Aircraft> const *this)
 {
@@ -2104,12 +2071,6 @@ void weak_ptr<Aircraft>::Dtor(struct weak_ptr<Aircraft> const *this)
     ensures \valid(\result); */
 struct weak_ptr<Aircraft> *operator=(struct weak_ptr<Aircraft> *this,
                                      struct weak_ptr<Aircraft> const *r);
-
-/*@ requires \valid(this);
-    requires \valid_read(r);
-    ensures \valid(\result); */
-struct weak_ptr<Aircraft> *operator=<Aircraft,void>(struct weak_ptr<Aircraft> *this,
-                                                    struct weak_ptr<Aircraft> const *r);
 
 /*@ requires \valid(this);
     requires \valid_read(r);

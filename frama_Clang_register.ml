@@ -133,6 +133,7 @@ let init_cxx_normalization () =
   if not !is_initialized then begin
       is_initialized:=true;
       Cil_printer.register_shallow_attribute Convert.fc_implicit_attr;
+      Cil_printer.register_shallow_attribute Convert.fc_pure_template_decl_attr;
       Printer.update_printer (module Cxx_printer);
       (* enable exception removal unless it has explicitely been set to false
          on the command line.
@@ -175,7 +176,7 @@ let parse_cxx file =
   Frama_Clang_option.feedback ~dkey "Generated Cabs code:@\n%a"
     Cprint.printFile cabs;
   let cil = Cabs2cil.convFile cabs in
-  Convert.remove_implicit cil;
+  Convert.remove_unneeded cil;
   (cil, cabs)
 
 let cxx_suffixes = [ ".cpp"; ".C"; ".cxx"; ".c++"; ".cc"; ".ii" ]

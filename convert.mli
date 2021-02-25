@@ -26,10 +26,19 @@ open Intermediate_format
     by Frama-Clang. *)
 val fc_implicit_attr: string
 
+(** attribute decorating templated member functions that are never defined
+    (i.e. fully instantiated). Their presence in the AST tends to be
+    dependent on the clang version used for type-checking.
+*)
+val fc_pure_template_decl_attr: string
+
 (** creates the name of the field corresponding to a direct base class. *)
 val create_base_field_name: Convert_env.env -> qualified_name -> tkind -> string
- 
+
 val convert_ast: Intermediate_format.file -> Cabs.file
 
-(** remove unused implicit definitions. *)
-val remove_implicit: Cil_types.file -> unit
+(** remove unneeded definitions and declarations. Notably:
+    - unused implicit definitions
+    - templated member functions that are not defined and never used.
+*)
+val remove_unneeded: Cil_types.file -> unit

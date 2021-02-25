@@ -950,29 +950,6 @@ void pair<int&,bool>::Ctor(struct pair<int&,bool> const *this, int *x,
   return;
 }
 
-/*@ requires \valid_read(this);
-    requires \valid_read(p); */
-void pair<int&,bool>::Ctor(struct pair<int&,bool> const *this,
-                           struct pair<int,bool> const *p);
-
-/*@ requires \valid(this);
-    requires \valid_read(p);
-    ensures \valid(\result); */
-struct pair<int&,bool> *operator=<int&,bool,void>(struct pair<int&,bool> *this,
-                                                  struct pair<int&,bool> const *p);
-
-/*@ requires \valid(this);
-    requires \valid_read(p);
-    ensures \valid(\result); */
-struct pair<int&,bool> *operator=<int,bool,void>(struct pair<int&,bool> *this,
-                                                 struct pair<int,bool> const *p);
-
-/*@ requires \valid(this);
-    requires \valid(p);
-    ensures \valid(\result); */
-struct pair<int&,bool> *operator=<int&,bool,void>(struct pair<int&,bool> *this,
-                                                  struct pair<int&,bool> *p);
-
 struct pair<int&,bool> *operator=<int,bool,void>(struct pair<int&,bool> *this,
                                                  struct pair<int,bool> *p);
 
