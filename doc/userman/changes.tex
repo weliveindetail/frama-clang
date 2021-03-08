@@ -3,6 +3,16 @@
 This chapter summarizes the changes in \fclang and its documentation
 between each release, with the most recent releases first.
 
+\section*{Version 0.0.10}
+\begin{itemize}
+\item compatibility with \clang 11.x
+\item compatibility with \framac 22.x
+\item don't generate code for implicit member functions and operators when
+ they're not used
+\item don't generate code for templated member functions that are in fact never
+  instantiated
+\end{itemize}
+
 \section*{Version 0.0.9}
 \begin{itemize}
 \item compatibility with \clang 10.0
