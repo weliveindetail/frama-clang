@@ -30,3 +30,4 @@ let frama_clang_build =
 in
 (frama_clang_build { llvm_version="9"; })
 // { on-llvm10 = (frama_clang_build { llvm_version="10"; });}
+// { on-llvm11 = (frama_clang_build { llvm_version="11"; });}

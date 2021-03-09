@@ -27,5 +27,11 @@ tests-on-llvm-10:
   stage: tests
   script:
    - nix/frama-ci.sh build -A frama-clang.on-llvm10.tests
+  when: manual
+
+tests-on-llvm-11:
+  stage: tests
+  script:
+   - nix/frama-ci.sh build -A frama-clang.on-llvm11.tests
   tags:
    - nix
