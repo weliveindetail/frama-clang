@@ -7,8 +7,8 @@ let
          # Descriptive name to make the store path easier to identify
          owner = "nixos";
          repo = "nixpkgs";
-         rev = "0f0b14258be090303c5013c2e29234040fa9766c";
-         sha256 = "0srpsnr5fhn2zp36jx3inj6vrs5n302hh3vv0c7rsc90aq5i27cr";
+         rev = "8d327040c03fe8afbc2a2a9973af17b0d1a77bf4";
+         sha256 = "0nqlyqwhb8lr1g9mwia0k2f9h91zj0vfjmaijk6z8daspsci854c";
      }) {};
 in
 let frama_clang_build =
