@@ -54,6 +54,7 @@ AC_SUBST(CLANG_LINKFLAGS)
 AC_SUBST(CLANG_SYSLIBS)
 AC_SUBST(CLANG_BIN_DIR)
 AC_SUBST(LLVM_LIBS)
+AC_SUBST(CLANG_LIBS)
 AC_SUBST(LLVM_VERSION)
 AC_SUBST(DEFAULT_FC_C_HEADERS)
 AC_SUBST(DEFAULT_FC_CXX_HEADERS)
@@ -108,8 +109,11 @@ CLANG_SYSLIBS="$($LLVM_CONFIG --system-libs)"
 CLANG_BIN_DIR="$($LLVM_CONFIG --bindir)"
 if test "$LLVM_SHARED_MODE" = "shared"; then
 LLVM_LIBS=$($LLVM_CONFIG --libs core);
+CLANG_LIBS=clang-cpp
 else
 LLVM_LIBS=$($LLVM_CONFIG --libs profiledata asmparser mc mcparser support bitreader option);
+CLANG_LIBS=clangFrontend clangDriver clangParse clangSema clangAnalysis \
+           clangEdit clangAST clangLex clangSerialization clangBasic
 fi
 fi
 
