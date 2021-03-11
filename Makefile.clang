@@ -53,9 +53,9 @@ OBJS=\
 DEPS=$(OBJS:.o=.d)
 CXXFLAGS?=$(CLANG_CXXFLAGS)
 CXXFLAGS+=-DCLANG_BIN_DIR=\"$(CLANG_BIN_DIR)\" \
-          -Wall -Wno-comment -Wno-enum-compare
+          -O1 -Wall -Wno-comment -Wno-enum-compare
 CFLAGS?=$(CLANG_CFLAGS)
-CFLAGS+=-Wno-enum-compare
+CFLAGS+=-O1 -Wno-enum-compare
 
 # enabling non-null assertions for AST construction would require
 # some refactoring in RTTITable.cpp. Still TODO at this point.
