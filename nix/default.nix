@@ -2,19 +2,10 @@
  { pkgs, stdenv, src ? ../., opam2nix,
    ocaml_version ? "ocamlPackages_latest.ocaml", plugins ? { } }:
 
-let
-     unstablePckgs = import (pkgs.fetchFromGitHub {
-         # Descriptive name to make the store path easier to identify
-         owner = "nixos";
-         repo = "nixpkgs";
-         rev = "8d327040c03fe8afbc2a2a9973af17b0d1a77bf4";
-         sha256 = "0nqlyqwhb8lr1g9mwia0k2f9h91zj0vfjmaijk6z8daspsci854c";
-     }) {};
-in
 let frama_clang_build =
   { llvm_version,
-    llvm?unstablePckgs.${"llvm_"+llvm_version},
-    llvm_package?unstablePckgs.${"llvmPackages_"+llvm_version} } :
+    llvm?pkgs.${"llvm_"+llvm_version},
+    llvm_package?pkgs.${"llvmPackages_"+llvm_version} } :
 
 (plugins.helpers.simple_plugin
    { inherit pkgs stdenv src opam2nix ocaml_version plugins;
