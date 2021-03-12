@@ -112,11 +112,13 @@ private:
 public:
   LogicType()
     : _superTypeName(NULL), _typeResult(NULL), _typedefResult(NULL),
-      _qualification(NULL), _declContext(NULL), _doesStopSuffix(false),
+      _qualification(NULL), _declContext(NULL), _seenInt(false),
+      _seenSigned(false), _doesStopSuffix(false),
       _loc(NULL) {}
   LogicType(qualified_name superTypeName)
     : _superTypeName(superTypeName), _typeResult(NULL), _typedefResult(NULL),
-      _qualification(NULL), _declContext(NULL), _doesStopSuffix(false),
+      _qualification(NULL), _declContext(NULL), _seenInt(false),
+      _seenSigned(false), _doesStopSuffix(false),
       _loc(NULL) {}
   ~LogicType()
     { if (_typeResult) free_logic_type(_typeResult);

@@ -818,7 +818,8 @@ LogicType::readToken(Parser::State& state, Parser::Arguments& arguments) {
                 arguments.extendLocationWithToken(_loc);
                 DefineGotoCase(TypeSuffix) }
               else {
-                DefineAddError("conflicting C type specification in logic type")
+                DefineAddError(
+                  "conflicting C type specification in logic type: char");
                 DefineReduceAndParse
               }
             }
@@ -853,7 +854,7 @@ LogicType::readToken(Parser::State& state, Parser::Arguments& arguments) {
                   DefineGotoCase(CTypeSuffix)
                 } else {
                   DefineAddErrorAndParse(
-                    "conflicting C type specification in logic type")
+                    "conflicting C type specification in logic type: int")
                 }
             }
             case KeywordToken::TUnsigned: {
