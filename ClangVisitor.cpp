@@ -5045,17 +5045,16 @@ void FramacVisitor::ensureVaListDeclaration(const clang::RecordDecl* decl) {
               body = opt_some_container(funContent);
             };
           };
-          
+
           const clang::RecordDecl* current_class = decl;
           funkind kind;
           if (functionDecl->getCanonicalDecl()->getStorageClass()
               == clang::SC_Static)
             kind = funkind_FKFunction();
           else {
+            const auto meth =
+              llvm::cast<const clang::CXXMethodDecl>(functionDecl);
             if (clang::CXXMethodDecl::classof(functionDecl)) {
-              const clang::CXXMethodDecl* meth
-                = static_cast<const clang::CXXMethodDecl*>(functionDecl);
-              kind = _clangUtils->cv_meth(meth);
             };
             arg_decl cdecl = (arg_decl)malloc(sizeof(*cdecl));
             prms = cons_container(cdecl,prms);
@@ -5063,33 +5062,31 @@ void FramacVisitor::ensureVaListDeclaration(const clang::RecordDecl* decl) {
             clang::QualType typeClass(current_class->getTypeForDecl(), 0);
             qual_type this_type =
               _clangUtils->makeType(functionDecl->getLocation(), typeClass);
-            this_type->qualifier =
-              cv_this_ptr(
-                static_cast<const clang::CXXMethodDecl*>(functionDecl));
+            this_type->qualifier = cv_this_ptr(meth);
             pkind pointerKind = pkind_PDataPointer(this_type);
             cdecl->arg_type = qual_type_cons(NULL, typ_Pointer(pointerKind));
             cdecl->arg_loc = makeLocation(functionDecl->getSourceRange());
-          };
-          if (functionDecl->getKind() == clang::Decl::CXXConstructor) {
-            kind = funkind_FKConstructor(true);
-            if (strlen(name) == 0) {
-              free(const_cast<char*>(name));
-              name = strdup("constructor-special");
-            };
-            if (body->is_some) {
-              list& contentBody = *(list*)&body->content.container;
-              insertConstructorPreambleIn(
-                *static_cast<const clang::CXXConstructorDecl*>(functionDecl),
-                contentBody,NULL);
+            if (llvm::isa<clang::CXXConstructorDecl>(meth)) {
+              kind = funkind_FKConstructor(true);
+              if (strlen(name) == 0) {
+                free(const_cast<char*>(name));
+                name = strdup("constructor-special");
+              }
+              if (body->is_some) {
+                list& contentBody = *(list*)&body->content.container;
+                insertConstructorPreambleIn(
+                  *llvm::cast<const clang::CXXConstructorDecl>(meth),
+                  contentBody,NULL);
+              }
+            } else if (llvm::isa<clang::CXXDestructorDecl>(meth)) {
+              kind = funkind_FKDestructor(true);
+              if (body->is_some)
+                insertDestructorPreambleIn(
+                *llvm::cast<const clang::CXXDestructorDecl>(meth), body);
+            } else {
+              kind = _clangUtils->cv_meth(meth);
             }
-          };
-          if (functionDecl->getKind() == clang::Decl::CXXDestructor) {
-            kind = funkind_FKDestructor(true);
-            if (body->is_some)
-              insertDestructorPreambleIn(
-                *static_cast<const clang::CXXDestructorDecl*>(functionDecl),
-                body);
-          };
+          }
           bool is_implicit = isImplicitFunction || functionDecl->isDefaulted();
           bool is_variadic = functionDecl->isVariadic();
           class_decl method = class_decl_CMethod(
@@ -6923,11 +6920,12 @@ bool FramacVisitor::VisitFunctionDecl(clang::FunctionDecl* Decl) {
   }
   else {
     if (Decl->getDeclContext()->isRecord() /* _parents.isClass() */) {
-      assert(llvm::dyn_cast<clang::CXXRecordDecl>(Decl->getDeclContext()));
       const clang::CXXRecordDecl* current_class =
-        (const clang::CXXRecordDecl*) Decl->getDeclContext();
+        llvm::cast<const clang::CXXRecordDecl>(Decl->getDeclContext());
       /* need to resynchronize RTTI table if the definition is outside of
          the class body. */
+      option /* statement list */ bodyref = delayedBody ? delayedBody : body;
+      option bodyBare = NULL;
       funkind kind;
       if (Decl->getCanonicalDecl()->getStorageClass() == clang::SC_Static ||
           Decl->getNameAsString() == "operator new"    ||
@@ -6936,11 +6934,88 @@ bool FramacVisitor::VisitFunctionDecl(clang::FunctionDecl* Decl) {
           Decl->getNameAsString() == "operator delete[]")
         kind = funkind_FKFunction();
       else {
-        if (clang::CXXMethodDecl::classof(Decl)) {
-          clang::CXXMethodDecl* meth = static_cast<clang::CXXMethodDecl*>(Decl);
-          if (meth->isVirtual()
-              && Decl->getDeclContext() == Decl->getLexicalDeclContext())
-            _rttiTable.addVirtualMethod(meth);
+        auto meth = llvm::cast<const clang::CXXMethodDecl>(Decl);
+        if (meth->isVirtual()
+            && Decl->getDeclContext() == Decl->getLexicalDeclContext())
+          _rttiTable.addVirtualMethod(meth);
+        if (llvm::isa<clang::CXXConstructorDecl>(Decl)) {
+          kind = funkind_FKConstructor(true);
+          if (strlen(name) == 0) {
+            free(const_cast<char*>(name));
+            name = strdup("constructor-special");
+          };
+          bool hasVirtualBaseClasses =
+            _rttiTable.hasVirtualBaseClasses(current_class);
+          if (bodyref->is_some) {
+            bool shouldDelay = false;
+            /* statement */ list bareResult = NULL;
+            ForwardReferenceList headerBare(bareResult);
+            if (hasVirtualBaseClasses &&
+                _clangUtils->doesGenerateBareFunctions() &&
+                (list) bodyref->content.container) {
+              list cursor = (list) bodyref->content.container;
+              headerBare.insertContainer((statement) cursor->element.container);
+              cursor = cursor->next;
+              while (cursor) {
+                headerBare.insertContainer(
+                  (statement) cursor->element.container);
+                cursor = cursor->next;
+              }
+            }
+            insertConstructorPreambleIn(
+              *llvm::cast<const clang::CXXConstructorDecl>(Decl),
+              *(list*)&bodyref->content.container, &shouldDelay,
+              (hasVirtualBaseClasses&& _clangUtils->doesGenerateBareFunctions())
+              ? &headerBare : NULL);
+            if ((shouldDelay || (hasVirtualBaseClasses
+                                 && _clangUtils->doesGenerateBareFunctions()))
+                && !delayedBody) {
+              delayedBody = body;
+              body = opt_none();
+            };
+            if (bareResult)
+              bodyBare = opt_some_container(bareResult);
+          }
+          else if (hasVirtualBaseClasses
+                   && _clangUtils->doesGenerateBareFunctions())
+            bodyBare = opt_none();
+        } else if (llvm::isa<clang::CXXDestructorDecl>(Decl)) {
+          // the same as for FKCONSTRUCTOR
+          kind = funkind_FKDestructor(true);
+          if (bodyref->is_some) {
+            /* statement */ list bareResult = NULL;
+            bool hasVirtualBaseClasses =
+              _rttiTable.hasVirtualBaseClasses(current_class);
+            ForwardReferenceList headerBare(bareResult);
+            if (hasVirtualBaseClasses && (list) bodyref->content.container) {
+              list cursor = (list) bodyref->content.container;
+              headerBare.insertContainer((statement) cursor->element.container);
+              cursor = cursor->next;
+              while (cursor) {
+                headerBare.insertContainer(
+                  (statement) cursor->element.container);
+                cursor = cursor->next;
+              };
+            };
+            insertDestructorPreambleIn(
+              *llvm::cast<const clang::CXXDestructorDecl>(Decl),
+              bodyref,
+              (hasVirtualBaseClasses &&
+               _clangUtils->doesGenerateBareFunctions())
+              ? &headerBare : NULL);
+            if (hasVirtualBaseClasses &&
+                _clangUtils->doesGenerateBareFunctions())
+              { bodyBare = opt_some_container(bareResult);
+                if (!delayedBody) {
+                  delayedBody = body;
+                  body = opt_none();
+                };
+              };
+          }
+          else if (_clangUtils->doesGenerateBareFunctions()
+                   && _rttiTable.hasVirtualBaseClasses(current_class))
+            bodyBare = opt_none();
+        } else {
           kind = _clangUtils->cv_meth(meth);
         };
         arg_decl cdecl = (arg_decl)malloc(sizeof(*cdecl));
@@ -6954,82 +7029,7 @@ bool FramacVisitor::VisitFunctionDecl(clang::FunctionDecl* Decl) {
         pkind pointerKind = pkind_PDataPointer(this_type);
         cdecl->arg_type = qual_type_cons(NULL, typ_Pointer(pointerKind));
         cdecl->arg_loc = makeLocation(Decl->getSourceRange());
-      };
-      option /* statement list */ bodyref = delayedBody ? delayedBody : body;
-      option bodyBare = NULL;
-      if (Decl->getKind() == clang::Decl::CXXConstructor) {
-        kind = funkind_FKConstructor(true);
-        if (strlen(name) == 0) {
-          free(const_cast<char*>(name));
-          name = strdup("constructor-special");
-        };
-        bool hasVirtualBaseClasses = _rttiTable
-            .hasVirtualBaseClasses(current_class);
-        if (bodyref->is_some) {
-          bool shouldDelay = false;
-          /* statement */ list bareResult = NULL;
-          ForwardReferenceList headerBare(bareResult);
-          if (hasVirtualBaseClasses && _clangUtils->doesGenerateBareFunctions()
-              && (list) bodyref->content.container) {
-            list cursor = (list) bodyref->content.container;
-            headerBare.insertContainer((statement) cursor->element.container);
-            cursor = cursor->next;
-            while (cursor) {
-              headerBare.insertContainer((statement) cursor->element.container);
-              cursor = cursor->next;
-            };
-          };
-          insertConstructorPreambleIn(
-              *static_cast<const clang::CXXConstructorDecl*>(Decl),
-              *(list*)&bodyref->content.container, &shouldDelay,
-              (hasVirtualBaseClasses&& _clangUtils->doesGenerateBareFunctions())
-                ? &headerBare : NULL);
-          if ((shouldDelay || (hasVirtualBaseClasses
-                  && _clangUtils->doesGenerateBareFunctions()))
-              && !delayedBody) {
-            delayedBody = body;
-            body = opt_none();
-          };
-          if (bareResult)
-            bodyBare = opt_some_container(bareResult);
-        }
-        else if (hasVirtualBaseClasses
-            && _clangUtils->doesGenerateBareFunctions())
-          bodyBare = opt_none();
-      };
-      if (Decl->getKind() == clang::Decl::CXXDestructor) {
-        // the same as for FKCONSTRUCTOR
-        kind = funkind_FKDestructor(true);
-        if (bodyref->is_some) {
-          /* statement */ list bareResult = NULL;
-          bool hasVirtualBaseClasses = _rttiTable
-              .hasVirtualBaseClasses(current_class);
-          ForwardReferenceList headerBare(bareResult);
-          if (hasVirtualBaseClasses && (list) bodyref->content.container) {
-            list cursor = (list) bodyref->content.container;
-            headerBare.insertContainer((statement) cursor->element.container);
-            cursor = cursor->next;
-            while (cursor) {
-              headerBare.insertContainer((statement) cursor->element.container);
-              cursor = cursor->next;
-            };
-          };
-          insertDestructorPreambleIn(*static_cast<const
-            clang::CXXDestructorDecl*>(Decl), bodyref,
-            (hasVirtualBaseClasses && _clangUtils->doesGenerateBareFunctions())
-              ? &headerBare : NULL);
-          if (hasVirtualBaseClasses && _clangUtils->doesGenerateBareFunctions())
-          { bodyBare = opt_some_container(bareResult);
-            if (!delayedBody) {
-              delayedBody = body;
-              body = opt_none();
-            };
-          };
-        }
-        else if (_clangUtils->doesGenerateBareFunctions()
-            && _rttiTable.hasVirtualBaseClasses(current_class))
-          bodyBare = opt_none();
-      };
+      }
       bool is_implicit = isImplicitFunction || Decl->isDefaulted();
       bool is_variadic = Decl->isVariadic();
       if (_parents.isClass()) {

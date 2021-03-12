@@ -183,7 +183,7 @@ bool RTTITable::ClassInfo::isSameMethod(
 }
 
 int
-RTTITable::ClassInfo::addVirtualMethod(clang::CXXMethodDecl* method)
+RTTITable::ClassInfo::addVirtualMethod(const clang::CXXMethodDecl* method)
 { typedef std::vector<VirtualMethodInfo>::iterator MethodIterator;
   MethodIterator iterEnd = _virtualMethodTable.end();
   int result = 0, index = 0;
@@ -213,7 +213,7 @@ RTTITable::ClassInfo::addVirtualMethod(clang::CXXMethodDecl* method)
 }
 
 int
-RTTITable::ClassInfo::getIndexOfMethod(clang::CXXMethodDecl* method,
+RTTITable::ClassInfo::getIndexOfMethod(const clang::CXXMethodDecl* method,
     const InheritancePath*& inheritancePath,
     const VirtualInheritancePath*& virtualInheritancePath) const
 { MethodIterator iterEnd = _virtualMethodTable.end();

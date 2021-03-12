@@ -641,6 +641,7 @@ expression Intermediate_ast::makeFloatZero(const location loc, fkind k) {
     case FFLOAT: r = "0.0f"; break;
     case FDOUBLE: r = "0.0"; break;
     case FLONGDOUBLE: r = "0.0l"; break;
+    default: __builtin_unreachable();
   }
   return makeFloatConstant(loc,k,r);
 }

@@ -58,7 +58,7 @@ private:
   private:
     class VirtualMethodInfo {
     private:
-      clang::CXXMethodDecl* _method;
+      const clang::CXXMethodDecl* _method;
       InheritancePath _inheritancePath;
       VirtualInheritancePath _virtualInheritancePath;
       InheritancePath _parentInheritancePath;
@@ -69,7 +69,7 @@ private:
             std::make_pair((const clang::CXXRecordDecl*) NULL, 0)) {}
          // shift for virtual base class access
          // _virtualInheritancePath.second is the index in _virtualMethodTable
-      VirtualMethodInfo(clang::CXXMethodDecl* method)
+      VirtualMethodInfo(const clang::CXXMethodDecl* method)
         : _method(method),
           _virtualInheritancePath(
             std::make_pair((const clang::CXXRecordDecl*) NULL, 0))
@@ -92,8 +92,8 @@ private:
         }
       bool isMethod() const { return _method != NULL; }
       bool isVirtualBaseAccess() const { return _method == NULL; }
-      clang::CXXMethodDecl* getMethod() const { return _method; }
-      void setMethod(clang::CXXMethodDecl* method) { _method = method; }
+      const clang::CXXMethodDecl* getMethod() const { return _method; }
+      void setMethod(const clang::CXXMethodDecl* method) { _method = method; }
       void addInherits(const clang::CXXRecordDecl* baseClass, int vmtPosition)
         { if (!_virtualInheritancePath.first)
             _inheritancePath.push_back(
@@ -150,8 +150,8 @@ private:
     const std::vector<const clang::CXXRecordDecl*>& getVirtualBases() const
       { return _virtualBaseClassTable; }
     int numberOfMethods() const { return _virtualMethodTable.size(); }
-    int addVirtualMethod(clang::CXXMethodDecl* method);
-    int getIndexOfMethod(clang::CXXMethodDecl* method,
+    int addVirtualMethod(const clang::CXXMethodDecl* method);
+    int getIndexOfMethod(const clang::CXXMethodDecl* method,
         const InheritancePath*& inheritancePath,
         const VirtualInheritancePath*& virtualInheritancePath) const;
     int getBasePosition(const clang::CXXRecordDecl* base, bool& isVirtual)
@@ -462,7 +462,7 @@ public:
       };
       return result;
     }
-  void addVirtualMethod(clang::CXXMethodDecl* method)
+  void addVirtualMethod(const clang::CXXMethodDecl* method)
     { assert(!_currentClass.empty() && !_virtualTags.empty());
       _currentClassInfo.front().addVirtualMethod(method);
       *_virtualTags.back() = true;
