@@ -34,10 +34,8 @@ union anonymous_union_1 {
 struct C {
    union anonymous_union_1 anonymous_3 ;
 };
-struct _frama_c_vmt _frama_c_vmt_header;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
 
-struct _frama_c_vmt_content _frama_c_vmt[1];
 /*@ requires \valid(this); */
 long get_b(struct C *this)
 {

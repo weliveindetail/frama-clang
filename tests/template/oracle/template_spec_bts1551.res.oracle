@@ -27,10 +27,8 @@ struct array<5> {
 };
 void array<5>::Ctor(struct array<5> const *this);
 
-struct _frama_c_vmt _frama_c_vmt_header;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
 
-struct _frama_c_vmt_content _frama_c_vmt[1];
 /*@ requires \valid(this);
     assigns \nothing; */
 void foo(struct array<5> *this);

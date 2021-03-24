@@ -1689,10 +1689,8 @@ void __si_class_type_info::Dtor(struct __si_class_type_info const *this)
   return;
 }
 
-struct _frama_c_vmt _frama_c_vmt_header;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
 
-struct _frama_c_vmt_content _frama_c_vmt[1];
 void __vmi_class_type_info::Dtor(struct __vmi_class_type_info const *this);
 
 struct _frama_c_vmt _frama_c_vmt_header;

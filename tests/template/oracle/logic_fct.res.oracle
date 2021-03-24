@@ -28,10 +28,8 @@ struct Stack<6> {
 };
 void Stack<6>::Ctor(struct Stack<6> const *this);
 
-struct _frama_c_vmt _frama_c_vmt_header;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
 
-struct _frama_c_vmt_content _frama_c_vmt[1];
 /*@ logic ℤ Size(struct Stack<6> \this) = \this.sz;
  */
 /*@

@@ -61,10 +61,8 @@ struct __fc_exn_struct __fc_exn =
    .exn_kind = 0,
    .exn_obj = {.__fc_S_Z1D = {._frama_c__Z1B = {._frama_c__Z1A = {.x = 0}},
                               ._frama_c__Z1C = {._frama_c__Z1A = {.x = 0}}}}};
-struct _frama_c_vmt _frama_c_vmt_header;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
 
-struct _frama_c_vmt_content _frama_c_vmt[1];
 /*@ requires \valid_read(this); */
 void A::Ctor(struct A const *this, int _x)
 {
@@ -77,11 +75,8 @@ struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info =
    .base_classes = (struct _frama_c_rtti_name_info_content *)0,
    .number_of_base_classes = 0,
    .pvmt = (struct _frama_c_vmt *)0};
-struct _frama_c_vmt _frama_c_vmt_header;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
 
-struct _frama_c_rtti_name_info_content _frama_c_base_classes[1];
-struct _frama_c_vmt_content _frama_c_vmt[1];
 /*@ requires \valid_read(this); */
 void B::Ctor(struct B const *this, int _x)
 {
@@ -94,11 +89,8 @@ struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info =
    .base_classes = (struct _frama_c_rtti_name_info_content *)0,
    .number_of_base_classes = 0,
    .pvmt = (struct _frama_c_vmt *)0};
-struct _frama_c_vmt _frama_c_vmt_header;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
 
-struct _frama_c_rtti_name_info_content _frama_c_base_classes[1];
-struct _frama_c_vmt_content _frama_c_vmt[1];
 /*@ requires \valid_read(this); */
 void C::Ctor(struct C const *this, int _x)
 {
@@ -111,11 +103,8 @@ struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info =
    .base_classes = (struct _frama_c_rtti_name_info_content *)0,
    .number_of_base_classes = 0,
    .pvmt = (struct _frama_c_vmt *)0};
-struct _frama_c_vmt _frama_c_vmt_header;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
 
-struct _frama_c_rtti_name_info_content _frama_c_base_classes[2];
-struct _frama_c_vmt_content _frama_c_vmt[1];
 /*@ requires \valid_read(this); */
 void D::Ctor(struct D const *this, int _x)
 {

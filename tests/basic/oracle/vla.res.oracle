@@ -27,10 +27,8 @@ typedef long Paddr;
 struct A {
    
 };
-struct _frama_c_vmt _frama_c_vmt_header;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
 
-struct _frama_c_vmt_content _frama_c_vmt[1];
 void m_fn1(struct A const *this, Paddr __frama_c_arg_0,
            unsigned int __frama_c_arg_1);
 

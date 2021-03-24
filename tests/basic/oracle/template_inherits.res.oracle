@@ -34,10 +34,8 @@ void free(void *ptr);
 
 void A<B>::Dtor(struct A<B> const *this);
 
-struct _frama_c_vmt _frama_c_vmt_header;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
 
-struct _frama_c_vmt_content _frama_c_vmt[1];
 void m_fn1(struct A<B> *this);
 
 /*@ requires \valid_read(this); */
@@ -48,11 +46,8 @@ void A<B>::Dtor(struct A<B> const *this)
 
 void B::Dtor(struct B const *this);
 
-struct _frama_c_vmt _frama_c_vmt_header;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
 
-struct _frama_c_rtti_name_info_content _frama_c_base_classes[1];
-struct _frama_c_vmt_content _frama_c_vmt[1];
 /*@ requires \valid_read(this); */
 void B::Dtor(struct B const *this)
 {

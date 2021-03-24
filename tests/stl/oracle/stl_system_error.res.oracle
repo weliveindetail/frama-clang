@@ -184,11 +184,8 @@ struct error_condition {
    int val_ ;
    struct error_category const *cat_ ;
 };
-struct _frama_c_vmt _frama_c_vmt_header;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
 
-struct _frama_c_vmt_content _frama_c_vmt[1];
-_Bool const value;
 /*@ requires \valid_read(this); */
 value_type value_type)(struct integral_constant<bool,0> const *this);
 
@@ -197,11 +194,8 @@ struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info =
    .base_classes = (struct _frama_c_rtti_name_info_content *)0,
    .number_of_base_classes = 0,
    .pvmt = (struct _frama_c_vmt *)0};
-struct _frama_c_vmt _frama_c_vmt_header;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
 
-struct _frama_c_vmt_content _frama_c_vmt[1];
-_Bool const value;
 /*@ requires \valid_read(this); */
 value_type value_type)(struct integral_constant<bool,1> const *this);
 
@@ -210,39 +204,26 @@ struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info =
    .base_classes = (struct _frama_c_rtti_name_info_content *)0,
    .number_of_base_classes = 0,
    .pvmt = (struct _frama_c_vmt *)0};
-struct _frama_c_vmt _frama_c_vmt_header;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
 
-struct _frama_c_rtti_name_info_content _frama_c_base_classes[1];
-struct _frama_c_vmt_content _frama_c_vmt[1];
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info =
   {.name = "__boolean",
    .base_classes = (struct _frama_c_rtti_name_info_content *)0,
    .number_of_base_classes = 0,
    .pvmt = (struct _frama_c_vmt *)0};
-struct _frama_c_vmt _frama_c_vmt_header;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
 
-struct _frama_c_rtti_name_info_content _frama_c_base_classes[1];
-struct _frama_c_vmt_content _frama_c_vmt[1];
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info =
   {.name = "__boolean",
    .base_classes = (struct _frama_c_rtti_name_info_content *)0,
    .number_of_base_classes = 0,
    .pvmt = (struct _frama_c_vmt *)0};
-struct _frama_c_vmt _frama_c_vmt_header;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
 
-struct _frama_c_rtti_name_info_content _frama_c_base_classes[1];
-struct _frama_c_vmt_content _frama_c_vmt[1];
-struct _frama_c_vmt _frama_c_vmt_header;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
 
-struct _frama_c_vmt_content _frama_c_vmt[1];
-struct _frama_c_vmt _frama_c_vmt_header;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
 
-struct _frama_c_vmt_content _frama_c_vmt[1];
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info =
   {.name = "_is_void",
    .base_classes = (struct _frama_c_rtti_name_info_content *)0,
@@ -2198,10 +2179,8 @@ int *fgetws(int * __restrict ws, int n, FILE * __restrict stream);
  */
 int wcscasecmp(int const *ws1, int const *ws2);
 
-struct _frama_c_vmt _frama_c_vmt_header;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
 
-struct _frama_c_vmt_content _frama_c_vmt[1];
 /*@ requires \valid_read(c2);
     requires \valid(c1); */
 void assign(char_type *c1, char_type const *c2);
@@ -2209,10 +2188,8 @@ void assign(char_type *c1, char_type const *c2);
 /*@ requires \valid_read(a); */
 char_type const *find(char_type const *s, size_t n, char_type const *a);
 
-struct _frama_c_vmt _frama_c_vmt_header;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
 
-struct _frama_c_vmt_content _frama_c_vmt[1];
 /*@ requires \valid_read(c2);
     requires \valid(c1); */
 void assign(char_type *c1, char_type const *c2);
@@ -2255,10 +2232,8 @@ void piecewise_construct_t::Ctor(struct piecewise_construct_t const *this);
 
 void piecewise_construct_t::Dtor(struct piecewise_construct_t const *this);
 
-struct _frama_c_vmt _frama_c_vmt_header;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
 
-struct _frama_c_vmt_content _frama_c_vmt[1];
 /*@ requires \valid_read(this); */
 void piecewise_construct_t::Ctor(struct piecewise_construct_t const *this)
 {
@@ -2287,10 +2262,8 @@ struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info =
    .base_classes = (struct _frama_c_rtti_name_info_content *)0,
    .number_of_base_classes = 0,
    .pvmt = (struct _frama_c_vmt *)0};
-struct _frama_c_vmt _frama_c_vmt_header;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
 
-struct _frama_c_vmt_content _frama_c_vmt[1];
 struct _frama_c_vmt _frama_c_vmt_header;
 
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
@@ -2396,10 +2369,8 @@ struct _frama_c_vmt _frama_c_vmt_header =
   {.table = _frama_c_vmt,
    .table_size = 7,
    .rtti_info = & _frama_c_rtti_name_info};
-struct _frama_c_vmt _frama_c_vmt_header;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
 
-struct _frama_c_vmt_content _frama_c_vmt[1];
 void bad_weak_ptr::Dtor(struct bad_weak_ptr const *this);
 
 struct _frama_c_vmt _frama_c_vmt_header;
@@ -2426,10 +2397,8 @@ void bad_weak_ptr::Dtor(struct bad_weak_ptr const *this)
   return;
 }
 
-struct _frama_c_vmt _frama_c_vmt_header;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
 
-struct _frama_c_vmt_content _frama_c_vmt[1];
 /*@ requires \valid_read(this); */
 void shared_ptr<void>::Ctor(struct shared_ptr<void> const *this)
 {
@@ -3110,10 +3079,8 @@ struct error_category const *generic_category(void);
 /*@ ensures \valid_read(\result); */
 struct error_category const *system_category(void);
 
-struct _frama_c_vmt _frama_c_vmt_header;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
 
-struct _frama_c_vmt_content _frama_c_vmt[1];
 /*@ requires \valid_read(this); */
 void error_code::Ctor(struct error_code const *this);
 
@@ -3243,10 +3210,8 @@ struct _frama_c_vmt _frama_c_vmt_header =
     requires \valid_read(lhs); */
 _Bool operator<(struct error_code const *lhs, struct error_code const *rhs);
 
-struct _frama_c_vmt _frama_c_vmt_header;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
 
-struct _frama_c_vmt_content _frama_c_vmt[1];
 /*@ requires \valid_read(this); */
 void error_condition::Ctor(struct error_condition const *this);
 
@@ -3281,11 +3246,8 @@ _Bool conversion(bool)(struct error_condition const *this);
 _Bool operator<(struct error_condition const *lhs,
                 struct error_condition const *rhs);
 
-struct _frama_c_vmt _frama_c_vmt_header;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
 
-struct _frama_c_rtti_name_info_content _frama_c_base_classes[1];
-struct _frama_c_vmt_content _frama_c_vmt[1];
 /*@ requires \valid_read(rhs);
     requires \valid_read(lhs); */
 _Bool operator==(struct error_code const *lhs, struct error_code const *rhs);

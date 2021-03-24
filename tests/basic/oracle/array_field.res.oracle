@@ -31,10 +31,8 @@ void *malloc(unsigned int size);
 
 void free(void *ptr);
 
-struct _frama_c_vmt _frama_c_vmt_header;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
 
-struct _frama_c_vmt_content _frama_c_vmt[1];
 /*@ requires \valid_read(this); */
 void ArrayFieldTest::Ctor(struct ArrayFieldTest const *this)
 {

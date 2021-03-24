@@ -3640,6 +3640,9 @@ and convert_class_component (env, implicits, types, fields, others) meth =
       in
       if is_static typ.qualifier then begin
         let attrs = add_fc_destructor_attr env typ [] in
+        (* we have actually an extern declaration in C sense: its definition
+           might reside in another translation unit. *)
+        let base = SpecStorage EXTERN :: base in
         let name = Convert_env.qualify env name in
         let cname,_= Convert_env.typedef_normalize env name TStandard in
         let cname = Mangling.mangle cname TStandard None in

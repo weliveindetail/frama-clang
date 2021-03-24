@@ -130,11 +130,8 @@ struct __fc_exn_struct __fc_exn =
    .exn_kind = 0,
    .exn_obj = {.__fc_S_ZN3stdE17bad_function_call = {._frama_c__ZN3stdE9exception = {
                                                      .pvmt = (struct _frama_c_vmt *)0}}}};
-struct _frama_c_vmt _frama_c_vmt_header;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
 
-struct _frama_c_vmt_content _frama_c_vmt[1];
-_Bool const value;
 /*@ requires \valid_read(this); */
 value_type value_type)(struct integral_constant<bool,0> const *this);
 
@@ -143,11 +140,8 @@ struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info =
    .base_classes = (struct _frama_c_rtti_name_info_content *)0,
    .number_of_base_classes = 0,
    .pvmt = (struct _frama_c_vmt *)0};
-struct _frama_c_vmt _frama_c_vmt_header;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
 
-struct _frama_c_vmt_content _frama_c_vmt[1];
-_Bool const value;
 /*@ requires \valid_read(this); */
 value_type value_type)(struct integral_constant<bool,1> const *this);
 
@@ -156,49 +150,33 @@ struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info =
    .base_classes = (struct _frama_c_rtti_name_info_content *)0,
    .number_of_base_classes = 0,
    .pvmt = (struct _frama_c_vmt *)0};
-struct _frama_c_vmt _frama_c_vmt_header;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
 
-struct _frama_c_rtti_name_info_content _frama_c_base_classes[1];
-struct _frama_c_vmt_content _frama_c_vmt[1];
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info =
   {.name = "__boolean",
    .base_classes = (struct _frama_c_rtti_name_info_content *)0,
    .number_of_base_classes = 0,
    .pvmt = (struct _frama_c_vmt *)0};
-struct _frama_c_vmt _frama_c_vmt_header;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
 
-struct _frama_c_rtti_name_info_content _frama_c_base_classes[1];
-struct _frama_c_vmt_content _frama_c_vmt[1];
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info =
   {.name = "__boolean",
    .base_classes = (struct _frama_c_rtti_name_info_content *)0,
    .number_of_base_classes = 0,
    .pvmt = (struct _frama_c_vmt *)0};
-struct _frama_c_vmt _frama_c_vmt_header;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
 
-struct _frama_c_rtti_name_info_content _frama_c_base_classes[1];
-struct _frama_c_vmt_content _frama_c_vmt[1];
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info =
   {.name = "__or",
    .base_classes = (struct _frama_c_rtti_name_info_content *)0,
    .number_of_base_classes = 0,
    .pvmt = (struct _frama_c_vmt *)0};
-struct _frama_c_vmt _frama_c_vmt_header;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
 
-struct _frama_c_rtti_name_info_content _frama_c_base_classes[1];
-struct _frama_c_vmt_content _frama_c_vmt[1];
-struct _frama_c_vmt _frama_c_vmt_header;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
 
-struct _frama_c_vmt_content _frama_c_vmt[1];
-struct _frama_c_vmt _frama_c_vmt_header;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
 
-struct _frama_c_vmt_content _frama_c_vmt[1];
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info =
   {.name = "_is_void",
    .base_classes = (struct _frama_c_rtti_name_info_content *)0,
@@ -214,106 +192,78 @@ struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info =
    .base_classes = (struct _frama_c_rtti_name_info_content *)0,
    .number_of_base_classes = 0,
    .pvmt = (struct _frama_c_vmt *)0};
-struct _frama_c_vmt _frama_c_vmt_header;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
 
-struct _frama_c_rtti_name_info_content _frama_c_base_classes[1];
-struct _frama_c_vmt_content _frama_c_vmt[1];
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info =
   {.name = "is_convertible",
    .base_classes = (struct _frama_c_rtti_name_info_content *)0,
    .number_of_base_classes = 0,
    .pvmt = (struct _frama_c_vmt *)0};
-struct _frama_c_vmt _frama_c_vmt_header;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
 
-struct _frama_c_rtti_name_info_content _frama_c_base_classes[1];
-struct _frama_c_vmt_content _frama_c_vmt[1];
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info =
   {.name = "is_convertible",
    .base_classes = (struct _frama_c_rtti_name_info_content *)0,
    .number_of_base_classes = 0,
    .pvmt = (struct _frama_c_vmt *)0};
-struct _frama_c_vmt _frama_c_vmt_header;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
 
-struct _frama_c_rtti_name_info_content _frama_c_base_classes[1];
-struct _frama_c_vmt_content _frama_c_vmt[1];
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info =
   {.name = "is_convertible",
    .base_classes = (struct _frama_c_rtti_name_info_content *)0,
    .number_of_base_classes = 0,
    .pvmt = (struct _frama_c_vmt *)0};
-struct _frama_c_vmt _frama_c_vmt_header;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
 
-struct _frama_c_rtti_name_info_content _frama_c_base_classes[1];
-struct _frama_c_vmt_content _frama_c_vmt[1];
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info =
   {.name = "is_convertible",
    .base_classes = (struct _frama_c_rtti_name_info_content *)0,
    .number_of_base_classes = 0,
    .pvmt = (struct _frama_c_vmt *)0};
-struct _frama_c_vmt _frama_c_vmt_header;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
 
-struct _frama_c_rtti_name_info_content _frama_c_base_classes[1];
-struct _frama_c_vmt_content _frama_c_vmt[1];
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info =
   {.name = "is_convertible",
    .base_classes = (struct _frama_c_rtti_name_info_content *)0,
    .number_of_base_classes = 0,
    .pvmt = (struct _frama_c_vmt *)0};
-struct _frama_c_vmt _frama_c_vmt_header;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
 
-struct _frama_c_rtti_name_info_content _frama_c_base_classes[1];
-struct _frama_c_vmt_content _frama_c_vmt[1];
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info =
   {.name = "is_convertible",
    .base_classes = (struct _frama_c_rtti_name_info_content *)0,
    .number_of_base_classes = 0,
    .pvmt = (struct _frama_c_vmt *)0};
-struct _frama_c_vmt _frama_c_vmt_header;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
 
-struct _frama_c_vmt_content _frama_c_vmt[1];
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info =
   {.name = "remove_reference",
    .base_classes = (struct _frama_c_rtti_name_info_content *)0,
    .number_of_base_classes = 0,
    .pvmt = (struct _frama_c_vmt *)0};
-struct _frama_c_vmt _frama_c_vmt_header;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
 
-struct _frama_c_vmt_content _frama_c_vmt[1];
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info =
   {.name = "remove_reference",
    .base_classes = (struct _frama_c_rtti_name_info_content *)0,
    .number_of_base_classes = 0,
    .pvmt = (struct _frama_c_vmt *)0};
-struct _frama_c_vmt _frama_c_vmt_header;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
 
-struct _frama_c_vmt_content _frama_c_vmt[1];
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info =
   {.name = "remove_reference",
    .base_classes = (struct _frama_c_rtti_name_info_content *)0,
    .number_of_base_classes = 0,
    .pvmt = (struct _frama_c_vmt *)0};
-struct _frama_c_vmt _frama_c_vmt_header;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
 
-struct _frama_c_vmt_content _frama_c_vmt[1];
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info =
   {.name = "remove_reference",
    .base_classes = (struct _frama_c_rtti_name_info_content *)0,
    .number_of_base_classes = 0,
    .pvmt = (struct _frama_c_vmt *)0};
-struct _frama_c_vmt _frama_c_vmt_header;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
 
-struct _frama_c_vmt_content _frama_c_vmt[1];
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info =
   {.name = "enable_if",
    .base_classes = (struct _frama_c_rtti_name_info_content *)0,
@@ -347,10 +297,8 @@ void piecewise_construct_t::Ctor(struct piecewise_construct_t const *this);
 
 void piecewise_construct_t::Dtor(struct piecewise_construct_t const *this);
 
-struct _frama_c_vmt _frama_c_vmt_header;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
 
-struct _frama_c_vmt_content _frama_c_vmt[1];
 /*@ requires \valid_read(this); */
 void piecewise_construct_t::Ctor(struct piecewise_construct_t const *this)
 {
@@ -1864,10 +1812,8 @@ struct _frama_c_vmt _frama_c_vmt_header =
    .rtti_info = & _frama_c_rtti_name_info};
 void reference_wrapper<int*,<abst>>::Dtor(struct reference_wrapper<int*,<abst>> const *this);
 
-struct _frama_c_vmt _frama_c_vmt_header;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
 
-struct _frama_c_vmt_content _frama_c_vmt[1];
 /*@ requires \valid_read(this);
     requires \valid(t); */
 void reference_wrapper<int*,<abst>>::Ctor(struct reference_wrapper<int*,<abst>> const *this,
@@ -1933,10 +1879,8 @@ struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info =
    .base_classes = (struct _frama_c_rtti_name_info_content *)0,
    .number_of_base_classes = 0,
    .pvmt = (struct _frama_c_vmt *)0};
-struct _frama_c_vmt _frama_c_vmt_header;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
 
-struct _frama_c_vmt_content _frama_c_vmt[1];
 /*@ requires \valid_read(this);
     requires \valid(t); */
 void reference_wrapper<int>::Ctor(struct reference_wrapper<int> const *this,
@@ -1984,10 +1928,8 @@ void __binop<int,std::__minus>::Ctor(struct __binop<int,std::__minus> const *thi
 
 void __binop<int,std::__minus>::Dtor(struct __binop<int,std::__minus> const *this);
 
-struct _frama_c_vmt _frama_c_vmt_header;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
 
-struct _frama_c_vmt_content _frama_c_vmt[1];
 /*@ requires \valid_read(this);
     requires \valid_read(y);
     requires \valid_read(x);
@@ -2031,10 +1973,8 @@ void __binop<int,std::__plus>::Ctor(struct __binop<int,std::__plus> const *this,
 
 void __binop<int,std::__plus>::Dtor(struct __binop<int,std::__plus> const *this);
 
-struct _frama_c_vmt _frama_c_vmt_header;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
 
-struct _frama_c_vmt_content _frama_c_vmt[1];
 /*@ requires \valid_read(this);
     requires \valid_read(y);
     requires \valid_read(x);
@@ -2095,11 +2035,8 @@ void plus<int>::Ctor(struct plus<int> const *this,
 
 void plus<int>::Dtor(struct plus<int> const *this);
 
-struct _frama_c_vmt _frama_c_vmt_header;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
 
-struct _frama_c_rtti_name_info_content _frama_c_base_classes[1];
-struct _frama_c_vmt_content _frama_c_vmt[1];
 /*@ requires \valid_read(this); */
 void plus<int>::Ctor(struct plus<int> const *this)
 {
@@ -2162,11 +2099,8 @@ void minus<int>::Ctor(struct minus<int> const *this,
 
 void minus<int>::Dtor(struct minus<int> const *this);
 
-struct _frama_c_vmt _frama_c_vmt_header;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
 
-struct _frama_c_rtti_name_info_content _frama_c_base_classes[1];
-struct _frama_c_vmt_content _frama_c_vmt[1];
 /*@ requires \valid_read(this); */
 void minus<int>::Ctor(struct minus<int> const *this)
 {
@@ -2207,10 +2141,8 @@ struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info =
    .pvmt = (struct _frama_c_vmt *)0};
 void __bool_binop<int,std::__less>::Ctor(struct __bool_binop<int,std::__less> const *this);
 
-struct _frama_c_vmt _frama_c_vmt_header;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
 
-struct _frama_c_vmt_content _frama_c_vmt[1];
 _Bool operator()(struct __bool_binop<int,std::__less> const *this,
                  int const *x, int const *y);
 
@@ -2251,11 +2183,8 @@ _Bool operator()(struct __bool_binop<int,std::__less> const *this,
 
 void less<int>::Ctor(struct less<int> const *this);
 
-struct _frama_c_vmt _frama_c_vmt_header;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
 
-struct _frama_c_rtti_name_info_content _frama_c_base_classes[1];
-struct _frama_c_vmt_content _frama_c_vmt[1];
 /*@ requires \valid_read(this); */
 void less<int>::Ctor(struct less<int> const *this)
 {
@@ -2311,10 +2240,8 @@ struct _frama_c_vmt _frama_c_vmt_header =
   {.table = _frama_c_vmt,
    .table_size = 2,
    .rtti_info = & _frama_c_rtti_name_info};
-struct _frama_c_vmt _frama_c_vmt_header;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
 
-struct _frama_c_vmt_content _frama_c_vmt[1];
 /*@ requires \valid_read(this); */
 void function<int&,<abst>>::Ctor(struct function<int&,<abst>> const *this);
 

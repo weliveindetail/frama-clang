@@ -39,10 +39,8 @@ struct Foo *operator=(struct Foo *this, struct Foo *__frama_c_arg_0);
 
 void Foo::Dtor(struct Foo const *this);
 
-struct _frama_c_vmt _frama_c_vmt_header;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
 
-struct _frama_c_vmt_content _frama_c_vmt[1];
 /*@ requires \valid_read(this); */
 void Foo::Ctor(struct Foo const *this)
 {
@@ -76,10 +74,8 @@ void Bar::Ctor(struct Bar const *this, struct Bar const *__frama_c_arg_0);
 
 void Bar::Dtor(struct Bar const *this);
 
-struct _frama_c_vmt _frama_c_vmt_header;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
 
-struct _frama_c_vmt_content _frama_c_vmt[1];
 /*@ requires \valid_read(this); */
 void Bar::Ctor(struct Bar const *this)
 {

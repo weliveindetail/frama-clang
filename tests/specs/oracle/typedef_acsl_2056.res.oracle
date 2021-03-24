@@ -26,10 +26,8 @@ typedef int value_type;
 struct A {
    int val ;
 };
-struct _frama_c_vmt _frama_c_vmt_header;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
 
-struct _frama_c_vmt_content _frama_c_vmt[1];
 /*@ logic value_type data(struct A \this) = (value_type)\this.val;
  */
 /*@ requires \valid(this);

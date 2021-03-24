@@ -4,15 +4,12 @@ Now output intermediate result
 [eva] Computing initial state
 [eva] Initial state computed
 [eva:initial-state] Values of globals at initialization
-  _frama_c_vmt_header ∈ {0}
   _frama_c_rtti_name_info.name ∈ {{ "A" }}
                          {.base_classes; .number_of_base_classes; .pvmt} ∈
                          {0}
-  _frama_c_vmt[0] ∈ {0}
   _frama_c_vmt_header.table ∈ {{ &_frama_c_vmt[0] }}
                      .table_size ∈ {1}
                      .rtti_info ∈ {{ &_frama_c_rtti_name_info }}
-  _frama_c_vmt_header_for_shift_0 ∈ {0}
   _frama_c_rtti_name_info.name ∈ {{ "B" }}
                          .base_classes ∈ {{ &_frama_c_base_classes[0] }}
                          .number_of_base_classes ∈ {1}
@@ -33,7 +30,6 @@ Now output intermediate result
   _frama_c_vmt_header.table ∈ {{ &_frama_c_vmt[0] }}
                      .table_size ∈ {1}
                      .rtti_info ∈ {{ &_frama_c_rtti_name_info }}
-  _frama_c_vmt_header_for_shift_0 ∈ {0}
   _frama_c_rtti_name_info.name ∈ {{ "C" }}
                          .base_classes ∈ {{ &_frama_c_base_classes[0] }}
                          .number_of_base_classes ∈ {1}
@@ -58,7 +54,6 @@ Now output intermediate result
                                  .table_size ∈ {1}
                                  .rtti_info ∈
                                  {{ &_frama_c_rtti_name_info }}
-  _frama_c_vmt_header_for_shift_0 ∈ {0}
   _frama_c_rtti_name_info.name ∈ {{ "D" }}
                          .base_classes ∈ {{ &_frama_c_base_classes[0] }}
                          .number_of_base_classes ∈ {3}

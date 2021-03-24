@@ -307,10 +307,8 @@ struct _frama_c_vmt _frama_c_vmt_header =
    .rtti_info = & _frama_c_rtti_name_info};
 void basic_stringbuf<char>::Dtor(struct basic_stringbuf<char> const *this);
 
-struct _frama_c_vmt _frama_c_vmt_header;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
 
-struct _frama_c_vmt_content _frama_c_vmt[1];
 /*@ requires \valid_read(this); */
 void basic_stringbuf<char>::Ctor(struct basic_stringbuf<char> const *this,
                                  enum openmode mode)
@@ -335,7 +333,6 @@ struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info =
    .pvmt = (struct _frama_c_vmt *)0};
 struct _frama_c_vmt _frama_c_vmt_header;
 
-struct _frama_c_vmt _frama_c_vmt_header_for_shift_0;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
 
 struct _frama_c_rtti_name_info_content _frama_c_base_classes[1];
@@ -420,7 +417,6 @@ void basic_istringstream<char>::Dtor(struct basic_istringstream<char> const *thi
 
 struct _frama_c_vmt _frama_c_vmt_header;
 
-struct _frama_c_vmt _frama_c_vmt_header_for_shift_0;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
 
 struct _frama_c_rtti_name_info_content _frama_c_base_classes[2];

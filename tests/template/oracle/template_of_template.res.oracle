@@ -30,10 +30,8 @@ struct e<a::c<a::b<char>>> {
 };
 void e<void>::Ctor(struct e<void> const *this);
 
-struct _frama_c_vmt _frama_c_vmt_header;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
 
-struct _frama_c_vmt_content _frama_c_vmt[1];
 /*@ requires \valid_read(this); */
 void e<void>::Ctor(struct e<void> const *this)
 {
@@ -47,10 +45,8 @@ struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info =
    .pvmt = (struct _frama_c_vmt *)0};
 void e<a::c<a::b<char>>>::Ctor(struct e<a::c<a::b<char>>> const *this);
 
-struct _frama_c_vmt _frama_c_vmt_header;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
 
-struct _frama_c_vmt_content _frama_c_vmt[1];
 /*@ requires \valid_read(this); */
 void e<a::c<a::b<char>>>::Ctor(struct e<a::c<a::b<char>>> const *this)
 {

@@ -4,11 +4,9 @@ Now output intermediate result
 [eva] Computing initial state
 [eva] Initial state computed
 [eva:initial-state] Values of globals at initialization
-  _frama_c_vmt_header ∈ {0}
   _frama_c_rtti_name_info.name ∈ {{ "Point" }}
                          {.base_classes; .number_of_base_classes; .pvmt} ∈
                          {0}
-  _frama_c_vmt[0] ∈ {0}
 [eva:alarm] tests/val_analysis/comment.cc:24: Warning: 
   function move_y: precondition dy ≢ 0 got status invalid.
 [eva] done for function main

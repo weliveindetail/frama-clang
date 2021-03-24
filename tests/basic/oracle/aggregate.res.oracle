@@ -4,16 +4,12 @@ Now output intermediate result
 [eva] Computing initial state
 [eva] Initial state computed
 [eva:initial-state] Values of globals at initialization
-  _frama_c_vmt_header ∈ {0}
   _frama_c_rtti_name_info.name ∈ {{ "A" }}
                          {.base_classes; .number_of_base_classes; .pvmt} ∈
                          {0}
-  _frama_c_vmt[0] ∈ {0}
-  _frama_c_vmt_header ∈ {0}
   _frama_c_rtti_name_info.name ∈ {{ "B" }}
                          {.base_classes; .number_of_base_classes; .pvmt} ∈
                          {0}
-  _frama_c_vmt[0] ∈ {0}
   a[0..1] ∈ {0}
   b[0].x ∈ {7}
    [0].y ∈ {0}
@@ -59,10 +55,8 @@ struct B {
 };
 void A::Dtor(struct A const *this);
 
-struct _frama_c_vmt _frama_c_vmt_header;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
 
-struct _frama_c_vmt_content _frama_c_vmt[1];
 /*@ requires \valid_read(this); */
 void A::Ctor(struct A const *this, int _x, int _y)
 {
@@ -82,10 +76,8 @@ struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info =
    .base_classes = (struct _frama_c_rtti_name_info_content *)0,
    .number_of_base_classes = 0,
    .pvmt = (struct _frama_c_vmt *)0};
-struct _frama_c_vmt _frama_c_vmt_header;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
 
-struct _frama_c_vmt_content _frama_c_vmt[1];
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info =
   {.name = "B",
    .base_classes = (struct _frama_c_rtti_name_info_content *)0,

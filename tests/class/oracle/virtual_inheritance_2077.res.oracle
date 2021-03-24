@@ -45,20 +45,15 @@ struct D {
    struct _frama_c_vmt *pvmt ;
    struct A _frama_c__Z1A ;
 };
-struct _frama_c_vmt _frama_c_vmt_header;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
 
-struct _frama_c_vmt_content _frama_c_vmt[1];
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info =
   {.name = "A",
    .base_classes = (struct _frama_c_rtti_name_info_content *)0,
    .number_of_base_classes = 0,
    .pvmt = (struct _frama_c_vmt *)0};
-struct _frama_c_vmt _frama_c_vmt_header;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
 
-struct _frama_c_rtti_name_info_content _frama_c_base_classes[1];
-struct _frama_c_vmt_content _frama_c_vmt[1];
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info =
   {.name = "B",
    .base_classes = (struct _frama_c_rtti_name_info_content *)0,
@@ -66,7 +61,6 @@ struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info =
    .pvmt = (struct _frama_c_vmt *)0};
 struct _frama_c_vmt _frama_c_vmt_header;
 
-struct _frama_c_vmt _frama_c_vmt_header_for_shift_0;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
 
 struct _frama_c_rtti_name_info_content _frama_c_base_classes[1];
@@ -317,7 +311,6 @@ struct _frama_c_vmt _frama_c_vmt_header =
    .rtti_info = & _frama_c_rtti_name_info};
 struct _frama_c_vmt _frama_c_vmt_header;
 
-struct _frama_c_vmt _frama_c_vmt_header_for_shift_0;
 struct _frama_c_rtti_name_info_node _frama_c_rtti_name_info;
 
 struct _frama_c_rtti_name_info_content _frama_c_base_classes[3];
