@@ -2790,14 +2790,14 @@ void srand48(long seed);
     assigns __fc_random48_init \from \nothing;
     assigns \result \from __fc_p_random48_counter;
  */
-unsigned short *seed48(unsigned short * /*[3]*/ seed16v);
+unsigned short *seed48(unsigned short seed16v[3]);
 
 /*@ ensures random48_initialized: __fc_random48_init ≡ 1;
     assigns __fc_random48_counter[0 .. 2], __fc_random48_init;
     assigns __fc_random48_counter[0 .. 2] \from *(param + (0 .. 5));
     assigns __fc_random48_init \from \nothing;
  */
-void lcong48(unsigned short * /*[7]*/ param);
+void lcong48(unsigned short param[7]);
 
 /*@ requires random48_initialized: __fc_random48_init ≡ 1;
     ensures result_range: \is_finite(\result) ∧ 0.0 ≤ \result < 1.0;
@@ -2816,7 +2816,7 @@ double drand48(void);
       \from __fc_random48_counter[0 .. 2];
     assigns \result \from __fc_random48_counter[0 .. 2];
  */
-double erand48(unsigned short * /*[3]*/ xsubi);
+double erand48(unsigned short xsubi[3]);
 
 /*@ requires random48_initialized: __fc_random48_init ≡ 1;
     ensures result_range: 0 ≤ \result < 2147483648;
@@ -2835,7 +2835,7 @@ long lrand48(void);
       \from __fc_random48_counter[0 .. 2];
     assigns \result \from __fc_random48_counter[0 .. 2];
  */
-long nrand48(unsigned short * /*[3]*/ xsubi);
+long nrand48(unsigned short xsubi[3]);
 
 /*@ requires random48_initialized: __fc_random48_init ≡ 1;
     ensures result_range: -2147483648 ≤ \result < 2147483648;
@@ -2854,7 +2854,7 @@ long mrand48(void);
       \from __fc_random48_counter[0 .. 2];
     assigns \result \from __fc_random48_counter[0 .. 2];
  */
-long jrand48(unsigned short * /*[3]*/ xsubi);
+long jrand48(unsigned short xsubi[3]);
 
 /*@ assigns __fc_heap_status, \result;
     assigns __fc_heap_status
