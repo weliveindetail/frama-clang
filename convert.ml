@@ -143,7 +143,7 @@ let spec_of_ikind s =
   )
 
 let make_integral_constant_kind k v =
-  let v = Int64.to_string v in
+  let v = Integer.to_string v in
   let s =
     match k with
       | IBool
@@ -156,6 +156,17 @@ let make_integral_constant_kind k v =
       | ILongLong -> "LL"
       | IULongLong -> "ULL"
   in CONST_INT (v ^ s)
+
+let is_unsigned_kind = function
+  | IBool -> true (* standard says that bool is neither signed nor unsigned,
+                     but at some point you have to take sides. *)
+  | IChar_s | ISChar | IWChar_s | IWSChar -> false
+  | IChar | IWChar -> Cil.theMachine.theMachine.char_is_unsigned
+  | IShort | IInt -> false
+  | IChar_u | IUChar | IChar16 | IChar32 | IWChar_u | IWUChar
+  | IUShort | IUInt -> true
+  | ILong | ILongLong -> false
+  | IULong | IULongLong -> true
 
 let closure_name = "__fc_closure"
 
@@ -173,11 +184,28 @@ let mk_var env name = mk_expr env (VARIABLE name)
 
 let mk_addrof env e = mk_expr env (UNARY(ADDROF,e))
 
-let mk_int64_cst_n i = CONSTANT (CONST_INT (Int64.to_string i))
+let mk_int64_cst_n env ?(kind=IInt) i =
+  let mk_node i = CONSTANT (make_integral_constant_kind kind i) in
+  let mk_node_64 i = mk_node (Integer.of_int64 i) in
+  let mk_exp_64 i = mk_expr env (mk_node_64 i) in
+  if i < Int64.zero then begin
+    if is_unsigned_kind kind then begin
+      (* must convert back into unsigned version. *)
+      let v = Integer.of_int64 i in
+      let v =
+        Integer.(add (neg (mul (of_int 2) (of_int64 Int64.min_int)))) v
+      in
+      mk_node v
+    end else if i = Int64.min_int then begin
+      let m = Int64.neg (Int64.succ i) in
+      BINARY(
+        SUB, mk_expr env (UNARY (MINUS, (mk_exp_64 m))), mk_exp_64 Int64.one)
+    end else UNARY(MINUS, mk_exp_64 i)
+  end else mk_node_64 i
 
-let mk_int64_cst env i = mk_expr env (mk_int64_cst_n i)
+let mk_int64_cst env ?kind i = mk_expr env (mk_int64_cst_n env ?kind i)
 
-let mk_zero env = (mk_int64_cst env Int64.zero)
+let mk_zero ?kind env = (mk_int64_cst env ?kind Int64.zero)
 
 let mk_assign env dst src = mk_expr env (BINARY(ASSIGN, dst, src))
 
@@ -765,10 +793,7 @@ and make_prototype loc env name kind rt args variadic does_remove_virtual =
   env, (rt, (name,decl (PROTO(JUSTBASE,args,[],variadic)),[],loc))
 
 and convert_constant env c does_remove_virtual = match c with
-  | IntCst (t,_,v) ->
-    if ((Int64.compare v Int64.zero) >= 0)
-    then CONSTANT (make_integral_constant_kind t v)
-    else UNARY(MINUS, mk_int64_cst env (Int64.neg v))
+  | IntCst (kind,_,v) -> mk_int64_cst_n env ~kind v
   | FloatCst(_,v) -> CONSTANT(CONST_FLOAT v)
   | EnumCst(n,e,_) ->
     let n, t = Convert_env.typedef_normalize env n TStandard in
@@ -2469,7 +2494,7 @@ and convert_stmt_list env l does_remove_virtual =
   in
   List.rev stmts, env
 
-let convert_enum_constant env ikind e =
+let convert_enum_constant env kind e =
   let loc = Convert_env.get_loc env in
   match e with
     | EnumCst(name,e,value) ->
@@ -2480,20 +2505,7 @@ let convert_enum_constant env ikind e =
         in
         (* If the value is negative, create an expression
            with a positive value. *)
-        let value =
-          if value < Int64.zero then begin
-            (* The negation of min_int may overflow. *)
-            if value = Int64.min_int then
-              Frama_Clang_option.abort
-                ~current:true "Enum constant has value -2^63";
-            UNARY(MINUS,
-                  mk_expr env
-                    (CONSTANT
-                       (make_integral_constant_kind ikind (Int64.neg value))))
-          end else
-            CONSTANT (make_integral_constant_kind ikind value)
-        in
-        (name,mk_expr env value,loc)
+        (name,mk_int64_cst env ~kind value,loc)
     | FloatCst _ | IntCst _ | TypeCst _ ->
         Frama_Clang_option.fatal "Enum constant has a wrong kind"
 
