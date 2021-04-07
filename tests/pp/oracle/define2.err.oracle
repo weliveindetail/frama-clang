@@ -1,4 +1,4 @@
-tests/pp/define2.cpp:4:3: error: [pp] Preprocessor directive is not permitted in ACSL++ annotation (ignoring line): # define XX 0
+tests/pp/define2.cpp:9:3: error: [pp] Preprocessor directive is not permitted in ACSL++ annotation (ignoring line): # define XX 0
 # define XX 0
   ^
 code generation aborted due to one compilation error

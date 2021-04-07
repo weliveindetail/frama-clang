@@ -1,6 +1,6 @@
 [kernel] Parsing tests/pp/valid_function1.cpp (external front-end)
 Now output intermediate result
-[kernel:annot-error] tests/pp/valid_function1.cpp:7: Warning: 
+[kernel:annot-error] tests/pp/valid_function1.cpp:11: Warning: 
   subscripted value is neither array nor pointer. Ignoring logic specification of function _Z1h
 [kernel] User Error: warning annot-error treated as fatal error.
 [kernel] User Error: stopping on file "tests/pp/valid_function1.cpp" that has errors.

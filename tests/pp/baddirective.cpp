@@ -1,4 +1,10 @@
+/* run.config*
+EXIT: 1
+STDOPT:
+*/
+
 // Tests a misspelled directive
+
 /*@
 
 requires  \true;

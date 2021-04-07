@@ -1,4 +1,4 @@
-tests/pp/baddirective2.cpp:5:2: error: [pp] Invalid preprocessor directive [zzzzz] (ignoring line): #zzzzz "Failure2"
+tests/pp/baddirective2.cpp:10:2: error: [pp] Invalid preprocessor directive [zzzzz] (ignoring line): #zzzzz "Failure2"
 #zzzzz "Failure2"
  ^
 code generation aborted due to one compilation error

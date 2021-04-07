@@ -1,4 +1,4 @@
-tests/pp/comment.cpp:5:2: error: [pp] Missing preprocessor directive (ignoring line): # // asdasd
+tests/pp/comment.cpp:9:2: error: [pp] Missing preprocessor directive (ignoring line): # // asdasd
 # // asdasd
  ^
 code generation aborted due to one compilation error
