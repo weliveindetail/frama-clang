@@ -1,5 +1,4 @@
 /* run.config
-   GCC:
    OPT: @MACHDEP@ tests/basic/static_1_aux.cpp -print -check -cxx-c++stdlib-path share/libc++ -cxx-clang-command="bin/framaCIRGen"
 */
 

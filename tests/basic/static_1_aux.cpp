@@ -1,5 +1,4 @@
 /* run.config
-   GCC:
    DONTRUN:
 */
 
