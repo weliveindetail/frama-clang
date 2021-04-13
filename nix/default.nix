@@ -20,7 +20,7 @@ let frama_clang_build =
      preFramaCTests = ''
        echo CONFIGURING Why3 for Frama_Clang.
        export HOME=$(mktemp -d)
-       why3 config --detect
+       why3 config detect
      '';
    });
 in
