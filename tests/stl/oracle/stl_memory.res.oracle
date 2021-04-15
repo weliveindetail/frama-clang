@@ -739,7 +739,7 @@ void *memchr(void const *s, int c, size_t n);
       \from *((char *)src + (0 .. n - 1));
     assigns \result \from dest;
  */
-void *memcpy(void * __restrict dest, void const * __restrict src, size_t n);
+void *memcpy(void * restrict dest, void const * restrict src, size_t n);
 
 /*@ requires valid_dest: valid_or_empty(dest, n);
     requires valid_src: valid_read_or_empty(src, n);
@@ -984,7 +984,7 @@ char *__fc_strtok_ptr;
     complete behaviors resume_str, new_str;
     disjoint behaviors resume_str, new_str;
  */
-char *strtok(char * __restrict s, char const * __restrict delim);
+char *strtok(char * restrict s, char const * restrict delim);
 
 /*@ requires valid_string_delim: valid_read_string(delim);
     requires valid_saveptr: \valid(saveptr);
@@ -1047,8 +1047,8 @@ char *strtok(char * __restrict s, char const * __restrict delim);
     complete behaviors resume_str, new_str;
     disjoint behaviors resume_str, new_str;
  */
-char *strtok_r(char * __restrict s, char const * __restrict delim,
-               char ** __restrict saveptr);
+char *strtok_r(char * restrict s, char const * restrict delim,
+               char ** restrict saveptr);
 
 /*@ requires
       valid_string_stringp: \valid(stringp) ∧ valid_string(*stringp);
@@ -1081,7 +1081,7 @@ char *strerror(int errnum);
       \from *(src + (0 .. strlen{Old}(src)));
     assigns \result \from dest;
  */
-char *strcpy(char * __restrict dest, char const * __restrict src);
+char *strcpy(char * restrict dest, char const * restrict src);
 
 /*@ requires valid_nstring_src: valid_read_nstring(src, n);
     requires room_nstring: \valid(dest + (0 .. n - 1));
@@ -1102,7 +1102,7 @@ char *strcpy(char * __restrict dest, char const * __restrict src);
         equal_prefix:
           memcmp{Post, Post}(\old(dest), \old(src), \old(n)) ≡ 0;
  */
-char *strncpy(char * __restrict dest, char const * __restrict src, size_t n);
+char *strncpy(char * restrict dest, char const * restrict src, size_t n);
 
 /*@ requires valid_string_src: valid_read_string(src);
     requires room_nstring: \valid(dest + (0 .. n - 1));
@@ -1120,7 +1120,7 @@ char *strncpy(char * __restrict dest, char const * __restrict src, size_t n);
     assigns \result
       \from (indirect: src), (indirect: *(src + (0 .. n - 1))), (indirect: n);
  */
-size_t strlcpy(char * __restrict dest, char const * __restrict src, size_t n);
+size_t strlcpy(char * restrict dest, char const * restrict src, size_t n);
 
 /*@ requires valid_string_src: valid_read_string(src);
     requires room_string: \valid(dest + (0 .. strlen(src)));
@@ -1134,7 +1134,7 @@ size_t strlcpy(char * __restrict dest, char const * __restrict src, size_t n);
       \from *(src + (0 .. strlen{Old}(src)));
     assigns \result \from dest;
  */
-char *stpcpy(char * __restrict dest, char const * __restrict src);
+char *stpcpy(char * restrict dest, char const * restrict src);
 
 /*@ requires valid_string_src: valid_read_string(src);
     requires valid_string_dest: valid_string(dest);
@@ -1156,7 +1156,7 @@ char *stpcpy(char * __restrict dest, char const * __restrict src);
       \from *(src + (0 .. strlen{Old}(src)));
     assigns \result \from dest;
  */
-char *strcat(char * __restrict dest, char const * __restrict src);
+char *strcat(char * restrict dest, char const * restrict src);
 
 /*@ requires valid_nstring_src: valid_read_nstring(src, n);
     requires valid_string_dest: valid_string(dest);
@@ -1196,7 +1196,7 @@ char *strcat(char * __restrict dest, char const * __restrict src);
         \from *(src + (0 .. strlen{Old}(src)));
       assigns \result \from dest;
  */
-char *strncat(char * __restrict dest, char const * __restrict src, size_t n);
+char *strncat(char * restrict dest, char const * restrict src, size_t n);
 
 /*@ requires valid_string_src: valid_read_string(src);
     requires valid_string_dest: valid_string(dest);
@@ -1209,7 +1209,7 @@ char *strncat(char * __restrict dest, char const * __restrict src, size_t n);
     assigns \result
       \from (indirect: src), (indirect: *(src + (0 .. n - 1))), (indirect: n);
  */
-size_t strlcat(char * __restrict dest, char const * __restrict src, size_t n);
+size_t strlcat(char * restrict dest, char const * restrict src, size_t n);
 
 /*@ requires valid_dest: \valid(dest + (0 .. n - 1));
     requires valid_string_src: valid_read_string(src);
@@ -1218,7 +1218,7 @@ size_t strlcat(char * __restrict dest, char const * __restrict src, size_t n);
       \from (indirect: *(src + (0 ..))), (indirect: n);
     assigns \result \from dest;
  */
-size_t strxfrm(char * __restrict dest, char const * __restrict src, size_t n);
+size_t strxfrm(char * restrict dest, char const * restrict src, size_t n);
 
 /*@ requires valid_string_s: valid_read_string(s);
     assigns \result;

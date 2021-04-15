@@ -465,7 +465,7 @@ long long atoll(char const *nptr);
     complete behaviors store_position, no_storage;
     disjoint behaviors store_position, no_storage;
  */
-double strtod(char const * __restrict nptr, char ** __restrict endptr);
+double strtod(char const * restrict nptr, char ** restrict endptr);
 
 /*@ requires valid_nptr: \valid_read(nptr);
     requires separation: \separated(nptr, endptr);
@@ -493,7 +493,7 @@ double strtod(char const * __restrict nptr, char ** __restrict endptr);
     complete behaviors store_position, no_storage;
     disjoint behaviors store_position, no_storage;
  */
-float strtof(char const * __restrict nptr, char ** __restrict endptr);
+float strtof(char const * restrict nptr, char ** restrict endptr);
 
 /*@ requires valid_nptr: \valid_read(nptr);
     requires separation: \separated(nptr, endptr);
@@ -521,7 +521,7 @@ float strtof(char const * __restrict nptr, char ** __restrict endptr);
     complete behaviors store_position, no_storage;
     disjoint behaviors store_position, no_storage;
  */
-long double strtold(char const * __restrict nptr, char ** __restrict endptr);
+long double strtold(char const * restrict nptr, char ** restrict endptr);
 
 /*@ requires valid_nptr: \valid_read(nptr);
     requires separation: \separated(nptr, endptr);
@@ -557,7 +557,7 @@ long double strtold(char const * __restrict nptr, char ** __restrict endptr);
     complete behaviors store_position, no_storage;
     disjoint behaviors store_position, no_storage;
  */
-long strtol(char const * __restrict nptr, char ** __restrict endptr, int base);
+long strtol(char const * restrict nptr, char ** restrict endptr, int base);
 
 /*@ requires valid_nptr: \valid_read(nptr);
     requires separation: \separated(nptr, endptr);
@@ -593,7 +593,7 @@ long strtol(char const * __restrict nptr, char ** __restrict endptr, int base);
     complete behaviors store_position, no_storage;
     disjoint behaviors store_position, no_storage;
  */
-long long strtoll(char const * __restrict nptr, char ** __restrict endptr,
+long long strtoll(char const * restrict nptr, char ** restrict endptr,
                   int base);
 
 /*@ requires valid_nptr: \valid_read(nptr);
@@ -630,8 +630,8 @@ long long strtoll(char const * __restrict nptr, char ** __restrict endptr,
     complete behaviors store_position, no_storage;
     disjoint behaviors store_position, no_storage;
  */
-unsigned long strtoul(char const * __restrict nptr,
-                      char ** __restrict endptr, int base);
+unsigned long strtoul(char const * restrict nptr, char ** restrict endptr,
+                      int base);
 
 /*@ requires valid_nptr: \valid_read(nptr);
     requires separation: \separated(nptr, endptr);
@@ -667,8 +667,8 @@ unsigned long strtoul(char const * __restrict nptr,
     complete behaviors store_position, no_storage;
     disjoint behaviors store_position, no_storage;
  */
-unsigned long long strtoull(char const * __restrict nptr,
-                            char ** __restrict endptr, int base);
+unsigned long long strtoull(char const * restrict nptr,
+                            char ** restrict endptr, int base);
 
 /*@ ghost int __fc_random_counter; */
 static unsigned long const __fc_rand_max = (unsigned long)32767;
@@ -1036,7 +1036,7 @@ int mblen(char const *s, size_t n);
       \from (indirect: s), *(s + (0 .. n - 1)), (indirect: n),
             __fc_mbtowc_state;
  */
-int mbtowc(int * __restrict pwc, char const * __restrict s, size_t n);
+int mbtowc(int * restrict pwc, char const * restrict s, size_t n);
 
 /*@ ghost int __fc_wctomb_state; */
 /*@ assigns \result, *(s + (0 ..)), __fc_wctomb_state;
@@ -1053,7 +1053,7 @@ int wctomb(char *s, int wc);
     assigns *(pwcs + (0 .. n - 1))
       \from (indirect: s), *(s + (0 .. n - 1)), (indirect: n);
  */
-size_t mbstowcs(int * __restrict pwcs, char const * __restrict s, size_t n);
+size_t mbstowcs(int * restrict pwcs, char const * restrict s, size_t n);
 
 /*@ requires separation: \separated(s, pwcs);
     assigns \result, *(s + (0 .. n - 1));
@@ -1063,7 +1063,7 @@ size_t mbstowcs(int * __restrict pwcs, char const * __restrict s, size_t n);
     assigns *(s + (0 .. n - 1))
       \from (indirect: pwcs), *(pwcs + (0 .. n - 1)), (indirect: n);
  */
-size_t wcstombs(char * __restrict s, int const * __restrict pwcs, size_t n);
+size_t wcstombs(char * restrict s, int const * restrict pwcs, size_t n);
 
 /*@ requires valid_memptr: \valid(memptr);
     requires

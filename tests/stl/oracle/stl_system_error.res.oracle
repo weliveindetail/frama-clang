@@ -639,7 +639,7 @@ void *memchr(void const *s, int c, size_t n);
       \from *((char *)src + (0 .. n - 1));
     assigns \result \from dest;
  */
-void *memcpy(void * __restrict dest, void const * __restrict src, size_t n);
+void *memcpy(void * restrict dest, void const * restrict src, size_t n);
 
 /*@ requires valid_dest: valid_or_empty(dest, n);
     requires valid_src: valid_read_or_empty(src, n);
@@ -884,7 +884,7 @@ char *__fc_strtok_ptr;
     complete behaviors resume_str, new_str;
     disjoint behaviors resume_str, new_str;
  */
-char *strtok(char * __restrict s, char const * __restrict delim);
+char *strtok(char * restrict s, char const * restrict delim);
 
 /*@ requires valid_string_delim: valid_read_string(delim);
     requires valid_saveptr: \valid(saveptr);
@@ -947,8 +947,8 @@ char *strtok(char * __restrict s, char const * __restrict delim);
     complete behaviors resume_str, new_str;
     disjoint behaviors resume_str, new_str;
  */
-char *strtok_r(char * __restrict s, char const * __restrict delim,
-               char ** __restrict saveptr);
+char *strtok_r(char * restrict s, char const * restrict delim,
+               char ** restrict saveptr);
 
 /*@ requires
       valid_string_stringp: \valid(stringp) ∧ valid_string(*stringp);
@@ -981,7 +981,7 @@ char *strerror(int errnum);
       \from *(src + (0 .. strlen{Old}(src)));
     assigns \result \from dest;
  */
-char *strcpy(char * __restrict dest, char const * __restrict src);
+char *strcpy(char * restrict dest, char const * restrict src);
 
 /*@ requires valid_nstring_src: valid_read_nstring(src, n);
     requires room_nstring: \valid(dest + (0 .. n - 1));
@@ -1002,7 +1002,7 @@ char *strcpy(char * __restrict dest, char const * __restrict src);
         equal_prefix:
           memcmp{Post, Post}(\old(dest), \old(src), \old(n)) ≡ 0;
  */
-char *strncpy(char * __restrict dest, char const * __restrict src, size_t n);
+char *strncpy(char * restrict dest, char const * restrict src, size_t n);
 
 /*@ requires valid_string_src: valid_read_string(src);
     requires room_nstring: \valid(dest + (0 .. n - 1));
@@ -1020,7 +1020,7 @@ char *strncpy(char * __restrict dest, char const * __restrict src, size_t n);
     assigns \result
       \from (indirect: src), (indirect: *(src + (0 .. n - 1))), (indirect: n);
  */
-size_t strlcpy(char * __restrict dest, char const * __restrict src, size_t n);
+size_t strlcpy(char * restrict dest, char const * restrict src, size_t n);
 
 /*@ requires valid_string_src: valid_read_string(src);
     requires room_string: \valid(dest + (0 .. strlen(src)));
@@ -1034,7 +1034,7 @@ size_t strlcpy(char * __restrict dest, char const * __restrict src, size_t n);
       \from *(src + (0 .. strlen{Old}(src)));
     assigns \result \from dest;
  */
-char *stpcpy(char * __restrict dest, char const * __restrict src);
+char *stpcpy(char * restrict dest, char const * restrict src);
 
 /*@ requires valid_string_src: valid_read_string(src);
     requires valid_string_dest: valid_string(dest);
@@ -1056,7 +1056,7 @@ char *stpcpy(char * __restrict dest, char const * __restrict src);
       \from *(src + (0 .. strlen{Old}(src)));
     assigns \result \from dest;
  */
-char *strcat(char * __restrict dest, char const * __restrict src);
+char *strcat(char * restrict dest, char const * restrict src);
 
 /*@ requires valid_nstring_src: valid_read_nstring(src, n);
     requires valid_string_dest: valid_string(dest);
@@ -1096,7 +1096,7 @@ char *strcat(char * __restrict dest, char const * __restrict src);
         \from *(src + (0 .. strlen{Old}(src)));
       assigns \result \from dest;
  */
-char *strncat(char * __restrict dest, char const * __restrict src, size_t n);
+char *strncat(char * restrict dest, char const * restrict src, size_t n);
 
 /*@ requires valid_string_src: valid_read_string(src);
     requires valid_string_dest: valid_string(dest);
@@ -1109,7 +1109,7 @@ char *strncat(char * __restrict dest, char const * __restrict src, size_t n);
     assigns \result
       \from (indirect: src), (indirect: *(src + (0 .. n - 1))), (indirect: n);
  */
-size_t strlcat(char * __restrict dest, char const * __restrict src, size_t n);
+size_t strlcat(char * restrict dest, char const * restrict src, size_t n);
 
 /*@ requires valid_dest: \valid(dest + (0 .. n - 1));
     requires valid_string_src: valid_read_string(src);
@@ -1118,7 +1118,7 @@ size_t strlcat(char * __restrict dest, char const * __restrict src, size_t n);
       \from (indirect: *(src + (0 ..))), (indirect: n);
     assigns \result \from dest;
  */
-size_t strxfrm(char * __restrict dest, char const * __restrict src, size_t n);
+size_t strxfrm(char * restrict dest, char const * restrict src, size_t n);
 
 /*@ requires valid_string_s: valid_read_string(s);
     assigns \result;
@@ -1649,12 +1649,12 @@ struct sigaction *__fc_p_sigaction = __fc_sigaction;
       \from (indirect: signum), (indirect: act), (indirect: *act),
             (indirect: oldact), (indirect: *oldact);
  */
-int sigaction(int signum, struct sigaction const * __restrict act,
-              struct sigaction * __restrict oldact);
+int sigaction(int signum, struct sigaction const * restrict act,
+              struct sigaction * restrict oldact);
 
 /*@ requires valid_set_or_null: set ≡ \null ∨ \valid_read(set); */
-int sigprocmask(int how, sigset_t const * __restrict set,
-                sigset_t * __restrict oldset);
+int sigprocmask(int how, sigset_t const * restrict set,
+                sigset_t * restrict oldset);
 
 /*@ ensures result_ok_or_error: \result ≡ 0 ∨ \result ≡ -1;
     assigns \result;
@@ -1773,9 +1773,8 @@ struct tm *localtime(time_t const *timer);
     assigns \result
       \from (indirect: max), (indirect: *(format + (0 ..))), (indirect: *tm);
  */
-size_t strftime(char * __restrict s, size_t max,
-                char const * __restrict format,
-                struct tm const * __restrict tm);
+size_t strftime(char * restrict s, size_t max, char const * restrict format,
+                struct tm const * restrict tm);
 
 /*@ requires tp: \valid(tp);
     assigns \result, *tp, __fc_time;
@@ -1908,8 +1907,8 @@ int clock_nanosleep(clockid_t clock_id, int flags,
     assigns \result \from (indirect: *timer), result;
     assigns *result \from (indirect: *timer);
  */
-struct tm *gmtime_r(time_t const * __restrict timer,
-                    struct tm * __restrict result);
+struct tm *gmtime_r(time_t const * restrict timer,
+                    struct tm * restrict result);
 
 /*@ requires valid_request: \valid_read(rqtp);
     requires
@@ -1988,7 +1987,7 @@ int *wmemset(int *wcs, int wc, size_t n);
             (indirect: src);
     assigns \result \from dest;
  */
-int *wcscat(int * __restrict dest, int const * __restrict src);
+int *wcscat(int * restrict dest, int const * restrict src);
 
 /*@ requires valid_wstring_src: valid_read_wstring(wcs);
     ensures
@@ -2018,7 +2017,7 @@ int wcscmp(int const *s1, int const *s2);
       \from *(src + (0 .. wcslen{Old}(src))), (indirect: src);
     assigns \result \from dest;
  */
-int *wcscpy(int * __restrict dest, int const * __restrict src);
+int *wcscpy(int * restrict dest, int const * restrict src);
 
 /*@ requires valid_wstring_wcs: valid_read_wstring(wcs);
     requires valid_wstring_accept: valid_read_wstring(accept);
@@ -2046,7 +2045,7 @@ size_t wcscspn(int const *wcs, int const *accept);
       \from (indirect: *(dest + (0 ..))), (indirect: *(src + (0 .. n - 1))),
             (indirect: n);
  */
-size_t wcslcat(int * __restrict dest, int const * __restrict src, size_t n);
+size_t wcslcat(int * restrict dest, int const * restrict src, size_t n);
 
 /*@ requires valid_wstring_src: valid_read_wstring(src);
     requires room_nwstring: \valid(dest + (0 .. n));
@@ -2086,7 +2085,7 @@ size_t wcslen(int const *s);
             (indirect: src), (indirect: n);
     assigns \result \from dest;
  */
-int *wcsncat(int * __restrict dest, int const * __restrict src, size_t n);
+int *wcsncat(int * restrict dest, int const * restrict src, size_t n);
 
 /*@ requires valid_wstring_s1: valid_read_wstring(s1);
     requires valid_wstring_s2: valid_read_wstring(s2);
@@ -2109,7 +2108,7 @@ int wcsncmp(int const *s1, int const *s2, size_t n);
       \from *(src + (0 .. n - 1)), (indirect: src), (indirect: n);
     assigns \result \from dest;
  */
-int *wcsncpy(int * __restrict dest, int const * __restrict src, size_t n);
+int *wcsncpy(int * restrict dest, int const * restrict src, size_t n);
 
 /*@ requires valid_wstring_wcs: valid_read_wstring(wcs);
     requires valid_wstring_accept: valid_read_wstring(accept);
@@ -2163,7 +2162,7 @@ int *wcsstr(int const *haystack, int const *needle);
     assigns *(ws + (0 .. n - 1)) \from (indirect: n), (indirect: *stream);
     assigns \result \from ws, (indirect: n), (indirect: *stream);
  */
-int *fgetws(int * __restrict ws, int n, FILE * __restrict stream);
+int *fgetws(int * restrict ws, int n, FILE * restrict stream);
 
 /*@ axiomatic wformat_length {
       logic ℤ wformat_length{L}(int *format) ;
