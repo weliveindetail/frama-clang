@@ -16,7 +16,7 @@ let frama_clang_build =
    { inherit pkgs stdenv src opam2nix ocaml_version plugins plugin_extend;
      name = "frama-clang-on-llvm-" + llvm_version;
      deps = [ llvm_package.clang-unwrapped llvm pkgs.gnused ];
-     opamPackages = [ { name = "camlp5"; constraint="=7.14";} ];
+     opamPackages = [ "camlp5=7.14" ];
      preFramaCTests = ''
        echo CONFIGURING Why3 for Frama_Clang.
        export HOME=$(mktemp -d)
