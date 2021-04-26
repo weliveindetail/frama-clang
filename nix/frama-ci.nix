@@ -5,7 +5,7 @@ let
     src = builtins.fetchGit {
             "url" = "https://bobot:${password}@git.frama-c.com/frama-c/Frama-CI.git";
             "name" = "Frama-CI";
-            "rev" = "ec755339b61f06484b1abcfa164f14d901f58c31";
+            "rev" = "fb16d73399e355d864d9cc6dad5cd702ff9e1b8a";
             "ref" = "feature/upgrade-opam2nix";
     };
  in
