@@ -25,7 +25,7 @@
 //   Definition of a translator clang -> intermediate_format (-> cabs -> cil).
 //
 
-#ifdef __GNUC__
+#if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wclass-memaccess"
 #endif
@@ -47,7 +47,7 @@
 #include <sstream>
 #include <cstddef>
 #include <list>
-#ifdef __GNUC__
+#if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic pop
 #endif
 
