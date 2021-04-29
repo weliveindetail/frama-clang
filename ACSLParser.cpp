@@ -25,7 +25,7 @@
 //   Implementation of the ACSL++ parser.
 //
 
-#ifdef __GNUC__
+#if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wclass-memaccess"
 #endif
@@ -38,7 +38,7 @@
 #include "clang/Sema/Lookup.h"
 #include "clang/Basic/TargetInfo.h"
 #include "clang/Lex/MacroArgs.h"
-#ifdef __GNUC__
+#if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic pop
 #endif
 

@@ -36,7 +36,7 @@
 #include <set>
 #include <map>
 #include <functional>
-#ifdef __GNUC__
+#if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wclass-memaccess"
 #endif
@@ -46,7 +46,7 @@
 #include "clang/AST/DeclTemplate.h"
 #include "clang/Basic/SourceManager.h"
 #include "clang/Basic/FileManager.h"
-#ifdef __GNUC__
+#if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic pop
 #endif
 
