@@ -27,6 +27,7 @@
 FCLANG_VERSION=0.0.10
 
 PLUGIN_DIR ?= .
+Frama_Clang_DIR ?= .
 
 include $(PLUGIN_DIR)/Makefile.common
 
@@ -84,7 +85,8 @@ dontrun:
 $(Frama_Clang_DIR)/gen_ast: $(Frama_Clang_DIR)/gen_ast.ml
 	$(PRINT_OCAMLC) $@
 	$(OCAMLC) $(Frama_Clang_BFLAGS) -o $@ -pp $(CAMLP5O) \
-        zarith.cma dynlink.cma $^
+        /root/.opam/ocaml-base-compiler.4.08.1/lib/zarith/zarith.cma \
+        dynlink.cma $^
 
 $(Frama_Clang_DIR)/test_ast: \
   $(Frama_Clang_DIR)/intermediate_format.cmo \
@@ -97,7 +99,7 @@ $(Frama_Clang_DIR)/%.mli $(Frama_Clang_DIR)/%.c: \
 	$(Frama_Clang_DIR)/gen_ast $<
 
 CLANG_MAKE:=$(MAKE) PLUGIN_DIR=$(Frama_Clang_DIR) FRAMAC_SHARE=$(FRAMAC_SHARE) \
-            -f $(Frama_Clang_DIR)/Makefile.clang
+            -f $(Frama_Clang_DIR)/Makefile.clang SHELL='sh -x'
 
 clean::
 	$(RM) gen_ast

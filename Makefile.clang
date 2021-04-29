@@ -71,18 +71,26 @@ CFLAGS+=-g
 CLANG_LINKFLAGS+=-g
 endif
 
+# Use clang for compilation and lld for linking.
+CC=clang-11
+CXX=clang++-11
+CLANG_LINKFLAGS+=-fuse-ld=lld
+
 LLVM_MAJOR:= $(shell echo $(LLVM_VERSION) | sed -e 's/^\([0-9]*\).*/\1/')
 
 LLVM_MAJOR_10:= \
   $(shell if test $(LLVM_MAJOR) -ge 10; then echo "yes"; else echo "no"; fi)
 
 #LINK_COMPONENTS := $(TARGETS_TO_BUILD) asmparser support mc
-ifeq ("$(LLVM_MAJOR_10)","yes")
-USEDLIBS=clang-cpp
-else
+
+# There's no clang-cpp library target in LLVM 10 or higher. It's common practice
+# to link against the individual clang libs just like the else branch does.
+#ifeq ("$(LLVM_MAJOR_10)","yes")
+#USEDLIBS=clang-cpp
+#else
 USEDLIBS = clangFrontend clangDriver clangParse clangSema clangAnalysis \
            clangEdit clangAST clangLex clangSerialization clangBasic
-endif
+#endif
 
 # for use in main Makefile
 default: $(PLUGIN_DIR)/bin/$(TOOLNAME)
