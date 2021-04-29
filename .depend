@@ -1,0 +1,173 @@
+Frama_Clang.cmi :
+Frama_Clang.cmi :
+class.cmo : \
+    mangling.cmi \
+    intermediate_format.cmi \
+    frama_Clang_option.cmi \
+    fclang_datatype.cmi \
+    class.cmi
+class.cmx : \
+    mangling.cmx \
+    intermediate_format.cmi \
+    frama_Clang_option.cmx \
+    fclang_datatype.cmx \
+    class.cmi
+class.cmi : \
+    intermediate_format.cmi \
+    fclang_datatype.cmi
+convert.cmo : \
+    reorder_defs.cmi \
+    mangling.cmi \
+    intermediate_format.cmi \
+    generate_spec.cmi \
+    frama_Clang_option.cmi \
+    fclang_datatype.cmi \
+    cxx_utils.cmi \
+    convert_env.cmi \
+    convert_acsl.cmi \
+    class.cmi \
+    convert.cmi
+convert.cmx : \
+    reorder_defs.cmx \
+    mangling.cmx \
+    intermediate_format.cmi \
+    generate_spec.cmx \
+    frama_Clang_option.cmx \
+    fclang_datatype.cmx \
+    cxx_utils.cmx \
+    convert_env.cmx \
+    convert_acsl.cmx \
+    class.cmx \
+    convert.cmi
+convert.cmi : \
+    intermediate_format.cmi \
+    convert_env.cmi
+convert_acsl.cmo : \
+    mangling.cmi \
+    intermediate_format.cmi \
+    frama_Clang_option.cmi \
+    convert_env.cmi \
+    convert_acsl.cmi
+convert_acsl.cmx : \
+    mangling.cmx \
+    intermediate_format.cmi \
+    frama_Clang_option.cmx \
+    convert_env.cmx \
+    convert_acsl.cmi
+convert_acsl.cmi : \
+    intermediate_format.cmi \
+    convert_env.cmi
+convert_env.cmo : \
+    intermediate_format.cmi \
+    frama_Clang_option.cmi \
+    fclang_datatype.cmi \
+    cxx_utils.cmi \
+    convert_env.cmi
+convert_env.cmx : \
+    intermediate_format.cmi \
+    frama_Clang_option.cmx \
+    fclang_datatype.cmx \
+    cxx_utils.cmx \
+    convert_env.cmi
+convert_env.cmi : \
+    intermediate_format.cmi \
+    fclang_datatype.cmi
+convert_link.cmo : \
+    mangling.cmi \
+    frama_Clang_option.cmi \
+    fclang_datatype.cmi \
+    convert_env.cmi \
+    convert.cmi \
+    class.cmi \
+    convert_link.cmi
+convert_link.cmx : \
+    mangling.cmx \
+    frama_Clang_option.cmx \
+    fclang_datatype.cmx \
+    convert_env.cmx \
+    convert.cmx \
+    class.cmx \
+    convert_link.cmi
+convert_link.cmi :
+cxx_utils.cmo : \
+    intermediate_format.cmi \
+    frama_Clang_option.cmi \
+    cxx_utils.cmi
+cxx_utils.cmx : \
+    intermediate_format.cmi \
+    frama_Clang_option.cmx \
+    cxx_utils.cmi
+cxx_utils.cmi : \
+    intermediate_format.cmi \
+    fclang_datatype.cmi
+fclang_datatype.cmo : \
+    intermediate_format.cmi \
+    fclang_datatype.cmi
+fclang_datatype.cmx : \
+    intermediate_format.cmi \
+    fclang_datatype.cmi
+fclang_datatype.cmi : \
+    intermediate_format.cmi
+frama_Clang_option.cmo : \
+    frama_Clang_option.cmi
+frama_Clang_option.cmx : \
+    frama_Clang_option.cmi
+frama_Clang_option.cmi :
+frama_Clang_register.cmo : \
+    intermediate_format_parser.cmi \
+    frama_Clang_option.cmi \
+    convert_link.cmi \
+    convert.cmi \
+    frama_Clang_register.cmi
+frama_Clang_register.cmx : \
+    intermediate_format_parser.cmx \
+    frama_Clang_option.cmx \
+    convert_link.cmx \
+    convert.cmx \
+    frama_Clang_register.cmi
+frama_Clang_register.cmi :
+generate_spec.cmo : \
+    intermediate_format.cmi \
+    fclang_datatype.cmi \
+    cxx_utils.cmi \
+    convert_env.cmi \
+    generate_spec.cmi
+generate_spec.cmx : \
+    intermediate_format.cmi \
+    fclang_datatype.cmx \
+    cxx_utils.cmx \
+    convert_env.cmx \
+    generate_spec.cmi
+generate_spec.cmi : \
+    intermediate_format.cmi \
+    convert_env.cmi
+intermediate_format.cmi :
+intermediate_format_parser.cmo : \
+    intermediate_format.cmi \
+    intermediate_format_parser.cmi
+intermediate_format_parser.cmx : \
+    intermediate_format.cmi \
+    intermediate_format_parser.cmi
+intermediate_format_parser.cmi : \
+    intermediate_format.cmi
+mangling.cmo : \
+    intermediate_format.cmi \
+    frama_Clang_option.cmi \
+    fclang_datatype.cmi \
+    cxx_utils.cmi \
+    mangling.cmi
+mangling.cmx : \
+    intermediate_format.cmi \
+    frama_Clang_option.cmx \
+    fclang_datatype.cmx \
+    cxx_utils.cmx \
+    mangling.cmi
+mangling.cmi : \
+    intermediate_format.cmi
+reorder_defs.cmo : \
+    frama_Clang_option.cmi \
+    reorder_defs.cmi
+reorder_defs.cmx : \
+    frama_Clang_option.cmx \
+    reorder_defs.cmi
+reorder_defs.cmi :
