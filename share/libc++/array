@@ -1,0 +1,224 @@
+/**************************************************************************/
+/*                                                                        */
+/*  This file is part of Frama-Clang                                      */
+/*                                                                        */
+/*  Copyright (C) 2012-2020                                               */
+/*    CEA (Commissariat à l'énergie atomique et aux énergies              */
+/*         alternatives)                                                  */
+/*                                                                        */
+/*  you can redistribute it and/or modify it under the terms of the GNU   */
+/*  Lesser General Public License as published by the Free Software       */
+/*  Foundation, version 2.1.                                              */
+/*                                                                        */
+/*  It is distributed in the hope that it will be useful,                 */
+/*  but WITHOUT ANY WARRANTY; without even the implied warranty of        */
+/*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         */
+/*  GNU Lesser General Public License for more details.                   */
+/*                                                                        */
+/*  See the GNU Lesser General Public License version 2.1                 */
+/*  for more details (enclosed in the file LICENSE).                      */
+/*                                                                        */
+/**************************************************************************/
+
+#ifndef __STD_ARRAY
+#define __STD_ARRAY
+
+#include<cstddef>
+#include<iterator>
+#include<initializer_list>
+#include<utility>
+
+namespace std {
+  template <class T, size_t N >
+  struct array {
+    // types:
+    typedef T& reference;
+    typedef const T& const_reference;
+    typedef T* iterator;
+    typedef const T* const_iterator;
+    typedef size_t size_type;
+    typedef ptrdiff_t difference_type;
+    typedef T value_type;
+    typedef T* pointer;
+    typedef const T* const_pointer;
+    typedef reverse_iterator<iterator> reverse_iterator;
+    typedef std::reverse_iterator<const_iterator> const_reverse_iterator;
+
+    private: T elems[N];
+
+    public:
+    array(const initializer_list<T>& l) {
+      typename initializer_list<T>::iterator it = l.begin();
+      size_type i = 0;
+      size_type len = l.size();
+      size_type end = len < N ? len : N;
+      while(i < end) { elems[i++] = *(it++); }
+    };
+
+    void fill(const T& u) {
+      for (int i = 0; i < N; i++) {
+        elems[i] = u;
+      }
+    };
+
+    void swap(array<T, N>& a) {
+      for (int i = 0; i < N; i++) {
+        std::swap<T>(elems[i], a.elems[i]);
+      }
+    };
+
+    iterator begin() { return &elems[0]; };
+
+    const_iterator begin() const { return &elems[0]; };
+
+    iterator end() { return &elems[0] + N; };
+
+    const_iterator end() const { return &elems[0] + N; };
+
+    reverse_iterator rbegin() {
+      return reverse_iterator(end());
+    };
+
+    const_reverse_iterator rbegin() const {
+      return const_reverse_iterator(end()); };
+
+    reverse_iterator rend() { return reverse_iterator(begin()); };
+
+    const_reverse_iterator rend() const {
+      return const_reverse_iterator(begin());
+    };
+
+    const_iterator cbegin() const { return &elems[0]; };
+
+    const_iterator cend() const { return &elems[0] + N; };
+
+    const_reverse_iterator crbegin() const {
+      return const_reverse_iterator(cend());
+    };
+
+    const_reverse_iterator crend() const {
+      return const_reverse_iterator(cbegin()); };
+
+    constexpr size_type size() const { return N; };
+    constexpr size_type max_size() const { return N; };
+    constexpr bool empty() const { return false; };
+
+    reference operator[](size_type n) { return elems[n]; };
+    const_reference operator[](size_type n) const { return elems[n]; };
+    const_reference at(size_type n) const { return elems[n]; };
+    reference at(size_type n) { return elems[n]; };
+    reference front() { return *begin(); };
+    const_reference front() const { return *begin(); };
+    reference back() { return *end(); };
+    const_reference back() const { return *end(); };
+    T * data() { return &elems[0]; };
+    const T * data() const { return &elems[0]; };
+  };
+
+  template <class T>
+  struct array<T,0> {
+
+    typedef T& reference;
+    typedef const T& const_reference;
+    typedef T* iterator;
+    typedef const T* const_iterator;
+    typedef size_t size_type;
+    typedef ptrdiff_t difference_type;
+    typedef T value_type;
+    typedef T* pointer;
+    typedef const T* const_pointer;
+    typedef reverse_iterator<iterator> reverse_iterator;
+    typedef std::reverse_iterator<const_iterator> const_reverse_iterator;
+
+    public:
+
+    void fill(const T& u) { };
+
+    void swap(array<T, 0>& a) { };
+
+    iterator begin() { return nullptr; };
+
+    const_iterator begin() const { return nullptr; };
+
+    iterator end() { return nullptr; };
+
+    const_iterator end() const { return nullptr; };
+
+    reverse_iterator rbegin() { return end(); };
+
+    const_reverse_iterator rbegin() const { return end(); };
+
+    reverse_iterator rend() { return begin(); };
+
+    const_reverse_iterator rend() const { return begin(); };
+
+    const_iterator cbegin() const { return nullptr; };
+
+    const_iterator cend() const { return nullptr; };
+
+    const_reverse_iterator crbegin() const { return nullptr; };
+
+    const_reverse_iterator crend() const { return nullptr; };
+
+    constexpr size_type size() const { return 0; };
+    constexpr size_type max_size() const { return 0; };
+    constexpr bool empty() const { return false; };
+
+    template <class U = T, size_t M = 0>
+    reference operator[](size_type n) = delete;
+
+    const_reference operator[](size_type n) const = delete;
+
+    const_reference at(size_type n) const = delete;
+
+    reference at(size_type n) = delete;
+
+    reference front() = delete;
+
+    const_reference front() const = delete;
+
+    reference back() = delete;
+
+    const_reference back() const = delete;
+
+    T * data() { return nullptr; };
+    const T * data() const { return nullptr; };
+  };
+
+  template<class T, size_t N>
+  class tuple_size<array<T, N>> {
+    static size_t value;
+  };
+
+  template<class T, size_t N> size_t tuple_size<array<T, N>>::value = N;
+
+  template<size_t I, class T, size_t N>
+  class tuple_element<I, array<T, N>> {
+    static_assert (I<N, "tuple_element of array out of bound");
+    typedef T type;
+  };
+
+  template<size_t I, class T, size_t N> T& get(array<T, N>&a) noexcept {
+    static_assert(I<N, "get element of array out of bound");
+    return a[I];
+  };
+
+  template<size_t I, class T, size_t N> T&& get(array<T, N>&&a) noexcept {
+    static_assert(I<N, "get element of array out of bound");
+    return move<T>(a[I]);
+  };
+
+  template<size_t I, class T, size_t N>
+  const T& get(const array<T, N>&a) noexcept {
+    static_assert(I<N, "get element of array out of bound");
+    return a[I];
+  };
+
+}
+
+#endif
+/*
+Local Variables:
+mode: C++
+End:
+*/

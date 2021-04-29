@@ -1,0 +1,150 @@
+/**************************************************************************/
+/*                                                                        */
+/*  This file is part of Frama-Clang                                      */
+/*                                                                        */
+/*  Copyright (C) 2012-2020                                               */
+/*    CEA (Commissariat à l'énergie atomique et aux énergies              */
+/*         alternatives)                                                  */
+/*                                                                        */
+/*  you can redistribute it and/or modify it under the terms of the GNU   */
+/*  Lesser General Public License as published by the Free Software       */
+/*  Foundation, version 2.1.                                              */
+/*                                                                        */
+/*  It is distributed in the hope that it will be useful,                 */
+/*  but WITHOUT ANY WARRANTY; without even the implied warranty of        */
+/*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         */
+/*  GNU Lesser General Public License for more details.                   */
+/*                                                                        */
+/*  See the GNU Lesser General Public License version 2.1                 */
+/*  for more details (enclosed in the file LICENSE).                      */
+/*                                                                        */
+/**************************************************************************/
+
+#ifndef _STD_ISTREAM
+#define _STD_ISTREAM
+
+#include <__fc_define_char_traits_char>
+#include <ios>
+#include <streambuf>
+
+namespace std {
+  template <class charT, class traits>
+  class basic_istream : virtual public basic_ios<charT,traits> {
+  public:
+    typedef charT char_type;
+    typedef typename traits::int_type int_type;
+    typedef typename traits::pos_type pos_type;
+    typedef typename traits::off_type off_type;
+    typedef traits traits_type;
+
+    explicit basic_istream(basic_streambuf<charT,traits>* sb);
+    virtual ~basic_istream();
+
+    class sentry {
+      typedef traits traits_type;
+      bool ok_;
+    public:
+      explicit sentry(basic_istream<charT,traits>& is, bool noskipws = false);
+      ~sentry();
+      explicit operator bool() const { return ok_; }
+      sentry(const sentry&) = delete;
+      sentry& operator=(const sentry&) = delete;
+    };
+
+    basic_istream<charT,traits>& operator>>(
+      basic_istream<charT,traits>& (*pf)(basic_istream<charT,traits>&));
+    basic_istream<charT,traits>& operator>>(
+      basic_ios<charT,traits>& (*pf)(basic_ios<charT,traits>&));
+    basic_istream<charT,traits>& operator>>(ios_base& (*pf)(ios_base&));
+    basic_istream<charT,traits>& operator>>(bool& n);
+    basic_istream<charT,traits>& operator>>(short& n);
+    basic_istream<charT,traits>& operator>>(unsigned short& n);
+    basic_istream<charT,traits>& operator>>(int& n);
+    basic_istream<charT,traits>& operator>>(unsigned int& n);
+    basic_istream<charT,traits>& operator>>(long& n);
+    basic_istream<charT,traits>& operator>>(unsigned long& n);
+    basic_istream<charT,traits>& operator>>(long long& n);
+    basic_istream<charT,traits>& operator>>(unsigned long long& n);
+    basic_istream<charT,traits>& operator>>(float& f);
+    basic_istream<charT,traits>& operator>>(double& f);
+    basic_istream<charT,traits>& operator>>(long double& f);
+    basic_istream<charT,traits>& operator>>(void*& p);
+    basic_istream<charT,traits>& operator>>(
+      basic_streambuf<char_type,traits>* sb);
+
+    streamsize gcount() const;
+    int_type get();
+    basic_istream<charT,traits>& get(char_type& c);
+    basic_istream<charT,traits>& get(char_type* s, streamsize n);
+    basic_istream<charT,traits>& get(
+      char_type* s, streamsize n, char_type delim);
+    basic_istream<charT,traits>& get(basic_streambuf<char_type,traits>& sb);
+    basic_istream<charT,traits>& get(
+      basic_streambuf<char_type,traits>& sb, char_type delim);
+    basic_istream<charT,traits>& getline(char_type* s, streamsize n);
+    basic_istream<charT,traits>& getline(
+      char_type* s, streamsize n, char_type delim);
+    basic_istream<charT,traits>& ignore(
+      streamsize n = 1, int_type delim = traits::eof());
+    int_type peek();
+    basic_istream<charT,traits>& read (char_type* s, streamsize n);
+    streamsize readsome(char_type* s, streamsize n);
+    basic_istream<charT,traits>& putback(char_type c);
+    basic_istream<charT,traits>& unget();
+    int sync();
+    pos_type tellg();
+    basic_istream<charT,traits>& seekg(pos_type);
+    basic_istream<charT,traits>& seekg(off_type, ios_base::seekdir);
+  protected:
+    basic_istream(basic_istream&&rhs);
+    basic_istream& operator=(basic_istream&& rhs);
+    void swap(basic_istream& rhs);
+  };
+
+  template<class charT, class traits>
+  basic_istream<charT,traits>& operator>>(basic_istream<charT,traits>&, charT&);
+  template<class traits>
+  basic_istream<char,traits>& operator>>(
+    basic_istream<char,traits>&, unsigned char&);
+  template<class traits>
+  basic_istream<char,traits>& operator>>(
+    basic_istream<char,traits>&, signed char&);
+  template<class charT, class traits>
+  basic_istream<charT,traits>& operator>>(
+    basic_istream<charT,traits>&, charT*);
+  template<class traits>
+  basic_istream<char,traits>& operator>>(
+    basic_istream<char,traits>&, unsigned char*);
+  template<class traits>
+  basic_istream<char,traits>& operator>>(
+    basic_istream<char,traits>&, signed char*);
+
+  template <class charT, class traits> class basic_iostream :
+    public basic_istream<charT,traits>,
+    public basic_ostream<charT,traits> {
+  public:
+    typedef charT char_type;
+    typedef typename traits::int_type int_type;
+    typedef typename traits::pos_type pos_type;
+    typedef typename traits::off_type off_type;
+    typedef traits traits_type;
+    explicit basic_iostream(basic_streambuf<charT,traits>* sb);
+    virtual ~basic_iostream();
+  protected:
+    basic_iostream(basic_iostream&&rhs);
+    basic_iostream& operator=(basic_iostream&& rhs);
+    void swap(basic_iostream& rhs);
+  };
+
+  template <class charT, class traits>
+  basic_istream<charT,traits>& ws(basic_istream<charT,traits>& is);
+
+  template <class charT, class traits, class T>
+  basic_istream<charT, traits>&
+  operator>>(basic_istream<charT, traits>&& is, T& x);
+}
+#endif
+
+// Local Variables:
+// mode: c++
+// End:

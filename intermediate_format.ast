@@ -1,0 +1,1111 @@
+(**************************************************************************)
+(*                                                                        *)
+(*  This file is part of Frama-Clang                                      *)
+(*                                                                        *)
+(*  Copyright (C) 2012-2020                                               *)
+(*    CEA (Commissariat à l'énergie atomique et aux énergies              *)
+(*         alternatives)                                                  *)
+(*                                                                        *)
+(*  you can redistribute it and/or modify it under the terms of the GNU   *)
+(*  Lesser General Public License as published by the Free Software       *)
+(*  Foundation, version 2.1.                                              *)
+(*                                                                        *)
+(*  It is distributed in the hope that it will be useful,                 *)
+(*  but WITHOUT ANY WARRANTY; without even the implied warranty of        *)
+(*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *)
+(*  GNU Lesser General Public License for more details.                   *)
+(*                                                                        *)
+(*  See the GNU Lesser General Public License version 2.1                 *)
+(*  for more details (enclosed in the file LICENSE).                      *)
+(*                                                                        *)
+(**************************************************************************)
+
+(* Intermediate format between clang and Cabs *)
+(* See Ast.org and gen_ast.ml for details *)
+
+type ikind =
+  | IBool { }
+  | IChar_u { } (* plain char, for an arch where it is unsigned *)
+  | IChar_s { } (* plain char, for an arch where is is signed *)
+  | IUChar { } (*  explicitely unsigned char *)
+  | ISChar { } (* explicitely signed char *)
+  | IChar16 { } (* char16_t. Same as uint_least16_t *)
+  | IChar32 { } (* char32_t. Same as uint_least32_t *)
+  | IWChar_u { }
+  | IWChar_s { }
+  | IWUChar { }
+  | IWSChar { }
+  | IChar { }
+  | IWChar { }
+  | IShort { }
+  | IUShort { }
+  | IInt { }
+  | IUInt { }
+  | ILong { }
+  | IULong { }
+  | ILongLong { }  
+  | IULongLong { }
+    (* not useful IShiftToVirtual *)
+    (* type of integer shift present in virtual method tables to retrieve a *)
+    (*   concrete this from an abstract this in presence of multiple        *)
+    (*   inheritance.                                                       *)
+    (* deduced by convert.ml from inheritance graph to create the VMTs      *)
+;;
+
+type fkind =
+  | FFloat { } 
+  | FDouble { } 
+  | FLongDouble { } 
+;;
+
+type ickind =
+  | ICLiteral {}
+  | ICStaticConst {}
+  | ICExternConst {} 
+  (* a const global variable that is explicitely declared extern.
+     See 3.5[basic.link]§3
+   *)  
+;;
+
+type tcckind =
+  | TCCSizeOf {}
+  | TCCAlignOf {}
+;;
+
+type compilation_constant =
+  | IntCst { val_type: ikind; kind: ickind; value: int64; }
+  | FloatCst { val_type: fkind; value: string; }
+  | EnumCst { name: qualified_name; enum_name: ekind; value: int64; }
+  | TypeCst { kind: tcckind; arg: typ; }
+;;
+
+type template_parameter =
+  | TPStructOrClass { name: qualified_name; }
+  | TPTypename { value: qual_type; }
+  | TPConstant { value: compilation_constant; }
+  | TPDeclaration { value: qualified_name; }
+;;
+
+type qualification =
+  | QNamespace { name: string; }
+  | QStructOrClass { name: string; }
+  | QTemplateInstance { name: string; parameters: template_parameter list; }
+;;
+
+type qualified_name =
+  { prequalification: qualification list; decl_name: string; }
+  OCaml normalize x =
+    "match x.prequalification with
+        | QNamespace \"\" :: prequalification -> { x with prequalification }
+        | _ -> x"
+;;
+
+type ekind = {
+  body: qualified_name;
+  is_extern_c: bool;
+}
+;;
+
+type funkind =
+  | FKFunction { } (* Static function ? *)
+  | FKMethod { qualifier: specifier list; }
+    (* "normal" method (with this and a return type). The qualifier is the one
+       of the implicit this pointer.          
+     *)
+  | FKCastMethodOperator { qualifier: specifier list; type_descr : qual_type; }
+  | FKConstructor { complete: bool; } (* Constructor *)
+  | FKDestructor { complete: bool; } (* Destructor *)
+;;
+
+type signature =
+      { result: qual_type; parameter: qual_type list; variadic: bool; }
+    (* for methods the first argument is this = pointer to the class object *)
+;;
+
+type pkind =
+  | PDataPointer { subtype : qual_type; }  (* sizeof = 32/64 *)
+  | PFunctionPointer { decl : signature; } (* sizeof = 32/64 *) 
+  | PStandardMethodPointer { decl : signature; shift_object: int64; }
+  | PVirtualMethodPointer { decl : signature;
+                            method_index: int64; shift_object: int64;
+                          }
+      (* sizeof = 64/96/128 - contain shift, could contain virtual methods *)
+;;
+
+type akind = { subtype : qual_type; dimension: expression option; }
+;;
+
+type ckind =
+  | CClass { } 
+  | CStruct { } 
+  | CUnion { } 
+;;
+
+type tkind =
+  | TStandard { }
+  | TTemplateInstance { parameters: template_parameter list; }
+;;
+
+type vkind =
+  | VStandard { }
+  | VVirtual { }
+;;
+
+type typ =
+  | Void { }
+  | Int { kind: ikind; }
+  | Enum { kind: ekind; }
+  | Float { kind: fkind; }
+  | Pointer { kind: pkind; }
+  | LVReference { kind: pkind; }
+      (* syntactically reference, semantically pointer *)
+  | RVReference { kind: pkind; }
+      (* RValue reference. semantically equivalent to Lvalue ref. *)     
+  | Array { kind: akind; }
+  | Struct { body: qualified_name; template_kind: tkind; }
+      (* body.ckind should be CClass or CStruct *)
+  | Union { body: qualified_name; template_kind: tkind; }
+      (* body.ckind should be CUnion *)
+  | Named { name: qualified_name; is_extern_c_name : bool; } (* typedef *)
+  | Lambda {
+      proto : signature;
+      closure: capture list;
+    } (* a lambda object of the given signature.
+         Note that normally each anonymous lambda object should give rise
+         to a different class. With this representation, we won't distinguish
+         between two lambda types with exactly the same signature and the
+         same list of captured identifiers (which would end up in two
+         structurally equal classes anyway)
+       *)
+;;
+
+type specifier =
+  | Const {} | Volatile {} | Restrict {} | Static {} (* C meaning *)
+;;
+
+type qual_type = { qualifier: specifier list; plain_type: typ; }
+;;
+
+type arg_decl = { arg_type: qual_type; arg_name: string; arg_loc: location; }
+;;
+
+type expression =
+  { eloc: location; econtent: exp_node; }
+;;
+
+(* Local and Global are never functions. *)
+type variable =
+  | Local { name: qualified_name; }
+  | Global { name: qualified_name; }
+  | FunctionParameter { name: string; }
+  | CodePointer
+      { function_name: qualified_name; sigtype: signature; kind: funkind;
+        is_extern_c: bool; template_kind: tkind;
+      }
+;;
+
+type uokind =
+  | UOCastNoEffect { result_type: qual_type; }
+  | UOCastDeref { } (* dereference from a ref type *)
+  | UOCastDerefInit { } (* Initialization of a field with ref type *)
+  | UOCastToVoid { } (* cast to void to ignore an expression *)
+  | UOCastInteger { result_type: qual_type; cast_type: ikind; } 
+  | UOCastEnum { result_type: qual_type; cast_type: ekind; } 
+  | UOCastFloat { result_type: qual_type; cast_type: fkind; }
+  | UOCastC { result_type: qual_type; } (* Arbitrary cast *)
+  | UOPostInc { }
+  | UOPostDec { }
+  | UOPreInc { }
+  | UOPreDec { }
+  | UOOpposite { }
+  | UOBitNegate { }
+  | UOLogicalNegate { }
+;;
+
+type bokind =
+  | BOPlus { }
+  | BOMinus { }
+  | BOLess { }
+  | BOLessOrEqual { }
+  | BOEqual { }
+  | BODifferent { }
+  | BOGreaterOrEqual { }
+  | BOGreater { }
+  | BOTimes { }
+  | BODivide { }
+  | BOModulo { }
+  | BOBitOr { }
+  | BOBitAnd { }
+  | BOBitExclusiveOr { }
+  | BOLeftShift { }
+  | BORightShift { }
+  | BOLogicalAnd { }
+  | BOLogicalOr { }
+  | BOComma { }
+;;
+
+type assign_kind =
+  | AKRValue { }
+  | AKAssign { }
+;;
+
+type reference_or_pointer_kind =
+  | RPKPointer { }
+  | RPKReference { }
+  | RPKStaticBasePointer { } (* static_cast, multiple inheritance *)
+  | RPKStaticBaseReference { }
+  | RPKVirtualBasePointer
+    { base_index : int64; origin_type : qual_type; noeffect : bool; }
+    (* static_cast, multiple virtual inheritance *)
+  | RPKVirtualBaseReference
+    { base_index : int64; origin_type : qual_type; }
+  | RPKDynamicPointer { origin_type : qual_type; pvmt : expression; }
+    (* dynamic_cast *)
+  | RPKDynamicReference { origin_type : qual_type; pvmt : expression; }
+;;
+
+type exp_node =
+  | Constant { cst: compilation_constant; }
+  | String { cst: string; }
+  (* | Char { cst: string; } = compilation_constant *) 
+  | Variable { var: variable; }
+  | Malloc { size_type: typ; }
+  | MallocArray { size_type: typ; size: expression; }
+  | Free { sub: expression; }
+  | FreeArray { sub: expression; }
+  | Assign { lvalue: expression; rvalue: expression; }
+  | Unary_operator { kind : uokind; sub: expression; }
+  | Binary_operator { kind : bokind; assignment: assign_kind;
+                      first_sub: expression; second_sub: expression;
+                    }
+  | Dereference { sub: expression; }
+  | Address { sub: expression; }
+  | PointerCast { cast_type : qual_type; ref_pointer: reference_or_pointer_kind;
+                  sub: expression;
+                }
+  | ShiftPointerCast { cast_type : qual_type; origin_type : qual_type;
+                       ref_pointer: reference_or_pointer_kind;
+                       sub: expression;
+                     }
+  | FieldAccess { sub: expression; field: string; }
+   (* represents x.f. Use FieldAccess(Dereference x, f) for x->f *)
+  | ArrayAccess { sub: expression; index: expression;  }
+      (* can be replaced by plus on array type *)
+  | Conditional
+      { condition: expression; then_exp: expression; else_exp: expression; }
+  | Static_call { name: qualified_name;
+                  sigtype: signature;
+                  kind: funkind; arguments: expression list;
+                  template_kind: tkind;
+                  extern_c_call: bool;
+                } (* method or function or constructor or destructor *)
+  | Virtual_call { name: qualified_name; sigtype: signature; kind: funkind;
+                   this_object: expression; arguments: expression list;
+                   method_index: int64; shift_object: inheritance list;
+                   shift_pvmt: inheritance list;
+                 } (* virtual method *)
+  | Dynamic_call { kind: funkind;
+                   fun_pointer: expression;
+                   arguments: expression list;
+                 } (* function or method or virtual method pointer *)
+  | Lambda_call { callee: expression; arguments: expression list; }
+     (* call of a lambda object. *)
+  | Temporary
+    { temp_name: string;
+      temp_type: qual_type;
+      temp_expr: init_expr;
+      force: bool;
+    }
+    (* Temporary object initialized to the given expression. temp_name is 
+       bound in temp_expr, in particular to be given as 'this' argument of a
+       constructor; force is a way to force the creation of a local variable,
+       especially if temp_name is used outside init_expr
+    *)
+  | InitializerList
+    { il_elt_type: qual_type; il_expr: init_expr; }
+    (* materialize the construction of a std::initializer_list<il_elt_type>.
+     The init_expr should be a Compound_init for an array.
+     *)
+  | VAArg { subexpr: expression; typeinfo: qual_type; }
+  | Throw { sub: expression option; }
+  | GnuBody { body: statement list; }
+  | LambdaExpr {
+       lam_rt: qual_type;
+       lam_args: arg_decl list;
+       lam_closure: capture list;
+       lam_body: statement list;
+    }
+;;
+
+type capture =
+  | Cap_id { cap_id_name: string; cap_id_type: qual_type; cap_id_ref: bool; }
+  | Cap_this { cap_this_ref: bool; }
+   (* TODO: get rid of this and make FramaCIRGen output the appropriate class
+      type to treat this as a normal identifier. *)
+;;
+
+type case_statement =
+  | Case { case_value: compilation_constant; instructions: statement list; }
+  | Default { instructions: statement list; }
+;;
+
+(* We'll use the semantic view of clang, where compound inits have been
+   expanded, so that there's no need for designator, except for union,
+   where we still want to know which field initialized. *)
+type init_expr =
+  | Single_init { definition: expression; }
+  | Implicit_init { } (* implicit initialization *)
+  | Compound_init { init_elts: init_expr list; }
+  | Union_init { field: string; field_type: qual_type; definition: init_expr; }
+  (* initialization of an array of objects. expression is parameterized by
+     the index whose upper bound should be given by the type of the object
+     being initialized. *)
+  | Array_init { index: qualified_name; constructor: expression; }
+;;
+
+(* C++ allows to define a local variable as part of
+   the condition of a switch/if *)
+type cond_statement =
+  | CondExpression { expr: expression; }
+  | CondVarDecl { name: string; var_type: qual_type; definition: init_expr; }
+;;
+
+type init_declarator = {id_name: string; init_type: qual_type; init_val: init_expr option; }
+;;
+
+type init_statement =
+  | INop { }
+  | IExpression { expr: expression; }
+  | IVarDecl { init_declarator_list: init_declarator list; }
+;;
+
+type incr_statement =
+  | CNop { }
+  | CExpression { expr: expression; }
+;;
+
+type catch_block = { typed_arg: arg_decl option; cbody: statement list; }
+;;
+
+type statement =
+  | Nop { loc: location; }
+  | Return { loc: location; result: expression option; }
+  | Expression { loc: location; expr: expression; }
+  | VirtualExpression { loc: location; expr: expression; }
+  | Code_annot { loc: location; body: code_annotation; }
+  | Ghost_block { loc: location; ghost_code: statement list; }
+  | Block  { loc: location; instructions: statement list; }
+  | Condition { loc: location; condition: cond_statement;
+                then_instruction: statement;
+                else_instruction: statement;
+                (* else_instruction can be nop if else is missing *)
+              }
+  | Label  { loc: location; label: string; }
+  | Goto   { loc: location; target: string; }
+  | Switch { loc: location; condition: cond_statement;
+             labeled_instructions: case_statement list;
+           }
+  | VarDecl { loc: location; name: string; var_type: qual_type;
+              init: init_expr option; } (* can be inside block *)
+  | Break  { loc: location; } (* can be goto *)
+  | Continue { loc: location; } (* can be goto *)
+  | While { loc: location;
+            condition: expression;
+            instruction: statement;
+            annot: code_annotation list;
+          } (* can be condition and goto *)
+  | DoWhile { loc: location;
+              condition: expression;
+              instruction: statement;
+              annot: code_annotation list;
+            } (* can be condition and goto *)
+  | For { loc: location; init: init_statement; condition: expression option;
+          incr: incr_statement; instruction: statement;
+          annot: code_annotation list;
+        } (* can be condition and goto *)
+  | TryCatch { loc: location; instruction:
+               statement list;
+               cases: catch_block list;
+             }
+  | GccInlineAsm { loc: location;
+                   qualifier: specifier list;
+                   instructions: string list;
+                   details: asm_details option;
+                 }
+;;
+
+type asm_details =
+    { outputs: asm_IO list;
+      inputs: asm_IO list;
+      clobbers: string list;
+      ad_labels: string list;
+    }
+;;
+
+type asm_IO =
+    { aIO_name: string option;
+      constraints: string;
+      expr: expression;
+    }
+;;
+
+type access_kind =
+  | Public{} | Protected{} | Private{}
+;;
+
+type inheritance
+  = { base: qualified_name;
+      templated_kind: tkind;
+      access: access_kind;
+      is_virtual: vkind;
+      vmt_position: int;
+    }
+;;
+
+type class_decl =
+  | CMethod
+    { loc: location; fun_name: string; kind: funkind; return_type: qual_type;
+      args: arg_decl list; is_variadic: bool; body: statement list option;
+      is_implicit: bool; (* whether it is an implicitely defined function *)
+      template_kind: tkind;
+      has_further_definition: bool;
+      throws: qual_type list option;
+      fun_spec: function_contract option;
+    }
+  | CCompound
+    { loc: location;
+      name: string;
+      kind: ckind;
+      inherits: inheritance list option;
+      body: class_decl list option;
+      template_kind: tkind;
+      has_virtual: bool;
+    }
+  | CFieldDecl { loc: location;
+                 name: string;
+                 var_type: qual_type;
+                 bitfield: int option;
+                 is_mutable: bool;
+               }
+  | CTypedef { loc: location; name: string; def_type: qual_type; }
+  | CStaticConst { loc: location;
+                   name: string;
+                   val_type: ikind;
+                   kind: ickind;
+                   value: int64;
+                 }
+  | CEnum { loc: location; name: string; repr: ikind; 
+             body: compilation_constant list option; }
+  | Class_annot { loc: location; body: global_annotation; }
+;;
+
+type decl_or_impl_name =
+  | Declaration { name: string; }
+  | Implementation { name: qualified_name; }
+;;
+
+type translation_unit_decl =
+  | Function
+    { fun_name: decl_or_impl_name; kind: funkind; fun_loc: location;
+      return_type: qual_type;
+      args: arg_decl list; body: statement list option; is_extern_c: bool;
+      is_ghost: bool;
+      is_variadic: bool;
+      template_kind: tkind;
+      has_further_definition: bool;
+      throws: qual_type list option;
+      fun_spec: function_contract option;
+    }
+  | Compound
+    { loc: location; name: decl_or_impl_name; kind: ckind;
+      inherits: inheritance list option;
+      body: class_decl list option;
+      has_virtual: bool;
+      template_kind: tkind;
+      is_extern_c_context: bool;
+      is_ghost: bool;
+    }
+  | GlobalVarDecl
+    { loc: location; name: decl_or_impl_name; var_type: qual_type;
+      init: init_expr option; is_extern_c: bool; is_ghost: bool;
+    }
+  | Typedef
+    { loc: location;
+      name: decl_or_impl_name;
+      def_type: qual_type; 
+      is_extern_c_context: bool;
+      is_ghost: bool;
+    }
+  (* a namespace is never ghost: its components might be. *)
+  | Namespace { loc: location; name: string; body: translation_unit_decl list; }
+  | StaticConst { loc: location;
+                  name: string;
+                  val_type: ikind;
+                  kind: ickind;
+                  value: int64;
+                  is_extern_c: bool;
+                  is_ghost: bool;
+                }
+  | EnumDecl
+    { loc: location; name: decl_or_impl_name; 
+      repr: ikind;
+      body: compilation_constant list option;
+      is_extern_c_context: bool;
+      is_ghost: bool;
+    }
+  (* purely logical annotation is not ghost. *)
+  | GlobalAnnotation
+    { loc: location; body: global_annotation; }
+;;
+
+type file = { filename: string; globals: translation_unit_decl list; };;
+
+(* Specific to ACSL++ *)
+
+type logic_constant =
+  | LCInt { value: string; }
+      (** (Unbounded Integer constant as a string representation *)
+  | LStr { value: string; } (** String constant. *)
+  | LWStr { value: int64 list; } (** Wide character string constant. *)
+  | LChr { value: int; } (** Character constant. *)
+  | LWChr { value: int; } (** Wide character constant *)  
+  | LCReal { value: string; }
+  | LCEnum { value: int64; name: qualified_name; } (** Enumeration constant.*)
+;;
+
+type logic_type =
+  | Lvoid {} (** C void *)
+  | Linteger {} (** mathematical integers, {i i.e.} Z *)
+  | Lreal {} (** mathematical reals, {i i.e.} R *)
+  | Lint { kind: ikind; } (** C integral type *)
+  | Lfloat { kind: fkind; } (** C floating-point type *)
+  | Larray { subtype: logic_type; dim: logic_constant option; } (** C array *)
+  | Lpointer { subtype: logic_type; } (** C pointer *)
+  | Lreference { subtype: logic_type; }
+      (* syntactically reference, semantically pointer *) 
+  | Lenum { name: qualified_name; } (** C enum *)
+  | Lstruct { name: qualified_name; template_kind: tkind; } (** C struct *)
+  | Lunion { name: qualified_name; template_kind: tkind; } (** C union *)
+  | LCnamed { name: qualified_name; is_extern_c_name: bool; } 
+  (** typedef C type. *)
+  | Lvariable { name: qualified_name; } (** type variable. *)
+  | Lnamed { name: qualified_name; is_extern_c_name: bool;
+             template_arguments: logic_type list; }
+      (** declared logic type. *)
+  | Larrow { left: logic_type list; right: logic_type; }
+      (** (n-ary) function type *)
+;;
+
+type logic_label =
+  | StmtLabel { code_label: string; } (** label of a C statement. *)
+  | LogicLabel { label: string; }
+;;
+
+type term =
+{ node: term_node; (** kind of term. *)
+  loc: location; (** position in the source file. *)
+  (* ltype: logic_type; (** type of the term. *) *)
+  names: string list; (** names of the term if any. *)
+};;
+
+type logic_label_pair = { fst: logic_label; snd: logic_label; }
+;;
+
+type term_node =
+  (* same constructs as exp *)
+  | TConst { value: logic_constant; } (** a constant. *)
+  | TLval { value: term_lval; } (** an L-value *)
+  | TSizeOf { code_type: logic_type; } (** size of a given C type. *)
+  | TSizeOfStr { str: string; } (** size of a string constant. *)
+  | TUnOp { oper: uokind; subexpr: term; } (** unary operator. *)
+  | TBinOp { oper: bokind; fst: term; snd: term; } (** binary operators. *)
+  | TCastE { code_type: logic_type; subexpr: term; } (** cast to a C type. *)
+  | TAddrOf { subexpr: term_lval; } (** address of a term. *)
+  | TStartOf { subexpr: term_lval; } (** beginning of an array. *)
+  | TFieldAccess { expr: term; field: term_offset; }
+
+  (* additional constructs *)
+  | TFalse { } (** always-false term. *)
+  | TTrue { } (** always-true term. *)
+  | TApp { name: qualified_name;
+           table: logic_label_pair list;
+           arguments: term list;
+           extern_c_call: bool;
+         } (** application of a logic function. *)
+  | TLambda { quantifiers: logic_var_def list;
+              subexpr: term;
+            } (** lambda abstraction. *)
+  | TDataCons { ctor_name: qualified_name; arguments: term list; }
+      (** constructor of logic sum-type. *)
+  | TIf { condition: term; then_part: term; else_part: term; }
+      (** conditional operator*)
+  | TAt { node: term; label: logic_label; }
+      (** term refers to a particular program point. *)
+  | TBase_addr { label: logic_label option; pointer_value: term; }
+      (** base address of a pointer. *)
+  | TOffset { label: logic_label option; pointer_value: term; }
+      (** offset from the base address of a pointer. *)
+  | TBlock_length { label: logic_label option; pointer_block: term; }
+      (** length of the block pointed to by the term. *)
+  | TNull { } (** the null pointer. *)
+  | TLogic_coerce { result_type: logic_type; code_type: term; }
+    (** implicit conversion from a C type to a logic type.
+        The logic type must not be a Ctype. In particular, used to denote
+        lifting to Linteger and Lreal.
+    *)
+  | TCoerce { node: term; result_type: logic_type; }
+    (** coercion to a given C type. *)
+  | TCoerceE { node: term; result_type: term; }
+    (** coercion to the type of a given term. *)
+  | TUpdate { node: term; offset: term_offset; subnode: term; }
+    (** functional update of a field. *)
+  | TEmpty_set { } (** the empty set. *)
+  | TUnion { tlist: term list; } (** union of terms. *)
+  | TInter { tlist: term list; } (** intersection of terms. *)
+  | TComprehension { subexpr: term;
+                     quantifiers: logic_var_def list;
+                     condition: predicate_named option;
+                   }
+    (** set defined in comprehension ({t \{ t[i] | Tinteger i; 0 <= i < 5\}}) *)
+  | TRange { min: term option; max: term option; } (** range of integers. *)
+  | TLet { name: logic_info; value: term; } (** local binding *)
+;;
+
+type term_lval = { base_support: term_lhost; offset: term_offset; }
+;;
+
+type term_lhost =
+  | TVar { var: logic_var; } (** a variable. *)
+  | TCFun { name: qualified_name; signature_descr: signature; }
+    (* (pointer to) a C function *)  
+  | TResult { returned_type: logic_type; }
+      (** value returned by a C function.
+          Only used in post-conditions or assigns
+       *)
+  | TMem { subexpr: term; } (** memory access. *)
+;;
+
+type model_info =
+{ model_name: string; (** name *)
+  field_type: logic_type; (** type of the field *)
+  base_type: logic_type; (** type to which the field is associated. *)
+  decl: location; (** where the field has been declared. *)
+};;
+
+(*
+(** Information about a struct/union field. *)
+type fieldinfo =
+{ fcomp: compinfo;
+  (** The host structure that contains this field. There can be only one
+      [compinfo] that contains the field. *)
+  forig_name: string; (** original name as found in C file. *)
+  fname: string;
+  (** The name of the field. Might be the value of {!Cil.missingFieldName} in
+      which case it must be a bitfield and is not printed and it does not
+      participate in initialization *)
+  ftype: typ;
+  (** The type. If the field is a bitfield, a special attribute
+      [FRAMA_C_BITFIELD_SIZE] indicating the width of the bitfield is added. *)
+  fbitfield: int option;
+  (** If a bitfield then ftype should be an integer type and the width of the
+      bitfield must be 0 or a positive integer smaller or equal to the width of
+      the integer type. A field of width 0 is used in C to control the alignment
+      of fields. *)
+  fattr: attributes;
+  (** The attributes for this field (not for its type) *)
+  floc: location;
+  (** The location where this field is defined *)
+  faddrof: bool;
+  (** Adapted from CIL [vaddrof] field for variables. Only set for non-array
+      fields. Variable whose field address is taken is not marked anymore as
+      having its own address taken.  True if the address of this field is
+      taken. CIL will set these flags when it parses C, but you should make
+      sure to set the flag whenever your transformation create [AddrOf]
+      expression. *)
+};;
+*)
+
+type term_offset =
+  | TNoOffset { } (** no further offset. *)
+  | TField { field: string; offset: term_offset; }
+      (** access to the field of a compound type. *)
+  | TBase { base: qualified_name; template_base: tkind; offset: term_offset; }
+      (** access to a base class of a compound type. *)
+  | TVirtualBase
+      { base: qualified_name; template_base: tkind; offset: term_offset; }
+      (** access to a virtual base class of a compound type. *)
+  | TDerived { derived: qualified_name; template_derived: tkind;
+               base: qualified_name; template_base: tkind;
+               offset: term_offset;
+             }
+      (** access to a derived class of a compound type. *)
+  | TModel { model: string; offset: term_offset; }
+      (** access to a model field. *)
+  | TIndex { subexpr: term; offset: term_offset; }
+      (** index. Note that a range is denoted by [TIndex(Trange(i1,i2),ofs)] *)
+;;
+
+type logic_arg_decl = { la_type: logic_type; la_name: string; };;
+
+type logic_info =
+{ li_name: qualified_name;
+  li_extern_c: bool;
+  arg_labels: logic_label list; (** label arguments of the function. *)
+  tparams: string list; (** type parameters *)
+  returned_type: logic_type option; (** return type. None for predicates *)
+  profile: logic_arg_decl list; (** type of the arguments. *)
+  fun_body: logic_body; (** body of the function. *)
+};;
+
+type inductive_definition =
+{ def_name: string;
+  labels: logic_label list;
+  arguments: string list;
+  def: predicate_named;
+};;
+
+type logic_body =
+  | LBnone {} (** no definition and no reads clause *)
+  | LBreads { content: term list; }
+     (** read accesses performed by a function. *)
+  | LBterm { def: term; } (** direct definition of a function. *)
+  | LBpred { def: predicate_named; } (** direct definition of a predicate. *)
+  | LBinductive { def: inductive_definition list; }
+	(** inductive definition *)
+;;
+
+type logic_type_info = { 
+  type_name: qualified_name;
+  is_extern_c: bool;
+  params: string list; (** type parameters*)
+  definition: logic_type_def option;
+    (** definition of the type. None for abstract types. *)
+};;
+
+type logic_type_def =
+  | LTsum { arguments: logic_ctor_info list; }
+      (** sum type with its constructors. *)
+  | LTsyn { def: logic_type; } (** Synonym of another type. *)
+;;
+
+(** Information about a variable. *)
+(*
+type varinfo = {
+  vname: string;
+  (** The name of the variable. Cannot be empty. It is primarily your
+      responsibility to ensure the uniqueness of a variable name. For local
+      variables the name should be unique. *)
+  vorig_name: string;
+  (** the original name of the variable. Need not be unique. *)
+  vtype: typ; (** The declared type of the variable. *)
+  (** vattr: attributes; A list of attributes associated with the variable.*)
+  (** vstorage: storage; The storage-class *)
+  vglob: bool; (** True if this is a global variable*)
+  vdefined: bool;
+  (** True if the variable or function is defined in the file.  Only relevant
+      for functions and global variables.  Not used in particular for local
+      variables and logic variables. *)
+  vformal: bool;
+  (** True if the variable is a formal parameter of a function. *)
+  vinline: bool; (** Whether this varinfo is for an inline function. *)
+  vdecl: location; (** Location of variable declaration. *)
+  vid: int; (** A unique integer identifier. *)
+  vaddrof: bool;
+  (** [true] if the address of this variable is taken. CIL will set these
+      flags when it parses C, but you should make sure to set the flag
+      whenever your transformation create [AddrOf] expression. *)
+  vreferenced: bool;
+  (** [true] if this variable is ever referenced. This is computed by
+      [removeUnusedVars]. It is safe to just initialize this to [false]. *)
+  vgenerated: bool;
+  (** [true] for temporary variables generated by CIL normalization. [false]
+      for variables coming directly from user input.  *)
+  vdescr: string option;
+  (** For most temporary variables, a description of what the var holds.
+      (e.g. for temporaries used for function call results, this string is a
+      representation of the function call.) *)
+  vdescrpure: bool;           
+  (** Indicates whether the vdescr above is a pure expression or call.  True
+      for all CIL expressions and Lvals, but false for e.g. function calls.
+      Printing a non-pure vdescr more than once may yield incorrect
+      results. *)
+  vghost: bool; 
+  (** Indicates if the variable is declared in ghost code *)
+  vlogic: bool;
+  (** [false] iff this variable is a C variable. *)
+  vlogic_var_assoc: logic_var option
+  (** logic variable representing this variable in the logic world*)
+};;
+*)
+
+type logic_var_kind =
+  | LVGlobal {} (** global logic function or predicate. *)
+  | LVCGlobal {} (** Logic counterpart of a global C variable. *)
+  | LVCLocal {} (** Logic counterpart of a C local/formal. *)  
+  | LVFormal {} (** formal parameter of a logic function / predicate *)
+  | LVQuant {} (** Bound by a quantifier or a Lambda abstraction. *)
+  | LVLocal {} (** local \let *)
+  | LVBuiltin {} (** specific identifier, e.g. \\exit_status. *)
+;;
+
+type logic_var_def =
+{ lv_name : qualified_name; (** name of the variable. *)
+  (* lv_id : int; (** unique identifier *) *)
+  lv_type : logic_type; (** type of the variable. *)
+  lv_kind: logic_var_kind; (** kind of the variable *)
+  (* lv_origin : varinfo option; *)
+   (** when the logic variable stems from a C variable, set to the original C
+       variable.  *)
+};;
+
+type logic_var =
+{ lv_name : qualified_name; (** name of the variable. *)
+  (* lv_id : int; (** unique identifier *) *)
+  (* lv_type : logic_type; (** type of the variable. *) *)
+  lv_kind: logic_var_kind; (** kind of the variable *)
+  (* lv_origin : varinfo option; *)
+   (** when the logic variable stems from a C variable, set to the original C
+       variable.  *)
+};;
+
+type logic_ctor_info =
+{ ctor_name: qualified_name; (** name of the constructor. *)
+  is_extern_c: bool;
+  constype: qualified_name;
+    (** logic_type_info type to which the constructor belongs. *)
+  ctor_params: logic_type list;
+    (** types of the parameters of the constructor. *)
+};;
+
+type relation = 
+  | Rlt { }
+  | Rgt { }
+  | Rle { }
+  | Rge { }
+  | Req { }
+  | Rneq { } (** @plugin development guide *)
+;;
+
+type predicate =
+  | Pfalse { } (** always-false predicate. *)
+  | Ptrue { } (** always-true predicate. *)
+  | PApp { name: qualified_name;
+           table: logic_label_pair list;
+           arguments: term list;
+           extern_c_call: bool;
+         } (** application of a logic function. *)
+  | Pseparated { arguments: term list; }
+  | Prel { cmpop: relation; fstarg: term; sndarg: term; }
+      (** comparison of two terms. *)
+  | Pand { fstarg: predicate_named; sndarg: predicate_named; }
+      (** conjunction *)
+  | Por { fstarg: predicate_named; sndarg: predicate_named; } 
+      (** disjunction. *)
+  | Pxor { fstarg: predicate_named; sndarg: predicate_named; }
+      (** logical xor. *)
+  | Pimplies { left: predicate_named; right: predicate_named; }
+      (** implication. *)
+  | Piff { fstarg: predicate_named; sndarg: predicate_named; }
+      (** equivalence. *)
+  | Pnot { arg: predicate_named; } (** negation. *)
+  | Pif { cond: term; thenpart: predicate_named; elsepart: predicate_named; } 
+      (** conditional *)
+  | Plet { name: logic_info; def: predicate_named; }
+      (** definition of a local variable *)
+  | Pforall { quantifiers: logic_var_def list; prop: predicate_named; }
+      (** universal quantification. *)
+  | Pexists { quantifiers: logic_var_def list; prop: predicate_named; }
+      (** existential quantification. *)
+  | Pat { label: logic_label; prop: predicate_named; }
+    (** predicate refers to a particular program point. *)
+  | Pvalid_function { subexpr: term; }
+      (** the given locations are valid function pointers. *)
+  | Pvalid_read { reading_loc: logic_label option; subexpr: term; }
+      (** the given locations are valid for reading. *)
+  | Pvalid { loc: logic_label option; subexpr: term; }
+      (** the given locations are valid. *)
+  | Pinitialized { loc: logic_label option; subexpr: term; }
+      (** the given locations are initialized. *)
+  | Pallocable { loc: logic_label option; subexpr: term; }
+      (** the given locations can be allocated. *)
+  | Pfreeable { loc: logic_label option; subexpr: term; }
+      (** the given locations can be free. *)
+  | Pfresh { loc1: logic_label option;
+             loc2: logic_label option;
+             subexpr1: term;
+             subexpr2: term;
+           }
+      (** \fresh(pointer, n)
+          A memory block of n bytes is newly allocated to the pointer.*)
+  | Psubtype { subtype_tag: term; expr: term; }
+      (** First term is a type tag that is a subtype of the second. *)
+;;
+
+type variant =
+{ vbody: term;
+  vname: string option;
+};;
+
+type allocation =
+  | FreeAlloc { fst: term list; snd : term list; }
+    (** tsets. Empty list means \nothing. *)
+  | FreeAllocAny { } (** Nothing specified. Semantics depends on where it 
+		     is written. *)
+;;
+
+type deps =
+  | From { from: term list; } (** tsets. Empty list means \nothing. *)
+  | FromAny { } (** Nothing specified. Any location can be involved. *)
+;;
+
+type from = { floc: term; vars: deps; }
+;;
+
+type assigns = 
+  | WritesAny { } (** Nothing specified. Anything can be written. *)
+  | Writes { frm: from list; }
+    (** list of locations that can be written. Empty list means \nothing. *)
+;;
+
+type function_contract =
+{ behavior: behavior list; (** behaviors *)
+  variant: variant option; (** variant for recursive functions. *)
+  terminates: predicate_named option; (** termination condition. *)
+  complete_behaviors: set_of_behaviors list;
+    (** list of complete behaviors.
+        It is possible to have more than one set of complete behaviors *)
+  disjoint_behaviors: set_of_behaviors list;
+    (** list of disjoint behaviors.
+        It is possible to have more than one set of disjoint behaviors *)
+};;
+
+type behavior =
+{ beh_name: string; (** name of the behavior. *)
+  requires: predicate_named list; (** require clauses. *)
+  assumes : predicate_named list; (** assume clauses. *)
+  post_cond: post_condition list; (** post-conditions. *)
+  assignements: assigns; (** assignments. *)
+  alloc: allocation; (** frees, allocates. *)
+  extended: behavior_extensions list; (** Grammar extensions *)
+};;
+
+type termination_kind =
+  | Normal { }
+  | Exits { }
+  | Breaks { }
+  | Continues { }
+  | Returns { }
+;;
+
+type loop_pragma =
+  | Unroll_specs { specs: term list; }
+  | Widen_hints { hints: term list; }
+  | Widen_variables { vars: term list; }
+;;
+
+type slice_pragma =
+  | SPexpr { expr: term; }
+  | SPctrl { }
+  | SPstmt { }
+;;
+
+type impact_pragma =
+  | IPexpr { expr: term; }
+  | IPstmt { }
+;;
+
+type pragma =
+  | Loop_pragma { body: loop_pragma; }
+  | Slice_pragma { body: slice_pragma; }
+  | Impact_pragma { body: impact_pragma; }
+;;
+
+type predicate_named =
+{ pred_name: string list;
+  pred_loc: location;
+  pred_content: predicate;
+};;
+
+type post_condition =
+{ tkind: termination_kind;
+  pred: predicate_named;
+};;
+
+type behavior_extensions =
+{ ext_name: string;
+  identifier: int;
+  predicates: predicate_named list;
+};;
+
+type set_of_behaviors = { behaviors: string list; }
+;;
+
+type invariant_kind =
+  | InvariantAsAssertion {}
+  | NormalLoop {}
+;;
+
+type code_annotation =
+  | Assert { behaviors: string list; pred: predicate_named; }
+    (** assertion to be checked. The list of strings is the list of
+        behaviors to which this assertion applies. *)
+  | StmtSpec { behaviors: string list; contract: function_contract; }
+    (** statement contract eventualy for some behaviors. *)
+  | Invariant { behaviors: string list;
+                kind: invariant_kind;
+                pred: predicate_named;
+              }
+    (** loop/code invariant.
+        The list of strings is the list of behaviors to which
+        this invariant applies. The boolean flag is true for normal loop
+        invariants and false for invariant-as-assertions. *)
+  | Variant { body: variant; }
+    (** loop variant. Note that there can be at most one variant associated to a
+        given statement *)
+  | Assigns { variables: string list; assignements: assigns; }
+    (** loop assigns.  (see [b_assigns] in the behaviors for other assigns). At
+        most one clause associated to a given (statement, behavior) couple. *)
+  | Allocation { variables: string list; alloc: allocation; }
+    (** loop allocation clause.  (see [b_allocation] in the behaviors for other
+        allocation clauses).
+        At most one clause associated to a given (statement, behavior) couple.
+        @since Oxygen-20120901 when [b_allocation] has been added.  *)
+  | Pragma { body: pragma; } (** pragma. *)
+;;
+
+type global_annotation =
+  | Dfun_or_pred { loc: location; info: logic_info; }
+  | Dvolatile
+      { loc: location;
+        assoc_terms: term list;
+        reading_function: qualified_name option;
+        writing_function: qualified_name option;
+      }
+    (** associated terms, reading function, writing function *)
+  | Daxiomatic { loc: location; name: string; axioms: global_annotation list; }
+  | Dtype { loc: location; info: logic_type_info; }
+      (** declaration of a logic type. *)
+  | Dlemma
+      { loc: location;
+        name: string;
+        is_axiom: bool;
+        labels: logic_label list;
+        ids: string list;
+        pred: predicate_named;
+      }
+    (** definition of a lemma. The boolean flag is [true] if the property
+        should be taken as an axiom and [false] if it must be proved. *)
+  | Dinvariant { loc: location; info: logic_info; }
+    (** global invariant. The predicate does not have any argument. *)
+  | Dtype_annot { loc: location; info: logic_info; }
+    (** type invariant. The predicate has exactly one argument. *)
+  | Dmodel_annot { loc: location; info: model_info; }
+    (** Model field for a type t, seen as a logic function with one 
+        argument of type t *)
+;;
+
+(*
+Local Variables:
+compile-command: "make intermediate_format.ml"
+End:
+*)

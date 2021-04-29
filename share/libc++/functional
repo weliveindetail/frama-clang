@@ -1,0 +1,615 @@
+/**************************************************************************/
+/*                                                                        */
+/*  This file is part of Frama-Clang                                      */
+/*                                                                        */
+/*  Copyright (C) 2012-2020                                               */
+/*    CEA (Commissariat à l'énergie atomique et aux énergies              */
+/*         alternatives)                                                  */
+/*                                                                        */
+/*  you can redistribute it and/or modify it under the terms of the GNU   */
+/*  Lesser General Public License as published by the Free Software       */
+/*  Foundation, version 2.1.                                              */
+/*                                                                        */
+/*  It is distributed in the hope that it will be useful,                 */
+/*  but WITHOUT ANY WARRANTY; without even the implied warranty of        */
+/*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         */
+/*  GNU Lesser General Public License for more details.                   */
+/*                                                                        */
+/*  See the GNU Lesser General Public License version 2.1                 */
+/*  for more details (enclosed in the file LICENSE).                      */
+/*                                                                        */
+/**************************************************************************/
+
+#ifndef __STD_FUNCTIONAL
+
+#define __STD_FUNCTIONAL
+
+#include <utility>
+#include <type_traits>
+#include <exception>
+#include <typeinfo>
+
+namespace std {
+// Deprecated: do not implement unless needed in case study
+template <class Arg, class Result> struct unary_function;
+
+template <class Arg1, class Arg2, class Result> struct binary_function;
+
+// 20.8.3
+template <class T>
+ struct reference_wrapper {
+  typedef T type;
+  private:
+  T& obj;
+  public:
+  reference_wrapper(T& t) noexcept { obj = t; };
+  reference_wrapper(const reference_wrapper<T>& x) { obj = x.obj; };
+  reference_wrapper& operator=(const reference_wrapper<T>& x) {
+    obj = x.obj;
+    return *this;
+  };
+  operator T& () const noexcept { return obj; };
+  T& get() const noexcept { return obj; };
+
+  template <class... ArgTypes>
+  typename result_of<T(ArgTypes...)>::type operator()(ArgTypes&&... args)
+    const;
+};
+
+template <class RT, class... Args>
+struct __invoke { static RT invoke(RT(*)(Args&&...), Args&&...); };
+
+template <class RT, class Arg>
+struct __invoke<RT, Arg> {
+  static RT invoke(RT(*f)(Arg), Arg&& x) {
+    Arg a = x;
+    return (*f)(a); };
+};
+
+template <class RT, class Arg1, class Arg2>
+struct __invoke<RT, Arg1, Arg2> {
+static RT invoke(RT(*f)(Arg1, Arg2), Arg1&& x, Arg2&& y)
+  { Arg1 a1 = x;
+    Arg2 a2 = y;
+    return (*f)(a1,a2); };
+};
+
+template <class RT, class Arg> struct reference_wrapper<RT(Arg)> {
+  typedef RT(*type)(Arg);
+  typedef RT result_type;
+  typedef Arg argument_type;
+  private:
+  type obj;
+  public:
+  reference_wrapper(type& t) noexcept: obj(t) { };
+  reference_wrapper(const type& t) noexcept: obj(t) { };
+  reference_wrapper(const reference_wrapper<type>& x): obj(x.obj){ };
+  reference_wrapper& operator=(const reference_wrapper<type>& x) {
+    obj = x.obj;
+    return *this;
+  };
+  operator type& () const noexcept { return obj; };
+  type& get() const noexcept { return obj; };
+
+  RT operator()(Arg arg) const { return obj(arg); };
+};
+
+template <class RT, class Arg> struct reference_wrapper<RT(*)(Arg)> {
+  typedef RT(*type)(Arg);
+  typedef RT result_type;
+  typedef Arg argument_type;
+  private:
+  type obj;
+  public:
+  reference_wrapper(type& t) noexcept: obj(t) { };
+  reference_wrapper(const type& t) noexcept: obj(t) { };
+  reference_wrapper(const reference_wrapper<type>& x): obj(x.obj){ };
+  reference_wrapper& operator=(const reference_wrapper<type>& x) {
+    obj = x.obj;
+    return *this;
+  };
+  operator type& () const noexcept { return obj; };
+  type& get() const noexcept { return obj; };
+
+  RT operator()(Arg arg) const { return obj(arg); };
+};
+
+template <class RT, class Arg> struct reference_wrapper<RT(&)(Arg)> {
+  typedef RT(*type)(Arg);
+  typedef RT result_type;
+  typedef Arg argument_type;
+  private:
+  type obj;
+  public:
+  reference_wrapper(type& t) noexcept: obj(t) { };
+  reference_wrapper(const type& t) noexcept: obj(t) { };
+  reference_wrapper(const reference_wrapper<type>& x): obj(x.obj){ };
+  reference_wrapper& operator=(const reference_wrapper<type>& x) {
+    obj = x.obj;
+    return *this;
+  };
+  operator type& () const noexcept { return obj; };
+  type& get() const noexcept { return obj; };
+
+  RT operator()(Arg arg) const { return obj(arg); };
+
+};
+
+template <class RT, class Arg1, class Arg2>
+struct reference_wrapper<RT(*)(Arg1, Arg2)> {
+  typedef RT(*type)(Arg1, Arg2);
+  typedef RT result_type;
+  typedef Arg1 first_argument_type;
+  typedef Arg2 second_argument_type;
+  private:
+  type& obj;
+  public:
+  reference_wrapper(type& t) noexcept { obj = t; };
+  reference_wrapper(const reference_wrapper<type>& x) { obj = x.obj; };
+  reference_wrapper& operator=(const reference_wrapper<type>& x) {
+    obj = x.obj;
+    return *this;
+  };
+  operator type& () const noexcept { return obj; };
+  type& get() const noexcept { return obj; };
+
+  RT operator()(Arg1 arg1, Arg2 arg2) const { return obj(arg1, arg2); };
+
+};
+
+template <class RT, class Arg1, class Arg2>
+struct reference_wrapper<RT(&)(Arg1, Arg2)> {
+  typedef RT(*type)(Arg1, Arg2);
+  typedef RT result_type;
+  typedef Arg1 first_argument_type;
+  typedef Arg2 second_argument_type;
+  private:
+  type& obj;
+  public:
+  reference_wrapper(type& t) noexcept { obj = t; };
+  reference_wrapper(const reference_wrapper<type>& x) { obj = x.obj; };
+  reference_wrapper& operator=(const reference_wrapper<type>& x) {
+    obj = x.obj;
+    return *this;
+  };
+  operator type& () const noexcept { return obj; };
+  type& get() const noexcept { return obj; };
+
+  RT operator()(Arg1 arg1, Arg2 arg2) const { return obj(arg1, arg2); };
+};
+
+template <typename T> struct reference_wrapper<const T>:
+    public reference_wrapper<T> { };
+
+template <typename T> struct reference_wrapper<reference_wrapper<T>>:
+    public reference_wrapper<T> { };
+
+// TODO: pointers to member functions
+
+template<class T>
+ reference_wrapper<T> ref(T& t) noexcept {
+  reference_wrapper<T> res(t);
+  return res;
+};
+
+template<class T>
+ reference_wrapper<T> ref(reference_wrapper<T> t) noexcept {
+  return ref(t.get());
+};
+
+template<class T>
+ reference_wrapper<const T> cref(const T& t) noexcept {
+  reference_wrapper<const T> res(t);
+  return res;
+};
+
+template <class T> reference_wrapper<const T> cref(reference_wrapper<T> t)
+  noexcept {
+  return ref(t.get());
+};
+
+// Standard functional objects
+
+// Arithmetic operations
+
+template <class T, T(*op)(const T&, const T&)>struct __binop {
+  T operator() (const T& x, const T&y) const { return op(x,y); };
+  typedef T first_argument_type;
+  typedef T second_argument_type;
+  typedef T result_type;
+  typedef T (*__funtype)(const T&, const T&);
+  operator __funtype() { return op; };
+};
+
+template <class T> T __plus(const T& x, const T& y) { return x + y; };
+
+template <class T> struct plus: __binop<T, __plus<T>> { };
+
+template <class T> T __minus(const T& x, const T& y) { return x - y; };
+
+template <class T>struct minus: __binop<T, __minus<T>> { };
+
+template <class T> T __multiplies(const T& x, const T& y) { return x * y; };
+
+template <class T>struct multiplies: __binop<T, __multiplies<T>> { };
+
+template <class T> T __divides(const T& x, const T& y) { return x / y; };
+
+template <class T>struct divides: __binop<T, __divides<T>> { };
+
+template <class T>T __modulus(const T& x, const T& y) { return x % y; };
+
+template <class T>struct modulus: __binop<T, __modulus<T>> { };
+
+template <class T> T __negate(const T& x) { return -x; };
+
+template <class T>struct negate {
+  T operator()(const T& x) const { return __negate<T>(x); };
+  typedef T argument_type;
+  typedef T result_type;
+  typedef T(*__funtype)(const T&);
+  operator __funtype() { return __negate<T>; };
+};
+
+// Comparisons
+
+template <class T, bool(*op)(const T&, const T&)>struct __bool_binop {
+  bool operator() (const T& x, const T&y) const { return op(x,y); };
+  typedef T first_argument_type;
+  typedef T second_argument_type;
+  typedef bool result_type;
+  typedef bool (*__funtype)(const T&, const T&);
+  operator __funtype() { return op; };
+};
+
+template <class T>bool __equal_to(const T& x, const T& y) { return x == y; };
+
+template <class T> struct equal_to: __bool_binop<T,__equal_to<T>> { };
+
+template <class T> bool
+__not_equal_to(const T& x, const T&y) { return x != y; };
+
+template <class T> struct not_equal_to: __bool_binop<T,__not_equal_to<T>> { };
+
+template <class T> bool __greater(const T& x, const T& y) { return x > y; };
+
+template <class T> struct greater: __bool_binop<T,__greater<T>> { };
+
+template <class T> bool __less(const T& x, const T& y) { return x < y; };
+
+template <class T> struct less: __bool_binop<T,__less<T>> { };
+
+template <class T>
+bool __greater_equal(const T& x, const T& y) { return x >= y; };
+
+template <class T> struct greater_equal: __bool_binop<T,__greater_equal<T>> { };
+
+template <class T>
+bool __less_equal(const T& x, const T& y) { return x <= y; };
+
+template <class T> struct less_equal: __bool_binop<T,__less_equal<T>> { };
+
+// logical operations
+
+template <class T>
+bool __logical_and(const T& x, const T& y) { return x && y; };
+
+template <class T> struct logical_and: __bool_binop<T, __logical_and<T>> { };
+
+template <class T>
+bool __logical_or(const T& x, const T& y) { return x || y; };
+
+template <class T> struct logical_or: __bool_binop<T, __logical_or<T>> { };
+
+template <class T>bool __logical_not (const T& x) { return !x; };
+
+template <class T>struct logical_not {
+  bool operator() (const T& x) const { return __logical_not(!x); };
+  typedef T argument_type;
+  typedef bool result_type;
+  typedef bool (*__funtype)(const T&, const T&);
+  operator __funtype() { return __logical_not; };
+};
+
+// bitwise operations
+
+template <class T> T __bit_and(const T& x, const T& y) { return x & y; };
+
+template <class T>struct bit_and: __binop<T, __bit_and<T>> { };
+
+template <class T> T __bit_or(const T&x, const T& y) { return x | y; };
+
+template <class T>struct bit_or: __binop<T, __bit_or<T>> { };
+
+template <class T> T __bit_xor(const T& x, const T& y) { return x ^ y; };
+
+// negators
+
+template <class Predicate>
+class unary_negate {
+  private:
+  const Predicate& __predicate;
+  public:
+  explicit unary_negate(const Predicate& pred): __predicate(pred) { };
+  bool operator() (
+    const typename reference_wrapper<Predicate>::argument_type& x) const {
+    return !__predicate(x);
+  }
+  typedef typename reference_wrapper<Predicate>::argument_type argument_type;
+  typedef bool result_type;
+};
+
+template <class Predicate>
+unary_negate<Predicate> not1(const Predicate& pred)  {
+  return unary_negate<Predicate>(pred);
+};
+
+template <class Predicate>
+class binary_negate {
+private:
+  const Predicate& __predicate;
+public:
+  explicit binary_negate(const Predicate& pred): __predicate(pred) { };
+  bool operator()(
+    const typename Predicate::first_argument_type& x,
+    const typename Predicate::second_argument_type& y) const {
+    return !__predicate(x,y);
+  };
+  typedef typename Predicate::first_argument_type first_argument_type;
+  typedef typename Predicate::second_argument_type second_argument_type;
+  typedef bool result_type;
+};
+
+template <class Predicate>
+binary_negate<Predicate> not2(const Predicate& pred)  {
+  return binary_negate<Predicate>(pred);
+};
+
+// TODO: bind template
+
+// TODO: functions with > 2 args, custom allocator constructors
+
+class bad_function_call : public exception {
+  public:
+  bad_function_call() noexcept { };
+};
+
+template<class> class function;
+
+template<class R, class Arg>
+class function<R(Arg)> {
+  private:
+  R(*_f)(Arg);
+  public:
+  typedef R result_type;
+  typedef Arg argument_type;
+  function () noexcept: _f(nullptr) { };
+  function (nullptr_t null) noexcept: _f(null) { };
+  function (const function& other): _f(other.f) {
+    if (!other._f) _f = nullptr;
+    else _f = std::move(other)._f;
+  };
+
+  function (function&& other) {
+    if (!other._f) _f = nullptr;
+    else _f = other._f;
+  };
+
+  template<
+    class F,
+    typename = typename enable_if<is_convertible<F,R(*)(Arg)>::value>::type>
+  function(F f) {
+    if (!f) _f = nullptr;
+    else _f = f;
+  }
+
+  void swap(function& other) noexcept {
+    R(*tmp)(Arg) = _f;
+    _f = other._f;
+    other._f = *tmp;
+  };
+
+  function& operator=(const function& f) {
+    function(f).swap(*this);
+    return *this;
+  };
+
+  function& operator=(function&& f) {
+    std::forward<function>(f).swap(*this);
+    return *this;
+  };
+
+  function& operator=(nullptr_t null) {
+    this->_f = nullptr;
+    return *this;
+  };
+
+  template<
+    class F,
+    typename =
+    typename std::enable_if<is_convertible<F,R(*)(Arg)>::value>::type>
+    function& operator=(F&& f) { function(std::forward<F>(f)).swap(*this);
+    return *this;
+  };
+
+  ~function() { };
+
+  explicit operator bool() const noexcept { return _f !=nullptr; };
+
+  R operator() (Arg arg) {
+    if (!_f) throw bad_function_call();
+    return _f(std::forward<Arg>(arg));
+  };
+
+  const type_info& target_type() {
+    if (_f == nullptr) return typeid(void);
+    else return typeid(R(*)(Arg));
+  };
+
+  template<
+    typename T,
+    typename std::enable_if<is_convertible<R(Arg),T>::value>::type>
+  T* target() noexcept {
+    if (target_type() == typeid(T)) return _f; else return nullptr;
+  };
+
+  template<
+    typename T,
+    typename std::enable_if<is_convertible<R(Arg),T>::value>::type>
+  const T* target() const noexcept {
+    if (target_type() == typeid(T)) return _f; else return nullptr;
+  };
+
+};
+
+template <class R, class Arg>
+bool operator==(const function<R(Arg)>& f, nullptr_t null) noexcept {
+  return !f;
+};
+
+template <class R, class Arg>
+bool operator==(nullptr_t null, const function<R(Arg)>& f) noexcept {
+  return !f;
+};
+
+template <class R, class Arg>
+bool operator!=(const function<R(Arg)>& f, nullptr_t null) noexcept {
+  return (bool)f;
+};
+
+template <class R, class Arg>
+bool operator!=(nullptr_t null, const function<R(Arg)>& f) noexcept {
+  return (bool)f;
+};
+
+template<class R, class Arg>
+void swap(function<R(Arg)>& f1, function<R(Arg)>& f2) { f1.swap(f2); };
+
+template<class R, class Arg1, class Arg2>
+class function<R(Arg1,Arg2)> {
+  private:
+  R(*_f)(Arg1, Arg2);
+  public:
+  typedef R result_type;
+  typedef Arg1 first_argument_type;
+  typedef Arg2 second_argument_type;
+  function () noexcept: _f(nullptr) { };
+  function (nullptr_t null) noexcept: _f(null) { };
+  function (const function& other): _f(other.f) {
+    if (!other._f) _f = nullptr;
+    else _f = std::move(other)._f;
+  };
+
+  function (function&& other) {
+    if (!other._f) _f = nullptr;
+    else _f = other._f;
+  };
+
+  template<
+    class F,
+    typename =
+    typename std::enable_if<
+      __or<typename std::is_convertible<F,R(&)(Arg1,Arg2)>::type,
+           typename std::is_convertible<F,R(*)(Arg1,Arg2)>::type>::value>::type>
+  function(F f) {
+      if (!f) _f = nullptr;
+      else _f = (R(*)(Arg1,Arg2))f;
+    };
+
+  void swap(function& other) noexcept {
+    R(*tmp)(Arg1, Arg2) = _f;
+    _f = other._f;
+    other._f = *tmp;
+  };
+
+  function& operator=(const function& f) {
+    function(f).swap(*this);
+    return *this;
+  };
+
+  function& operator=(function&& f) {
+    std::forward<function>(f).swap(*this);
+    return *this;
+  };
+
+  function& operator=(nullptr_t null) {
+    this->_f = nullptr;
+    return *this;
+  };
+
+  template<
+    class F,
+    typename =
+    typename std::enable_if<
+      __or<typename std::is_convertible<F,R(&)(Arg1,Arg2)>::type,
+           typename std::is_convertible<F,R(*)(Arg1,Arg2)>::type>
+      ::value>::type>
+    function& operator=(F&& f) { function(std::forward<F>(f)).swap(*this);
+    return *this;
+  };
+
+  ~function() { };
+
+  explicit operator bool() const noexcept { return _f !=nullptr; };
+
+  R operator() (Arg1 arg1, Arg2 arg2) {
+    if (!_f) throw bad_function_call();
+    return _f(std::forward<Arg1>(arg1), std::forward<Arg2>(arg2));
+  };
+
+  const type_info& target_type() {
+    if (_f == nullptr) return typeid(void);
+    else return typeid(R(*)(Arg1,Arg2));
+  };
+
+  template<
+    typename T,
+    typename std::enable_if<is_convertible<R(Arg1,Arg2),T>::value>::type>
+  T* target() noexcept {
+    if (target_type() == typeid(T)) return _f; else return nullptr;
+  };
+
+  template<
+    typename T,
+    typename std::enable_if<is_convertible<R(Arg1,Arg2),T>::value>::type>
+  const T* target() const noexcept {
+    if (target_type() == typeid(T)) return _f; else return nullptr;
+  };
+
+};
+
+template <class R, class Arg1, class Arg2>
+bool operator==(const function<R(Arg1,Arg2)>& f, nullptr_t null) noexcept {
+  return !f;
+};
+
+template <class R, class Arg1, class Arg2>
+bool operator==(nullptr_t null, const function<R(Arg1,Arg2)>& f) noexcept {
+  return !f;
+};
+
+template <class R, class Arg1, class Arg2>
+bool operator!=(const function<R(Arg1,Arg2)>& f, nullptr_t null) noexcept {
+  return (bool)f;
+};
+
+template <class R, class Arg1, class Arg2>
+bool operator!=(nullptr_t null, const function<R(Arg1, Arg2)>& f) noexcept {
+  return (bool)f;
+};
+
+template<class R, class Arg1, class Arg2>
+void swap(function<R(Arg1, Arg2)>& f1, function<R(Arg1, Arg2)>& f2) {
+  f1.swap(f2);
+};
+
+// TODO: hash template
+
+}
+#endif
+
+/*
+Local Variables:
+mode: C++
+End:
+*/

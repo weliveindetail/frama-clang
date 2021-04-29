@@ -1,0 +1,327 @@
+/**************************************************************************/
+/*                                                                        */
+/*  This file is part of Frama-Clang                                      */
+/*                                                                        */
+/*  Copyright (C) 2012-2020                                               */
+/*    CEA (Commissariat à l'énergie atomique et aux énergies              */
+/*         alternatives)                                                  */
+/*                                                                        */
+/*  you can redistribute it and/or modify it under the terms of the GNU   */
+/*  Lesser General Public License as published by the Free Software       */
+/*  Foundation, version 2.1.                                              */
+/*                                                                        */
+/*  It is distributed in the hope that it will be useful,                 */
+/*  but WITHOUT ANY WARRANTY; without even the implied warranty of        */
+/*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         */
+/*  GNU Lesser General Public License for more details.                   */
+/*                                                                        */
+/*  See the GNU Lesser General Public License version 2.1                 */
+/*  for more details (enclosed in the file LICENSE).                      */
+/*                                                                        */
+/**************************************************************************/
+
+#ifndef __STD_UTILITY
+
+#define __STD_UTILITY
+
+#include <initializer_list>
+#include <type_traits>
+
+namespace std {
+
+  namespace rel_ops {
+    template<class T> bool operator!=(const T& x, const T& y) { return !(x == y); }
+
+    template<class T> bool operator> (const T& x, const T& y) { return y < x; }
+
+    template<class T> bool operator<=(const T& x, const T& y) { return !(y<x); }
+
+    template<class T> bool operator>=(const T& x, const T& y) { return !(x<y); }
+  }
+
+  template<class T> void swap(T& a, T& b) noexcept {
+    T tmp = a;
+    a = b;
+    b = tmp;
+  }
+
+  template <class T, size_t N> void swap(T (&a)[N], T (&b)[N])
+    noexcept(noexcept(swap(*a, *b))) {
+    for (size_t i = 0; i < N; i++) swap<T>(a[i],b[i]);
+  }
+
+  template <class T> T&& forward(typename remove_reference<T>::type& t) noexcept {
+    return static_cast<T&&>(t);
+  }
+
+  template <class T> T&& forward(typename remove_reference<T>::type&& t) noexcept {
+    return t;
+  }
+
+  template <class T> typename remove_reference<T>::type&& move(T&& t) noexcept {
+    return static_cast<typename remove_reference<T>::type&&>(t);
+  }
+
+  template <class T>
+  typename conditional<!is_nothrow_move_constructible<T>::value &&
+                       is_copy_constructible<T>::value,
+                       const T&, T&&>::type
+  move_if_noexcept(T& x) noexcept { return std::move<T&>(x); }
+
+  // declval is defined in type_traits, which is included by this header.
+
+  struct piecewise_construct_t { };
+  /*constexpr*/ //TODO avoid making it a const in FC's translation
+  piecewise_construct_t piecewise_construct = piecewise_construct_t();
+
+  //forward decl
+
+  template<class ... _Args> struct tuple;
+
+  template <class T1, class T2> struct pair {
+    typedef T1 first_type;
+    typedef T2 second_type;
+    T1 first;
+    T2 second;
+    pair(const pair&) = default;
+    pair(pair&&) = default;
+
+    template<typename _T1 = T1, typename _T2 = T2,
+             typename =
+             typename
+             enable_if<__and<typename is_default_constructible<_T1>::type,
+                             typename is_default_constructible<_T2>::type>
+                       ::value>::type>
+    constexpr pair(): first(), second() { };
+
+    template<typename _T1 = T1, typename _T2 = T2,
+             typename =
+             typename
+             enable_if<
+               __and<
+                 typename is_copy_constructible<_T1>::type,
+                 typename is_copy_constructible<_T2>::type>::value>::type>
+    pair(const T1& x, const T2& y): first(x), second(y) { };
+
+    template<class U, class V,
+             typename =
+             typename
+             enable_if<
+               __and<
+               __and<
+               __and<
+                 typename is_constructible<T1,U&&>::type,
+                 typename is_constructible<T2,V&&>::type>,
+                 typename is_convertible<U&&,T1>::type>,
+                 typename is_convertible<V&&,T2>::type>::value>::type>
+    pair(U&& x, V&& y)
+      noexcept(is_nothrow_constructible<T1, U&&>::value &&
+               is_nothrow_constructible<T2, V&&>::value):
+      first(std::forward<U>(x)), second(std::forward<V>(y)) { };
+
+    template<class U, class V,
+             typename =
+             typename
+             enable_if<
+               __and<
+                 typename is_constructible<T1,const U&>::type,
+                 typename is_constructible<T2,const V&>::type>::value>::type>
+    pair(const pair<U, V>& p): first(p.first), second(p.second) { };
+
+    template<class U, class V,
+             typename =
+             typename
+             enable_if<
+               __and<
+               __and<
+               __and<
+                 typename is_constructible<T1,U&&>::type,
+                 typename is_constructible<T2,V&&>::type>,
+                 typename is_convertible<U&&,T1>::type>,
+                 typename is_convertible<V&&,T2>::type>::value>::type>
+    pair(pair<U, V>&& p)
+      noexcept(is_nothrow_constructible<T1, U&&>::value &&
+               is_nothrow_constructible<T2, V&&>::value):
+      first(forward<U>(p.first)), second(forward<V>(p.second)) { };
+
+    template <class... Args1, class... Args2,
+              typename =
+              typename
+              enable_if<
+                __and<
+                  typename is_constructible<T1, Args1...>::type,
+                  typename is_constructible<T2, Args2...>::type>::value>::type>
+    pair(piecewise_construct_t,
+         tuple<Args1...> first_args, tuple<Args2...> second_args)
+      noexcept(is_nothrow_constructible<T1,Args1...>::value &&
+               is_nothrow_constructible<T2,Args2...>::value);
+    template<class _T1=T1, class _T2=T2,
+             typename =
+             typename
+             enable_if<
+               __and<
+                 typename is_copy_assignable<T1>::type,
+                 typename is_copy_assignable<T2>::type>::value>::type>
+    pair& operator=(const pair& p) {
+      first = p.first;
+      second = p.second;
+      return this;
+    };
+
+    template<class U, class V,
+             typename=
+             typename
+             enable_if<
+               __and<
+                 typename is_assignable<T1&, const U&>::type,
+                 typename is_assignable<T2&, const V&>::type>::value>::type>
+    pair& operator=(const pair<U, V>& p) {
+      first = p.first;
+      second = p.second;
+      return this;
+    };
+
+    template<class _T1=T1, class _T2=T2,
+             typename =
+             typename
+             enable_if<
+               __and<
+                 typename is_move_assignable<T1>::type,
+                 typename is_move_assignable<T2>::type>::value>::type>
+    pair& operator=(pair&& p)
+      noexcept(is_nothrow_move_assignable<T1>::value &&
+               is_nothrow_move_assignable<T2>::value) {
+      first = forward<T1>(p.first);
+      second = forward<T2>(p.second);
+      return *this;
+    }
+
+    template<class U, class V,
+             typename =
+             typename
+             enable_if<
+               __and<
+                 typename is_assignable<T1&,U&&>::type,
+                 typename is_assignable<T2&,V&&>::type>::value>::type>
+    pair& operator=(pair<U, V>&& p)
+      noexcept(is_nothrow_assignable<T1&,U&&>::value &&
+               is_nothrow_assignable<T2&,V&&>::value) {
+      first = forward<U>(p.first);
+      second = forward<V>(p.second);
+      return *this;
+    }
+
+    void swap(pair& p) noexcept(noexcept(std::swap<T1>(first, p.first)) &&
+                                noexcept(std::swap<T2>(second, p.second))) {
+      std::swap<T1>(first, p.first);
+      std::swap<T2>(second, p.second);
+    };
+
+  };
+
+  template <class T1, class T2> bool operator==(
+    const pair<T1,T2>& x, const pair<T1,T2>& y) {
+    return x.first == y.first && x.second == y.second;
+  };
+
+  template <class T1, class T2>  bool operator<(
+    const pair<T1,T2>& x, const pair<T1,T2>& y) {
+    return
+      (x.first < y.first) ||
+      (!(y.first < x.first) && x.second < y.second);
+  };
+
+  template <class T1, class T2>  bool operator!=(
+    const pair<T1,T2>& x, const pair<T1,T2>& y) {
+    return !(x==y);
+  };
+
+  template <class T1, class T2> bool operator> (
+    const pair<T1,T2>& x, const pair<T1,T2>& y) {
+    return y < x;
+  };
+
+  template <class T1, class T2> bool operator>=(
+    const pair<T1,T2>&x, const pair<T1,T2>& y) {
+    return !(x<y);
+  };
+
+  template <class T1, class T2> bool operator<=(
+    const pair<T1,T2>& x, const pair<T1,T2>& y) {
+    return !(y < x);
+  }
+
+  template <class T1, class T2>  void swap(pair<T1,T2>& x, pair<T1,T2>& y)
+    noexcept(noexcept(x.swap(y))) {
+    x.swap(y);
+  }
+
+
+  //TODO: result type should be refined in presence of functional objects
+  template <class T1, class T2>
+  pair<typename remove_reference<T1>::type,
+       typename remove_reference<T2>::type> make_pair(T1&& x, T2&& y)
+    noexcept(
+      is_nothrow_constructible<T1,T1&&>::value &&
+      is_nothrow_constructible<T2,T2&&>::value) {
+    return pair<typename remove_reference<T1>::type,
+                typename remove_reference<T2>::type>(
+      std::forward<T1>(x),std::forward<T2>(y));
+  }
+
+  template <class T> class tuple_size;
+  template <size_t I, class T> class tuple_element;
+
+  template <class T1, class T2> struct tuple_size<std::pair<T1, T2> > {
+    static const size_t value = 2;
+  };
+
+  template <class T1, class T2> struct tuple_element<0, std::pair<T1, T2> > {
+    typedef T1 type;
+  };
+
+  template <class T1, class T2> struct tuple_element<1, std::pair<T1, T2> > {
+    typedef T2 type;
+  };
+
+  template<size_t I, class T1, class T2> struct _get_helper;
+
+  template<class T1, class T2> struct _get_helper<0,T1,T2>{
+    typedef pair<T1, T2> type;
+    typedef typename tuple_element<0, std::pair<T1, T2>>::type elt_type;
+    static elt_type& get(type &p) noexcept { return p.first; };
+    static elt_type&& get(type &&p) noexcept { return p.first; };
+    static const elt_type& get(const type &p) noexcept { return p.first; };
+  };
+
+  template<class T1, class T2> struct _get_helper<1,T1,T2>{
+    typedef pair<T1, T2> type;
+    typedef typename tuple_element<1, std::pair<T1, T2>>::type elt_type;
+    static elt_type& get(type &p) noexcept { return p.second; };
+    static elt_type&& get(type &&p) noexcept { return p.second; };
+    static const elt_type& get(const type &p) noexcept { return p.second; };
+  };
+
+  template<size_t I, class T1, class T2>
+  typename tuple_element<I, std::pair<T1, T2> >::type&
+  get(std::pair<T1, T2>& p) noexcept { return _get_helper<I,T1,T2>::get(p); };
+
+  template<size_t I, class T1, class T2>
+  typename tuple_element<I, std::pair<T1, T2> >::type&&
+  get(std::pair<T1, T2>&& p) noexcept { return _get_helper<I,T1,T2>::get(p); };
+
+  template<size_t I, class T1, class T2>
+  const typename tuple_element<I, std::pair<T1, T2> >::type&
+  get(const std::pair<T1, T2>& p) noexcept
+  { return _get_helper<I,T1,T2>::get(p);};
+
+  // TODO: tuple
+
+}
+#endif
+
+/*
+  Local Variables:
+  mode: C++
+  End:
+*/

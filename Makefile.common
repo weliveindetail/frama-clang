@@ -1,0 +1,74 @@
+##########################################################################
+#                                                                        #
+#  This file is part of Frama-Clang                                      #
+#                                                                        #
+#  Copyright (C) 2012-2020                                               #
+#    CEA (Commissariat à l'énergie atomique et aux énergies              #
+#         alternatives)                                                  #
+#                                                                        #
+#  you can redistribute it and/or modify it under the terms of the GNU   #
+#  Lesser General Public License as published by the Free Software       #
+#  Foundation, version 2.1.                                              #
+#                                                                        #
+#  It is distributed in the hope that it will be useful,                 #
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of        #
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         #
+#  GNU Lesser General Public License for more details.                   #
+#                                                                        #
+#  See the GNU Lesser General Public License version 2.1                 #
+#  for more details (enclosed in the file LICENSE).                      #
+#                                                                        #
+##########################################################################
+
+### Makefile common to the clang and Frama-C parts:
+### Generation of the appropriate bindings from the AST description file
+
+PLUGIN_DIR?=.
+
+ifneq ("$(MAKECMDGOALS)","uninstall")
+include $(PLUGIN_DIR)/Makefile.config
+endif
+
+#Installed header files
+CXX_HEADERS= algorithm array atomic bitset cassert cerrno climits	\
+clocale cstdarg cstddef cstdio cstdint cstdlib cstring ctime cwchar	\
+exception functional initializer_list ios iosfwd iostream istream	\
+iterator locale memory new ostream stdexcepts streambuf string		\
+system_error type_traits typeinfo utility cxxabi.h			\
+__fc_define_char_traits_char __fc_define_fpos				\
+__fc_define_ios_base_seekdir __fc_define_mbstate_t			\
+__fc_define_streamoff __fc_define_streamsize __fc_define_streampos
+
+# Existing ml source files
+FCLANG_MLFILES=\
+ class convert_acsl convert_env convert_link convert cxx_utils fclang_datatype \
+ frama_Clang_option frama_Clang_register generate_spec mangling reorder_defs
+
+# Existing C++ source files
+FCLANG_CXXFILES=\
+  ACSLCodeAnnotation ACSLComment ACSLComponent ACSLFunctionContract \
+  ACSLGlobalAnnotation ACSLLexer ACSLLogicType ACSLLoopAnnotation \
+  ACSLParser ACSLStatementAnnotation ACSLTermOrPredicate ACSLToken \
+  Clang_utils ClangVisitor DescentParse RTTITable VisitTable
+
+ifndef FRAMAC_SHARE
+FRAMAC_SHARE:=$(shell frama-c -print-path)
+endif
+
+MAKECONFIG_DIR?=$(FRAMAC_SHARE)
+include $(FRAMAC_SHARE)/Makefile.common
+
+$(PLUGIN_DIR)/.clang_complete: $(PLUGIN_DIR)/Makefile.config
+	rm -f $@
+	$(foreach opt,$(CLANG_CXXFLAGS),echo $(opt) >> $@;)
+
+FCLANG_DISTRIBUTED_FILES=\
+ $(addprefix $(Frama_Clang_DIR)/, \
+    $(FCLANG_MLFILES:%=%.ml) $(FCLANG_MLFILES:%=%.mli) Frama_Clang.mli \
+    $(FCLANG_CXXFILES:%=%.cpp) $(FCLANG_CXXFILES:%=%.h) \
+    AnnotationComment.h FramaCIRGen.cpp DescentParse.template \
+    gen_ast.ml intermediate_format.ast \
+    configure.ac configure \
+    Makefile Makefile.common Makefile.clang Makefile.config.in \
+    README.md \
+    $(addprefix share/libc++/, $(CXX_HEADERS)))

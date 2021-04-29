@@ -1,0 +1,48 @@
+/**************************************************************************/
+/*                                                                        */
+/*  This file is part of Frama-Clang                                      */
+/*                                                                        */
+/*  Copyright (C) 2012-2020                                               */
+/*    CEA (Commissariat à l'énergie atomique et aux énergies              */
+/*         alternatives)                                                  */
+/*                                                                        */
+/*  you can redistribute it and/or modify it under the terms of the GNU   */
+/*  Lesser General Public License as published by the Free Software       */
+/*  Foundation, version 2.1.                                              */
+/*                                                                        */
+/*  It is distributed in the hope that it will be useful,                 */
+/*  but WITHOUT ANY WARRANTY; without even the implied warranty of        */
+/*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         */
+/*  GNU Lesser General Public License for more details.                   */
+/*                                                                        */
+/*  See the GNU Lesser General Public License version 2.1                 */
+/*  for more details (enclosed in the file LICENSE).                      */
+/*                                                                        */
+/**************************************************************************/
+
+#ifndef __FC_DEFINE_FPOS
+#define __FC_DEFINE_FPOS
+#include "__fc_define_streamoff"
+
+namespace __fc_std {
+  template <typename stateT> struct fpos {
+  private:
+    stateT st;
+    streamoff off;
+  public:
+    fpos(streamoff o=streamoff()): st(), off(o) { }
+    operator streamoff() const { return off; }
+    bool operator==(fpos p) { return st == p.st && off == p.off; }
+    bool operator!=(fpos p) { return !(this == p); }
+    fpos& operator+=(streamoff o) { off += o; return *this; }
+    fpos operator+(streamoff o) const { fpos tmp(*this); tmp+=o; return tmp; }
+    fpos operator-=(streamoff o) { off-=o; return *this; }
+    fpos operator-(streamoff o) const { fpos tmp(*this); tmp-=o; return tmp; }
+    stateT state() const { return st; }
+    void state(stateT s) { st = s; }
+  };
+}
+#endif
+// Local Variables:
+// mode: c++
+// End:

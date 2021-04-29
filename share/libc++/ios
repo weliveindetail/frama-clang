@@ -1,0 +1,165 @@
+/**************************************************************************/
+/*                                                                        */
+/*  This file is part of Frama-Clang                                      */
+/*                                                                        */
+/*  Copyright (C) 2012-2020                                               */
+/*    CEA (Commissariat à l'énergie atomique et aux énergies              */
+/*         alternatives)                                                  */
+/*                                                                        */
+/*  you can redistribute it and/or modify it under the terms of the GNU   */
+/*  Lesser General Public License as published by the Free Software       */
+/*  Foundation, version 2.1.                                              */
+/*                                                                        */
+/*  It is distributed in the hope that it will be useful,                 */
+/*  but WITHOUT ANY WARRANTY; without even the implied warranty of        */
+/*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         */
+/*  GNU Lesser General Public License for more details.                   */
+/*                                                                        */
+/*  See the GNU Lesser General Public License version 2.1                 */
+/*  for more details (enclosed in the file LICENSE).                      */
+/*                                                                        */
+/**************************************************************************/
+
+#ifndef _STD_IOS
+#define _STD_IOS
+
+#include <iosfwd>
+#include <system_error>
+#include "__fc_machdep.h"
+#include <bitset>
+#include <__fc_define_streamsize>
+#include <__fc_define_ios_base_seekdir>
+
+namespace std {
+  class locale; // we can't include locale, as it depends on us.
+  typedef long streamoff;
+
+  enum class io_errc {
+    stream = 1
+  };
+
+  class ios_base {
+  public:
+     class failure: public system_error {
+      explicit failure(const string& msg,
+                       const error_code& ec = io_errc::stream);
+      explicit failure(const char* msg,
+                       const error_code& ec = io_errc::stream);
+    };
+    typedef bitset<15> fmtflags;
+    static constexpr fmtflags boolalpha = 1 << 0;
+    static constexpr fmtflags dec = 1 << 1 ;
+    static constexpr fmtflags fixed = 1 << 2 ;
+    static constexpr fmtflags hex = 1 << 3 ;
+    static constexpr fmtflags internal = 1 << 4 ;
+    static constexpr fmtflags left = 1 << 5 ;
+    static constexpr fmtflags oct = 1 << 6 ;
+    static constexpr fmtflags right = 1 << 7 ;
+    static constexpr fmtflags scientific = 1 << 8 ;
+    static constexpr fmtflags showbase = 1 << 9 ;
+    static constexpr fmtflags showpoint = 1 << 10 ;
+    static constexpr fmtflags showpos = 1 << 11 ;
+    static constexpr fmtflags skipws = 1 << 12 ;
+    static constexpr fmtflags unitbuf = 1 << 13 ;
+    static constexpr fmtflags uppercase = 1 << 14 ;
+    static constexpr fmtflags adjustfield = left;
+    static constexpr fmtflags basefield = dec;
+    static constexpr fmtflags floatfield = scientific;
+
+    typedef bitset<3> iostate;
+    static constexpr iostate badbit = 1<<0 ;
+    static constexpr iostate eofbit = 1<<1 ;
+    static constexpr iostate failbit = 1<<2 ;
+    static constexpr iostate goodbit = 0;
+
+    typedef bitset<6> openmode;
+    static constexpr openmode app = 1<<0 ;
+    static constexpr openmode ate = 1<<1 ;
+    static constexpr openmode binary = 1<<2 ;
+    static constexpr openmode in = 1<<3 ;
+    static constexpr openmode out = 1<<4 ;
+    static constexpr openmode trunc = 1<<5 ;
+
+    typedef ios_base_seekdir seekdir;
+    static constexpr seekdir beg = 1<<0 ;
+    static constexpr seekdir cur = 1<<1 ;
+    static constexpr seekdir end = 1<<2 ;
+
+    class Init {
+    public:
+      Init();
+      ~Init();
+    private:
+      static int init_cnt;
+    };
+
+    fmtflags flags() const;
+    fmtflags flags(fmtflags fmtfl);
+    fmtflags setf(fmtflags fmtfl);
+    fmtflags setf(fmtflags fmtfl, fmtflags mask);
+    void unsetf(fmtflags mask);
+
+    streamsize precision() const;
+    streamsize precision(streamsize prec);
+    streamsize width() const;
+    streamsize width(streamsize wide);
+
+    locale imbue(const locale& loc);
+    locale getloc() const;
+
+    static int xalloc();
+    long& iword(int index);
+    void*& pword(int index);
+
+    virtual ~ios_base();
+
+    enum event { erase_event, imbue_event, copyfmt_event };
+    typedef void (*event_callback)(event, ios_base&, int index);
+    void register_callback(event_callback fn, int index);
+    ios_base(const ios_base&) = delete;
+    ios_base& operator=(const ios_base&) = delete;
+    static bool sync_with_stdio(bool sync = true);
+  protected:
+    ios_base();
+  private:
+    static int index;
+    long* iarray;
+    void** parray;
+  };
+
+  ios_base& boolalpha (ios_base& str);
+  ios_base& noboolalpha(ios_base& str);
+  ios_base& showbase (ios_base& str);
+  ios_base& noshowbase (ios_base& str);
+  ios_base& showpoint (ios_base& str);
+  ios_base& noshowpoint(ios_base& str);
+  ios_base& showpos (ios_base& str);
+  ios_base& noshowpos (ios_base& str);
+  ios_base& skipws (ios_base& str);
+  ios_base& noskipws (ios_base& str);
+  ios_base& uppercase (ios_base& str);
+  ios_base& nouppercase(ios_base& str);
+  ios_base& unitbuf (ios_base& str);
+  ios_base& nounitbuf (ios_base& str);
+  ios_base& internal (ios_base& str);
+  ios_base& left (ios_base& str);
+  ios_base& right (ios_base& str);
+  ios_base& dec (ios_base& str);
+  ios_base& hex (ios_base& str);
+  ios_base& oct (ios_base& str);
+  ios_base& fixed (ios_base& str);
+  ios_base& scientific (ios_base& str);
+  ios_base& hexfloat(ios_base& str);
+  ios_base& defaultfloat(ios_base& str);
+
+  template <> struct is_error_code_enum<io_errc> : public true_type { };
+  error_code make_error_code(io_errc e);
+  error_condition make_error_condition(io_errc e);
+  const error_category& iostream_category();
+}
+
+#endif
+
+// Local Variables:
+// mode: c++
+// End:

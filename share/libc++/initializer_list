@@ -1,0 +1,68 @@
+/**************************************************************************/
+/*                                                                        */
+/*  This file is part of Frama-Clang                                      */
+/*                                                                        */
+/*  Copyright (C) 2012-2020                                               */
+/*    CEA (Commissariat à l'énergie atomique et aux énergies              */
+/*         alternatives)                                                  */
+/*                                                                        */
+/*  you can redistribute it and/or modify it under the terms of the GNU   */
+/*  Lesser General Public License as published by the Free Software       */
+/*  Foundation, version 2.1.                                              */
+/*                                                                        */
+/*  It is distributed in the hope that it will be useful,                 */
+/*  but WITHOUT ANY WARRANTY; without even the implied warranty of        */
+/*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         */
+/*  GNU Lesser General Public License for more details.                   */
+/*                                                                        */
+/*  See the GNU Lesser General Public License version 2.1                 */
+/*  for more details (enclosed in the file LICENSE).                      */
+/*                                                                        */
+/**************************************************************************/
+
+#ifndef _STD_INITIALIZER_LIST
+
+#define _STD_INITIALIZER_LIST
+
+#include <cstddef> // for size_t
+
+namespace std {
+  template<class E> class initializer_list {
+  private:
+    const E* base;
+    size_t length;
+  public:
+    typedef E value_type;
+    typedef const E& reference;
+    typedef const E& const_reference;
+    typedef size_t size_type;
+    typedef const E* iterator;
+    typedef const E* const_iterator;
+    initializer_list() noexcept {
+      base = NULL;
+      length = 0;
+    }
+    initializer_list(const E* b, size_t s): base(b), length(s) { }
+    size_t size() const noexcept {
+      return length;
+    }
+    const E* begin() const noexcept { return base; };
+    const E* end() const noexcept { return base + length; };
+};
+
+  template<class E> const E* begin(initializer_list<E> il) noexcept {
+    return il.begin();
+  }
+
+  template<class E> const E* end(initializer_list<E> il) noexcept {
+    return il.end();
+  }
+}
+
+#endif
+
+/*
+Local Variables:
+mode: C++
+End:
+*/

@@ -1,0 +1,2033 @@
+/**************************************************************************/
+/*                                                                        */
+/*  This file is part of Frama-Clang                                      */
+/*                                                                        */
+/*  Copyright (C) 2012-2020                                               */
+/*    CEA (Commissariat à l'énergie atomique et aux énergies              */
+/*         alternatives)                                                  */
+/*                                                                        */
+/*  you can redistribute it and/or modify it under the terms of the GNU   */
+/*  Lesser General Public License as published by the Free Software       */
+/*  Foundation, version 2.1.                                              */
+/*                                                                        */
+/*  It is distributed in the hope that it will be useful,                 */
+/*  but WITHOUT ANY WARRANTY; without even the implied warranty of        */
+/*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         */
+/*  GNU Lesser General Public License for more details.                   */
+/*                                                                        */
+/*  See the GNU Lesser General Public License version 2.1                 */
+/*  for more details (enclosed in the file LICENSE).                      */
+/*                                                                        */
+/**************************************************************************/
+
+/*
+ * Copyright (c) 2011
+ * Petr Ovtchenkov
+ *
+ * This material is provided "as is", with absolutely no warranty expressed
+ * or implied. Any use is at your own risk.
+ *
+ * Permission to use or copy this software for any purpose is hereby granted
+ * without fee, provided the above notices are retained on all copies.
+ * Permission to modify the code and to distribute modified code is granted,
+ * provided the above notices are retained, and a notice that the code was
+ * modified is included with the above copyright notice.
+ *
+ */
+
+#ifndef _STD_MEMORY
+#define _STD_MEMORY
+extern "C" {
+#include "__fc_machdep.h"
+}
+
+#include<type_traits>
+#include<utility>
+#include <exception>
+
+namespace std {
+  template <class Alloc> struct allocator_traits {
+    typedef Alloc allocator_type;
+    typedef typename Alloc::value_type value_type;
+    typedef value_type* pointer;
+    typedef const value_type* const_pointer;
+    typedef void* void_pointer;
+    typedef const void* const_void_pointer;
+    typedef __PTRDIFF_T difference_type;
+    typedef __SIZE_T size_type;
+    //typedef propagate_on_container_copy_assignment;
+    //typedef propagate_on_container_move_assignment;
+    //typedef propagate_on_container_swap;
+    //template <class T> using rebind_alloc = see below;
+    //template <class T> using rebind_traits =
+    //  allocator_traits<rebind_alloc<T> >;
+    static pointer allocate(Alloc& a, size_type n);
+    static pointer allocate(Alloc& a, size_type n, const_void_pointer hint);
+    static void deallocate(Alloc& a, pointer p, size_type n);
+    //template <class T, class... Args>
+    //static void construct(Alloc& a, T* p, Args&&... args);
+    template <class T>
+    static void destroy(Alloc& a, T* p);
+    static size_type max_size(const Alloc& a);
+    static Alloc select_on_container_copy_construction(const Alloc& rhs);
+  };
+
+  template <class T> class allocator;
+
+  template <> class allocator<void> {
+  public:
+    typedef void* pointer;
+    typedef const void* const_pointer;
+    typedef void value_type;
+    template <class U> struct rebind { typedef allocator<U> other; };
+};
+
+  template <class T> class allocator {
+  public:
+    typedef __SIZE_T size_type;
+    typedef __PTRDIFF_T difference_type;
+    typedef T* pointer;
+    typedef const T* const_pointer;
+    typedef T& reference;
+    typedef const T& const_reference;
+    typedef T value_type;
+    template <class U> struct rebind { typedef allocator<U> other; };
+    allocator();
+    allocator(const allocator&);
+    template <class U> allocator(const allocator<U>&);
+    ~allocator();
+    pointer address(reference x) const;
+    const_pointer address(const_reference x) const;
+    pointer allocate(size_type, allocator<void>::const_pointer hint = 0);
+    void deallocate(pointer p, size_type n);
+    size_type max_size() const;
+    // TODO: C++11 feature to be supported
+    //    template<class U, class... Args>
+    //  void construct(U* p, Args&&... args);
+    template <class U>
+      void destroy(U* p);
+  };
+
+  template <class T> struct default_delete {
+    constexpr default_delete() noexcept = default;
+    template
+    <class U,
+     typename =
+     typename std::enable_if<is_convertible<U*,T*>::value>::type>
+    default_delete(const default_delete<U>& d) noexcept { };
+    void operator()(T* const o) const { delete o; };
+  };
+
+  template <class T> struct default_delete<T[]> {
+    constexpr default_delete() noexcept = default;
+    void operator()(T* ptr) const { delete[] ptr; };
+    template <class U> void operator()(U*) const = delete;
+  };
+
+  template <class T> class auto_ptr;
+
+  template <class T> class shared_ptr;
+
+  template <class T, class... Args>
+  shared_ptr<T> make_shared(Args&&... args);
+
+  template <class T, class A, class... Args>
+  shared_ptr<T> allocate_shared(const A& a, Args&&... args);
+
+  template <class T, class U>
+  shared_ptr<T> static_pointer_cast(const shared_ptr<U>& r) noexcept;
+  
+  template <class T, class U>
+  shared_ptr<T> dynamic_pointer_cast(const shared_ptr<U>& r) noexcept;
+  
+  template <class T, class U>
+  shared_ptr<T> const_pointer_cast(const shared_ptr<U>& r) noexcept;
+
+  template <class D, class T>
+  D* get_deleter(const shared_ptr<T>&) noexcept;
+
+  // namespace detail {
+
+  struct __shared_ref_base
+  {
+    virtual void unlink() = 0;
+    virtual void link() = 0;
+    virtual long count() = 0;
+
+    virtual void weak_unlink() = 0;
+    virtual void weak_link() = 0;
+
+    virtual __shared_ref_base* ref() = 0;
+
+    virtual void* get_deleter()
+      { return NULL; }
+  };
+  typedef __shared_ref_base* shared_ref;
+
+  template <class T>
+  class __shared_ref :
+    public __shared_ref_base
+  {
+  protected:
+    T* __ptr;
+    long _n;
+    long _w;
+
+  public:
+    __shared_ref(T* p) :
+      __ptr(p),
+      _n(1),
+      _w(0)
+    { }
+
+    virtual void unlink()
+    {
+      if (--_n == 0) {
+	// don't refer to members after 'delete __ptr;', due to
+	// 'this' may be destroyed during 'delete __ptr;'.
+	if (_w > 0) {
+	  delete __ptr;
+	} else {
+	  delete __ptr;
+	  delete this;
+	}
+      }
+    }
+
+    virtual void link()
+    { ++_n; }
+
+    virtual long count()
+    { return _n; }
+
+    virtual void weak_unlink()
+    {
+      if ((--_w == 0) && (_n == 0)) {
+	delete this;
+      }
+    }
+
+    virtual void weak_link()
+    { ++_w; }
+
+    virtual __shared_ref_base* ref()
+    { return this; }
+
+  };
+
+  template <class Y>
+  class __alias_shared_ref :
+        public __shared_ref_base
+  {
+  protected:
+    __shared_ref_base* _parent;
+
+  public:
+    __alias_shared_ref(__shared_ref_base* r) :
+        _parent(r == NULL ? NULL : r->ref())
+      {
+        if (_parent != NULL) {
+          _parent->link();
+        }
+      }
+
+    virtual void unlink()
+      {
+        if (_parent != NULL) {
+          _parent->unlink();
+        }
+
+        delete this;
+      }
+
+    virtual void link()
+      {
+        if (_parent != NULL) {
+          _parent->link();
+        }
+      }
+
+    virtual long count()
+      { return _parent == NULL ? 0L : _parent->count(); }
+
+    virtual void weak_unlink()
+      {
+        if (_parent != NULL) {
+          _parent->weak_unlink();
+        }
+
+        delete this;
+      }
+
+    virtual void weak_link()
+      {
+        if (_parent != NULL) {
+          _parent->weak_link();
+        }
+      }
+
+    virtual __shared_ref_base* ref()
+      { return _parent == NULL ? NULL : _parent->ref(); }
+
+    // virtual void* get_deleter()
+    //   { return _parent == NULL ? NULL : _parent->get_deleter(); }
+  };
+
+  template <class T, class D>
+  class __shared_ref_deleter :
+    public __shared_ref<T>
+  {
+  public:
+    __shared_ref_deleter(T* p, D d) :
+        __shared_ref<T>(p),
+        _d(d)
+      { }
+
+    virtual void unlink()
+      {
+        if (--__shared_ref<T>::_n == 0) {
+          if (__shared_ref<T>::_w > 0) {
+          __shared_ref_deleter<T,D>::_d(__shared_ref<T>::__ptr);
+          } else {
+            __shared_ref_deleter<T,D>::_d(__shared_ref<T>::__ptr);
+            delete this;
+          }
+        }
+      }
+
+    virtual void weak_unlink()
+      {
+        if ((--__shared_ref<T>::_w == 0) && (__shared_ref<T>::_n == 0)) {
+          delete this;
+        }
+      }
+
+    virtual void* get_deleter()
+      { return reinterpret_cast<void*>(this); }
+
+    // template <DD>
+    // bool check_deleter() const
+    //   { return is_convertible<DD*,D*>::value; }
+
+  private:
+    template <class DD, class TT> friend DD* std::get_deleter(const std::shared_ptr<TT>&) noexcept;
+    D _d;
+  };
+
+  template <class T, class D, class A>
+  class __shared_ref_alloc :
+    public __shared_ref_deleter<T,D>
+  {
+  public:
+    __shared_ref_alloc(T* p, D d, A a) :
+      __shared_ref_deleter<T,D>(p, d),
+      _a(a)
+    { }
+
+    virtual void unlink()
+    {
+      if (--__shared_ref<T>::_n == 0) {
+	if (__shared_ref<T>::_w > 0) {
+	  __shared_ref_deleter<T,D>::_d(__shared_ref<T>::__ptr);
+	} else {
+	  __shared_ref_deleter<T,D>::_d(__shared_ref<T>::__ptr);
+	  _a.deallocate(this, 1);
+	}
+      }
+    }
+
+    virtual void weak_unlink()
+    {
+      if ((--__shared_ref<T>::_w == 0) && (__shared_ref<T>::_n == 0)) {
+	_a.deallocate(this, 1);
+      }
+    }
+
+  private:
+    A _a;
+  };
+
+  template <class T, class A>
+  class __shared_ref_intrusive :
+    public __shared_ref_base
+  {
+  private:
+    typedef typename A::template rebind<__shared_ref_intrusive>::other allocator_type;
+
+  public:
+    template <class... Args >
+    __shared_ref_intrusive(A a, Args ... args) :
+        __ptr(args...),
+        _n(1),
+        _w(0),
+        _a(std::move(a))
+      { }
+
+    virtual void unlink()
+      {
+        if (--_n == 0) {
+          if (_w > 0) {
+            __ptr.~T();
+          } else {
+            __ptr.~T();
+            _a.deallocate(this, 1);
+          }
+        }
+      }
+
+    virtual void link()
+      { ++_n; }
+
+    virtual long count()
+      { return _n; }
+
+    virtual void weak_unlink()
+      {
+        if ((--_w == 0) && (_n == 0)) {
+          _a.deallocate(this, 1);
+        }
+      }
+
+    virtual void weak_link()
+      { ++_w; }
+
+    virtual __shared_ref_base* ref()
+      { return this; }
+
+  protected:
+    friend class shared_ptr<T>;
+
+    T __ptr;
+    long _n;
+    long _w;
+    allocator_type _a;
+  };
+
+  // } // namespace detail
+
+  template <class T> class weak_ptr;
+
+  template <class T, class D = default_delete<T>> class unique_ptr {
+  private:
+    T* __ptr;
+    D __dlt;
+  public:
+    typedef T* pointer;
+    typedef T element_type;
+    typedef D deleter_type;
+
+    // 20.7.1.2.1, constructors
+    constexpr unique_ptr() noexcept: __ptr(nullptr), __dlt() { };
+
+    explicit unique_ptr(pointer p) noexcept: __ptr(p), __dlt() { };
+
+    unique_ptr(pointer p, typename remove_reference<D>::type& d)
+      noexcept: __ptr(p), __dlt(d) { };
+
+    unique_ptr(pointer p, typename remove_reference<D>::type&& d)
+      noexcept: __ptr(p), __dlt(d) { };
+
+    unique_ptr(unique_ptr&& u) noexcept:
+      __ptr(u.__ptr), __dlt(forward<D>(u.__dlt)) {
+      u.__ptr = nullptr;
+    };
+
+    constexpr unique_ptr(nullptr_t) : unique_ptr() { };
+
+    template <
+      class U,
+      class E,
+      typename = typename enable_if<is_convertible<typename unique_ptr<U,E>::pointer,pointer>::value>::type,
+      typename = typename enable_if<is_convertible<E,D>::value>::type>
+    unique_ptr(unique_ptr<U, E>&& u) noexcept:
+      __ptr(u.__ptr), __dlt(forward<D>(u.__dlt)) { };
+
+    template <
+      class U,
+      typename = typename enable_if<is_convertible<U*,T*>::value>::type>
+    unique_ptr(auto_ptr<U>&& u) noexcept:
+      __ptr(u.__ptr), __dlt() { };
+
+    // 20.7.1.2.2, destructor
+    ~unique_ptr() {
+      if (__ptr != nullptr) { __dlt(__ptr); };
+    };
+
+    // 20.7.1.2.3, assignment
+    unique_ptr& operator=(unique_ptr&& u) noexcept {
+      reset(u.release());
+      __dlt = forward<D>(u.get_deleter());
+      return *this;
+    };
+
+    template <
+      class U,
+      class E,
+      typename = typename enable_if<is_convertible<typename unique_ptr<U,E>::pointer,pointer>::value>::type,
+      typename = typename enable_if<is_convertible<E,D>::value>::type>
+    unique_ptr& operator=(unique_ptr<U, E>&& u) {
+      reset(u.release());
+      __dlt = forward<D>(u.get_deleter());
+      return *this;
+    };
+
+    unique_ptr& operator=(nullptr_t) noexcept { reset(); return *this; };
+
+    // 20.7.1.2.4, observers
+    typename add_lvalue_reference<T>::type operator*() const {
+      return *__ptr;
+    };
+
+    pointer operator->() const noexcept { return __ptr; };
+
+    pointer get() const noexcept { return __ptr; };
+
+    deleter_type& get_deleter() noexcept { return __dlt; };
+
+    const deleter_type& get_deleter() const noexcept { return __dlt; };
+
+    explicit operator bool() const noexcept {return __ptr != nullptr; };
+
+    // 20.7.1.2.5 modifiers
+    pointer release() noexcept {
+      pointer res = __ptr;
+      __ptr = nullptr;
+      return res;
+    };
+
+    void reset(pointer p = pointer()) noexcept {
+      pointer old = __ptr;
+      __ptr = p;
+      __dlt(old);
+    };
+
+    void swap(unique_ptr& u) noexcept {
+      ::std::swap<pointer>(__ptr, u.__ptr);
+      ::std::swap<deleter_type>(__dlt, u.__dlt);
+    };
+
+    // disable copy from lvalue
+    unique_ptr(const unique_ptr&) = delete;
+    unique_ptr& operator=(const unique_ptr&) = delete;
+  };
+
+  // unique_ptr specialization for arrays
+  template <class T, class D> class unique_ptr<T[], D> {
+  private:
+
+    T* __ptr;
+    D __dlt;
+
+  public:
+    typedef T* pointer;
+    typedef T element_type;
+    typedef D deleter_type;
+
+    // 20.7.1.3.1, constructors
+    constexpr unique_ptr() noexcept: __ptr(nullptr), __dlt() { };
+
+    explicit unique_ptr(pointer p) noexcept: __ptr(p), __dlt() { };
+
+  private:
+    template <
+    class U,
+    typename =
+    typename enable_if<is_convertible<U,T*>::value>::type>
+    explicit unique_ptr(U p) = delete;
+
+  public:
+    unique_ptr(pointer p, typename remove_reference<D>::type& d)
+      noexcept: __ptr(p), __dlt(d) { };
+
+    unique_ptr(pointer p, typename remove_reference<D>::type&& d)
+      noexcept: __ptr(p), __dlt(d) { };
+
+    unique_ptr(unique_ptr&& u) noexcept:
+      __ptr(u.__ptr), __dlt(forward<D>(u.__dlt)) {
+      u.__ptr = nullptr;
+    };
+
+  private:
+    template <
+    class U,
+    class E,
+    typename = typename enable_if<is_convertible<typename unique_ptr<U,E>::pointer,pointer>::value>::type,
+    typename = typename enable_if<is_convertible<E,D>::value>::type>
+    unique_ptr(unique_ptr<U, E>&& u) = delete;
+
+    template <
+      class U,
+      typename = typename enable_if<is_convertible<U*,T*>::value>::type>
+    unique_ptr(auto_ptr<U>&& u) = delete;
+
+  public:
+
+    // destructor
+    ~unique_ptr() { if (__ptr!=nullptr) __dlt(__ptr); };
+
+    // assignment
+    unique_ptr& operator=(unique_ptr&& u) noexcept {
+      reset(u.release());
+      __dlt = forward<D>(u.get_deleter());
+      return *this;
+    };
+
+    unique_ptr& operator=(nullptr_t) noexcept { reset(); return *this; };
+
+    T& operator[](size_t i) const { return __ptr[i]; };
+
+    pointer get() const noexcept { return __ptr; };
+
+    deleter_type& get_deleter() noexcept { return __dlt; };
+
+    const deleter_type& get_deleter() const noexcept { return __dlt; };
+
+    explicit operator bool() const noexcept {return __ptr != nullptr; };
+
+    // 20.7.1.2.5 modifiers
+    pointer release() noexcept {
+      pointer res = __ptr;
+      __ptr = nullptr;
+      return res;
+    };
+
+    void reset(pointer p = pointer()) noexcept {
+      pointer old = __ptr;
+      __ptr = p;
+      if (old != nullptr) __dlt(old);
+    };
+
+    void reset(nullptr_t) noexcept {
+      pointer old = __ptr;
+      __ptr = nullptr;
+      if (old != nullptr) __dlt(old);
+    }
+
+    void swap(unique_ptr& u) noexcept {
+      ::std::swap<pointer>(__ptr, u.__ptr);
+      ::std::swap<deleter_type>(__dlt, u.__dlt);
+    };
+
+    template <class U> void reset(U) = delete;
+
+    // disable copy from lvalue
+    unique_ptr(const unique_ptr&) = delete;
+    unique_ptr& operator=(const unique_ptr&) = delete;
+  };
+
+  template <class T, class D>
+  void swap(unique_ptr<T, D>& x, unique_ptr<T, D>& y) noexcept { x.swap(y); };
+
+  template <class T1, class D1, class T2, class D2>
+  bool operator==(const unique_ptr<T1, D1>& x, const unique_ptr<T2, D2>& y) {
+    return x.get() == y.get ();
+  };
+
+  template <class T1, class D1, class T2, class D2>
+  bool operator!=(const unique_ptr<T1, D1>& x, const unique_ptr<T2, D2>& y) {
+    return x.get() != y.get ();
+  };
+
+  template <class T1, class D1, class T2, class D2>
+  bool operator<(const unique_ptr<T1, D1>& x, const unique_ptr<T2, D2>& y) {
+    return x.get() < y.get ();
+  };
+
+  template <class T1, class D1, class T2, class D2>
+  bool operator<=(const unique_ptr<T1, D1>& x, const unique_ptr<T2, D2>& y) {
+    return x.get() <= y.get ();
+  };
+
+  template <class T1, class D1, class T2, class D2>
+  bool operator>(const unique_ptr<T1, D1>& x, const unique_ptr<T2, D2>& y) {
+    return x.get() > y.get ();
+  };
+
+  template <class T1, class D1, class T2, class D2>
+  bool operator>=(const unique_ptr<T1, D1>& x, const unique_ptr<T2, D2>& y) {
+    return x.get() >= y.get ();
+  };
+
+template <class T, class D>
+bool operator ==(const unique_ptr<T, D>& x, nullptr_t) noexcept
+{ return !x; }
+
+template <class T, class D>
+bool operator ==(nullptr_t, const unique_ptr<T, D>& x) noexcept
+{ return !x; }
+
+template <class T, class D>
+bool operator !=(const unique_ptr<T, D>& x, nullptr_t) noexcept
+{ return (bool)x; }
+
+template <class T, class D>
+bool operator !=(nullptr_t, const unique_ptr<T, D>& x) noexcept
+{ return (bool)x; }
+
+// Fix required: provide strict weak ordering
+template <class T, class D>
+bool operator <(const unique_ptr<T, D>& x, nullptr_t)
+{ return x.get() < nullptr; }
+
+// Fix required: provide strict weak ordering
+template <class T, class D>
+bool operator <(nullptr_t, const unique_ptr<T, D>& x)
+{ return nullptr < x.get(); }
+
+template <class T, class D>
+bool operator >(const unique_ptr<T, D>& x, nullptr_t)
+{ return nullptr < x; }
+
+template <class T, class D>
+bool operator >(nullptr_t, const unique_ptr<T, D>& x)
+{ return x < nullptr; }
+
+template <class T, class D>
+bool operator <=(const unique_ptr<T, D>& x, nullptr_t)
+{ return !(nullptr < x); }
+
+template <class T, class D>
+bool operator <=(nullptr_t, const unique_ptr<T, D>& x)
+{ return !(x < nullptr); }
+
+template <class T, class D>
+bool operator >=(const unique_ptr<T, D>& x, nullptr_t)
+{ return !(x < nullptr); }
+
+template <class T, class D>
+bool operator >=(nullptr_t, const unique_ptr<T, D>& x)
+{ return !(nullptr < x); }
+
+  // Deprecated, but used by boost
+
+  template <class X> class auto_ptr {
+  private:
+    X* __ptr;
+
+  public:
+    typedef X element_type;
+
+    // D.10.1.1 construct/copy/destroy:
+    explicit auto_ptr(X* p =0) throw() { __ptr = p; };
+
+    auto_ptr(auto_ptr& a) throw() { __ptr = a.release (); };
+
+    template<
+      class Y,
+      typename = typename enable_if<is_convertible<Y*,X*>::value>::type>
+    auto_ptr(auto_ptr<Y>& a) throw() {
+      __ptr = a.release();
+    };
+
+    auto_ptr& operator=(auto_ptr& a) throw() {
+      reset(a.release());
+      return *this;
+    };
+
+    template<
+      class Y,
+      typename = typename enable_if<is_convertible<Y*,X*>::value>::type>
+    auto_ptr& operator=(auto_ptr<Y>& a) throw() {
+      reset(a.release());
+      return *this;
+    };
+
+    ~auto_ptr() throw() { delete get(); };
+
+    // D.10.1.2 members:
+
+    X& operator*() const throw() { return *__ptr; };
+
+    X* operator->() const throw() { return __ptr; };
+
+    X* get() const throw() { return __ptr; };
+
+    X* release() throw() {
+      X* res = __ptr;
+      __ptr = nullptr;
+      return res;
+    };
+
+    void reset(X* p =0) throw() {
+      if (__ptr != p) delete __ptr;
+      __ptr = p;
+    };
+
+    typedef auto_ptr& auto_ptr_ref;
+
+    // D.10.1.3 conversions:
+    template<
+      class Y,
+      typename = typename enable_if<is_convertible<X*,Y*>::value>::type>
+    operator typename auto_ptr<Y>::auto_ptr_ref() throw() {
+      return *this;
+    };
+
+    template<class Y> operator auto_ptr<Y>() throw() {
+      X* p = release();
+      return auto_ptr<Y>(p);
+    };
+
+  };
+
+  template <> class auto_ptr<void>
+  {
+  public:
+    typedef void element_type;
+  };
+
+  class bad_weak_ptr : public exception {
+  public:
+    bad_weak_ptr() noexcept { };
+  };
+
+  template <class T> class enable_shared_from_this;
+
+  // namespace detail {
+
+  template <class T,bool> struct __enable_shared_from_this;
+  template <class T> struct __enable_shared_from_this<T,true>;
+
+  // } // namespace detail
+
+  template <class T>
+  class shared_ptr
+  {
+  public:
+    typedef T element_type;
+
+    // 20.7.2.2.1, constructors:
+    constexpr shared_ptr() noexcept :
+        _ref(NULL)
+      { }
+
+    template <
+      class Y,
+      class = typename enable_if<is_convertible<Y*,T*>::value>::type>
+    explicit shared_ptr(Y* p)
+      {
+        try {
+          __ptr = static_cast<T*>(p);
+          _ref = new __shared_ref<T>(__ptr);
+          __enable_shared_from_this<T,is_base_of<enable_shared_from_this<T>,T>::value>::pass(*this);
+        }
+        catch (...) {
+          delete p;
+          _ref = NULL;
+          throw;
+        }
+      }
+
+    template <
+      class Y,
+      class D,
+      class = typename enable_if<is_convertible<Y*,T*>::value>::type>
+    shared_ptr(Y* p, D d)
+      {
+        static_assert(is_copy_constructible<D>::value, "deleter is not copy constructable");
+        try {
+          __ptr = static_cast<T*>(p);
+          _ref = new __shared_ref_deleter<T,D>(__ptr, d);
+          __enable_shared_from_this<T,is_base_of<enable_shared_from_this<T>,T>::value>::pass(*this);
+        }
+        catch (...) {
+          d(p);
+          _ref = NULL;
+          throw;
+        }
+      }
+
+    template <
+      class Y,
+      class D,
+      class A,
+      class = typename enable_if<is_convertible<Y*,T*>::value>::type>
+    shared_ptr(Y* p, D d, A a)
+      {
+        static_assert(is_copy_constructible<D>::value, "deleter is not copy constructable");
+
+        typedef typename A::template rebind<__shared_ref_alloc<T,D,A> >::other allocator_type;
+        allocator_type _a(std::move(a));
+        void* m;
+
+        try {
+          m = _a.allocate(1);
+          __ptr = static_cast<T*>(p);
+          _ref = new (m) __shared_ref_alloc<T,D,A>(__ptr, d, std::move(_a));
+          __enable_shared_from_this<T,is_base_of<enable_shared_from_this<T>,T>::value>::pass(*this);
+        }
+        catch (...) {
+          d(p);
+          _a.deallocate(m, 1);
+          _ref = NULL;
+          throw;
+        }
+      }
+
+    template <class D>
+    shared_ptr(nullptr_t, D d)
+      {
+        static_assert(is_copy_constructible<D>::value, "deleter is not copy constructable");
+        try {
+          __ptr = NULL;
+          _ref = new __shared_ref_deleter<T,D>(NULL, d);
+        }
+        catch (...) {
+          d(NULL);
+          _ref = NULL;
+          throw;
+        }
+      }
+
+    template <class D, class A>
+    shared_ptr(nullptr_t, D d, A a)
+      {
+        static_assert(is_copy_constructible<D>::value, "deleter is not copy constructable");
+        try {
+          void* m = a.allocate(1);
+          __ptr = NULL;
+          _ref = new (m) __shared_ref_alloc<T,D,A>(NULL, d, std::move(a));
+        }
+        catch (...) {
+          d(NULL);
+          a.deallocate();
+          _ref = NULL;
+          throw;
+        }
+      }
+
+    template <class Y>
+    shared_ptr(const shared_ptr<Y>& r, T* p) noexcept
+      {
+        try {
+          __ptr = p;
+          _ref = new __alias_shared_ref<Y>(r._ref);
+        }
+        catch (...) {
+          _ref = NULL;
+        }
+      }
+
+    shared_ptr(const shared_ptr& r) noexcept :
+        _ref(r._ref == NULL ? NULL : r._ref->ref())
+      {
+        if (_ref != NULL) {
+          __ptr = r.get();
+          _ref->link();
+        } else {
+          __ptr = NULL;
+        }
+      }
+
+    template <
+      class Y,
+      class = typename enable_if<is_convertible<Y*,T*>::value>::type >
+    shared_ptr(const shared_ptr<Y>& r) noexcept :
+        _ref(r._ref == NULL ? NULL : r._ref->ref())
+      {
+        // static_assert(is_convertible<Y*,T*>::value, "pointers not convertible");
+
+        if (_ref != NULL) {
+          __ptr = r.get();
+          _ref->link();
+        } else {
+          __ptr = NULL;
+        }
+      }
+
+    shared_ptr(shared_ptr&& r) noexcept :
+        __ptr(r.__ptr),
+        _ref(r._ref)
+      {
+        r.__ptr = NULL;
+        r._ref = NULL;
+      }
+
+    template <
+      class Y,
+      class = typename enable_if<is_convertible<Y*,T*>::value>::type>
+    shared_ptr(shared_ptr<Y>&& r) noexcept :
+        __ptr(r.__ptr),
+        _ref(r._ref)
+      {
+        r.__ptr = NULL;
+        r._ref = NULL;
+      }
+
+  private:
+    template <class A>
+    shared_ptr(__shared_ref_intrusive<T,A>* r) :
+        __ptr(&r->__ptr),
+        _ref(r)
+      { }
+
+  public:
+
+    template <class Y>
+    explicit shared_ptr(const weak_ptr<Y>& r)
+      {
+        static_assert(is_convertible<Y*,T*>::value, "pointers not convertible");
+
+        if (r.expired()) {
+          throw bad_weak_ptr();
+        }
+        _ref = r._ref->ref(); // r._ref not NULL here
+        __ptr = r.__ptr;
+        _ref->link();
+      }
+
+    template <class Y>
+    shared_ptr(auto_ptr<Y>&& r)
+      {
+        static_assert(is_convertible<Y*,T*>::value, "pointers not convertible");
+
+        try {
+          __ptr = static_cast<T*>(r.get());
+          _ref = new __shared_ref<T>(__ptr);
+          r.release();
+        }
+        catch (...) {
+          _ref = NULL;
+          throw;
+        }
+      }
+
+    template <class Y, class D>
+    shared_ptr(unique_ptr<Y,D>&& r)
+      {
+        static_assert(is_convertible<typename unique_ptr<Y,D>::pointer,T*>::value, "pointers not convertible");
+
+        try {
+          __ptr = static_cast<T*>(r.get());
+          // if (!is_reference<D>::value) {
+          _ref = new __shared_ref_deleter<T,D>(__ptr, r.get_deleter());
+          // } else {
+          //   _ref = new __shared_ref_deleter<T,D>(__ptr, typename remove_reference<D>::type(r.get_deleter()));
+          // }
+          r.release();
+        }
+        catch (...) {
+          _ref = NULL;
+          throw;
+        }
+      }
+
+    constexpr shared_ptr(nullptr_t) noexcept :
+        _ref(NULL)
+      { }
+
+    // 20.7.2.2.2, destructor:
+    ~shared_ptr()
+      {
+        if (_ref != NULL) {
+          _ref->unlink();
+        }
+      }
+
+    // 20.7.2.2.3, assignment:
+    shared_ptr& operator =(const shared_ptr& r) noexcept
+      { // shared_ptr(r).swap(*this);
+        if (_ref != r._ref) {
+          __ptr = r.__ptr;
+          if (_ref != NULL) {
+            _ref->unlink();
+          }
+          _ref = r._ref;
+          if (_ref != NULL) {
+            _ref->link();
+          }          
+        }
+        return *this;
+      }
+
+    template <
+      class Y,
+      class = typename enable_if<is_convertible<Y*,T*>::value>::type>
+    shared_ptr& operator =(const shared_ptr<Y>& r) noexcept
+      {
+        if (_ref != r._ref) {
+          __ptr = static_cast<T*>(r.__ptr);
+          if (_ref != NULL) {
+            _ref->unlink();
+          }
+          _ref = r._ref;
+          if (_ref != NULL) {
+            _ref->link();
+          }          
+        }
+        return *this;
+      }
+
+    shared_ptr& operator =(shared_ptr&& r) noexcept
+      {
+        if (_ref != NULL) {
+          _ref->unlink();
+        }
+        if (_ref != r._ref) {
+          __ptr = r.__ptr;
+          _ref = r._ref;
+        }
+        r._ref = NULL;
+        // r.__ptr = NULL;
+        return *this;
+     }
+
+    template<
+      class Y,
+      class = typename enable_if<is_convertible<Y*,T*>::value>::type>
+    shared_ptr& operator =(shared_ptr<Y>&& r) noexcept
+      {
+        if (_ref != NULL) {
+          _ref->unlink();
+        }
+        if (_ref != r._ref) {
+          __ptr = static_cast<T*>(r.__ptr);
+          _ref = r._ref;
+        }
+        r._ref = NULL;
+        // r.__ptr = NULL;
+        return *this;
+      }
+
+    template <
+      class Y,
+      class = typename enable_if<is_convertible<Y*,T*>::value>::type>
+    shared_ptr& operator =(auto_ptr<Y>&& r)
+      {
+        static_assert(is_convertible<Y*,T*>::value, "pointers not convertible");
+
+        try {
+          __ptr = static_cast<T*>(r.get());
+          if (_ref != NULL) {
+            _ref->unlink();
+          }
+          _ref = new __shared_ref<T>(__ptr);
+          r.release();
+        }
+        catch (...) {
+          _ref = NULL;
+          throw;
+        }
+        return *this;
+      }
+
+    template <
+      class Y,
+      class D,
+      class = typename enable_if<is_convertible<Y*,T*>::value>::type>
+    shared_ptr& operator =(unique_ptr<Y, D>&& r)
+      {
+        if (_ref != r._ref) {
+          __ptr = static_cast<T*>(r.__ptr);
+          if (_ref != NULL) {
+            _ref->unlink();
+          }
+          _ref = r._ref;
+          if (_ref != NULL) {
+            _ref->link();
+            _ref->weak_unlink();
+          }
+        } else if (_ref != NULL) {
+          _ref->weak_unlink();
+        }
+        r._ref = NULL;
+        // r.__ptr = NULL;
+        return *this;
+      }
+
+    // 20.7.2.2.4, modifiers:
+    void swap(shared_ptr& r) noexcept
+      {
+	typedef element_type* pointer;
+        if (_ref != r._ref) {
+          ::std::swap<pointer>(__ptr, r.__ptr);
+          ::std::swap<shared_ref>(_ref, r._ref);
+        }
+      }
+
+    void reset() noexcept
+      { // shared_ptr().swap(*this);
+        if (_ref != NULL) {
+          _ref->unlink();
+          _ref = NULL;
+        }
+      }
+
+    template <class Y>
+    void reset(Y* p)
+      { shared_ptr(p).swap(*this); }
+
+    template <class Y, class D>
+    void reset(Y* p, D d)
+      { shared_ptr(p, d).swap(*this); }
+
+    template <class Y, class D, class A>
+    void reset(Y* p, D d, A a)
+      { shared_ptr(p, d, std::move(a)).swap(*this); }
+
+    // 20.7.2.2.5, observers:
+    T* get() const noexcept
+      { return __ptr; }
+    T& operator*() const noexcept
+      { return *__ptr; }
+    T* operator->() const noexcept
+      { return get(); }
+    long use_count() const noexcept
+      { return _ref == NULL ? 0L : _ref->count(); }
+    bool unique() const noexcept
+      { return _ref == NULL ? false : _ref->count() == 1L; }
+
+    explicit operator bool() const noexcept
+      { return __ptr != NULL; }
+
+    template <class U>
+    bool owner_before(shared_ptr<U> const& b) const;
+
+    template <class U>
+    bool owner_before(weak_ptr<U> const& b) const;
+
+  private:
+    template <class Y> friend class shared_ptr;
+    template <class Y> friend class weak_ptr;
+    template <class Y, class... Args> friend shared_ptr<Y> make_shared(Args&&... args);
+    template <class Y, class A, class... Args> friend shared_ptr<Y> allocate_shared(const A& a, Args&&... args);
+    template <class Y, class U> friend shared_ptr<Y> static_pointer_cast(const shared_ptr<U>& r) noexcept;
+    template <class Y, class U> friend shared_ptr<Y> dynamic_pointer_cast(const shared_ptr<U>& r) noexcept;
+    template <class Y, class U> friend shared_ptr<Y> const_pointer_cast(const shared_ptr<U>& r) noexcept;
+
+    template <class D, class TT> friend D* get_deleter(const shared_ptr<TT>& p) noexcept;
+
+    T* __ptr;
+    __shared_ref_base* _ref;
+  };
+
+  // specialization for void
+
+  template <>
+  class shared_ptr<void>
+  {
+  public:
+    typedef void element_type;
+
+    // 20.7.2.2.1, constructors:
+    /* constexpr */ shared_ptr() noexcept :
+        _ref(NULL)
+      { }
+
+    template <class Y>
+    explicit shared_ptr(Y* p)
+      {
+        try {
+          __ptr = static_cast<void*>(p);
+          _ref = new __shared_ref<void>(__ptr);
+        }
+        catch (...) {
+          delete p;
+          _ref = NULL;
+          throw;
+        }
+      }
+
+    template <
+      class Y,
+      class D,
+      class = typename enable_if<is_copy_constructible<D>::value>::type>
+    shared_ptr(Y* p, D d)
+      {
+        try {
+          __ptr = static_cast<void*>(p);
+          _ref = new __shared_ref_deleter<void,D>(__ptr, d);
+        }
+        catch (...) {
+          d(p);
+          _ref = NULL;
+          throw;
+        }
+      }
+
+    template <
+      class Y,
+      class D,
+      class A,
+      class = typename enable_if<is_copy_constructible<D>::value>::type>
+    shared_ptr(Y* p, D d, A a)
+      {
+        typedef typename A::template rebind<__shared_ref_alloc<void,D,A> >::other allocator_type;
+        allocator_type _a(std::move(a));
+        void* m;
+
+        try {
+          m = _a.allocate(1);
+          __ptr = static_cast<void*>(p);
+          _ref = new (m) __shared_ref_alloc<void,D,A>(__ptr, d, std::move(_a));
+        }
+        catch (...) {
+          d(p);
+          _a.deallocate(m, 1);
+          _ref = NULL;
+          throw;
+        }
+      }
+
+    template <
+      class D,
+      class = typename enable_if<is_copy_constructible<D>::value>::type>
+    shared_ptr(nullptr_t, D d)
+      {
+        try {
+          __ptr = NULL;
+          _ref = new __shared_ref_deleter<void,D>(NULL, d);
+        }
+        catch (...) {
+          d(NULL);
+          _ref = NULL;
+          throw;
+        }
+      }
+
+    template <
+      class D,
+      class A,
+      class = typename enable_if<is_copy_constructible<D>::value>::type>
+    shared_ptr(nullptr_t, D d, A a)
+      {
+        try {
+          void* m = a.allocate(1);
+          __ptr = NULL;
+          _ref = new (m) __shared_ref_alloc<void,D,A>(NULL, d, std::move(a));
+        }
+        catch (...) {
+          d(NULL);
+          a.deallocate();
+          _ref = NULL;
+          throw;
+        }
+      }
+
+    template <class Y>
+    shared_ptr(const shared_ptr<Y>& r, void* p) noexcept
+      {
+        try {
+          __ptr = p;
+          _ref = new __alias_shared_ref<Y>(r._ref);
+        }
+        catch (...) {
+          _ref = NULL;
+        }
+      }
+
+    shared_ptr(const shared_ptr& r) noexcept :
+        _ref(r._ref == NULL ? NULL : r._ref->ref())
+      {
+        if (_ref != NULL) {
+          __ptr = r.get();
+          _ref->link();
+        } else {
+          __ptr = NULL;
+        }
+      }
+
+    template <class Y>
+    shared_ptr(const shared_ptr<Y>& r) noexcept :
+        _ref(r._ref == NULL ? NULL : r._ref->ref())
+      {
+        // static_assert(is_convertible<Y*,T*>::value, "pointers not convertible");
+
+        if (_ref != NULL) {
+          __ptr = r.get();
+          _ref->link();
+        } else {
+          __ptr = NULL;
+        }
+      }
+
+    shared_ptr(shared_ptr&& r) noexcept :
+        __ptr(r.__ptr),
+        _ref(r._ref)
+      {
+        r.__ptr = NULL;
+        r._ref = NULL;
+      }
+
+    template <class Y>
+    shared_ptr(shared_ptr<Y>&& r) noexcept :
+        __ptr(r.__ptr),
+        _ref(r._ref)
+      {
+        r.__ptr = NULL;
+        r._ref = NULL;
+      }
+
+  private:
+    template <class A>
+    shared_ptr(__shared_ref_intrusive<void,A>* r) :
+        __ptr(&r->__ptr),
+        _ref(r)
+      { }
+
+  public:
+
+    template <class Y>
+    explicit shared_ptr(const weak_ptr<Y>& r)
+      {
+        if (r.expired()) {
+          throw bad_weak_ptr();
+        }
+        _ref = r._ref->ref(); // r._ref not NULL here
+        __ptr = r.__ptr;
+        _ref->link();
+      }
+
+    template <class Y>
+    shared_ptr(auto_ptr<Y>&& r)
+      {
+        try {
+          __ptr = static_cast<void*>(r.get());
+          _ref = new __shared_ref<void>(__ptr);
+          r.release();
+        }
+        catch (...) {
+          _ref = NULL;
+          throw;
+        }
+      }
+
+    template <class Y, class D>
+    shared_ptr(unique_ptr<Y,D>&& r)
+      {
+        try {
+          __ptr = static_cast<void*>(r.get());
+          // if (!is_reference<D>::value) {
+          _ref = new __shared_ref_deleter<void,D>(__ptr, r.get_deleter());
+          // } else {
+          //   _ref = new __shared_ref_deleter<void,D>(__ptr, typename remove_reference<D>::type(r.get_deleter()));
+          // }
+          r.release();
+        }
+        catch (...) {
+          _ref = NULL;
+          throw;
+        }
+      }
+
+    /* constexpr */ shared_ptr(nullptr_t) noexcept :
+        _ref(NULL)
+      { }
+    
+    // 20.7.2.2.2, destructor:
+    ~shared_ptr()
+      {
+        if (_ref != NULL) {
+          _ref->unlink();
+        }
+      }
+
+    // 20.7.2.2.3, assignment:
+    shared_ptr& operator =(const shared_ptr& r) noexcept
+      { // shared_ptr(r).swap(*this);
+        if (_ref != r._ref) {
+          __ptr = r.__ptr;
+          if (_ref != NULL) {
+            _ref->unlink();
+          }
+          _ref = r._ref;
+          if (_ref != NULL) {
+            _ref->link();
+          }          
+        }
+        return *this;
+      }
+
+    template <class Y>
+    shared_ptr& operator =(const shared_ptr<Y>& r) noexcept
+      {
+        if (_ref != r._ref) {
+          __ptr = static_cast<void*>(r.__ptr);
+          if (_ref != NULL) {
+            _ref->unlink();
+          }
+          _ref = r._ref;
+          if (_ref != NULL) {
+            _ref->link();
+          }          
+        }
+        return *this;
+      }
+
+    shared_ptr& operator =(shared_ptr&& r) noexcept
+      {
+        if (_ref != NULL) {
+          _ref->unlink();
+        }
+        if (_ref != r._ref) {
+          __ptr = r.__ptr;
+          _ref = r._ref;
+        }
+        r._ref = NULL;
+        // r.__ptr = NULL;
+        return *this;
+     }
+
+    template<class Y>
+    shared_ptr& operator =(shared_ptr<Y>&& r) noexcept
+      {
+        if (_ref != NULL) {
+          _ref->unlink();
+        }
+        if (_ref != r._ref) {
+          __ptr = static_cast<void*>(r.__ptr);
+          _ref = r._ref;
+        }
+        r._ref = NULL;
+        // r.__ptr = NULL;
+        return *this;
+      }
+
+    template <class Y>
+    shared_ptr& operator =(auto_ptr<Y>&& r)
+      {
+        try {
+          __ptr = static_cast<void*>(r.get());
+          if (_ref != NULL) {
+            _ref->unlink();
+          }
+          _ref = new __shared_ref<void>(__ptr);
+          r.release();
+        }
+        catch (...) {
+          _ref = NULL;
+          throw;
+        }
+        return *this;
+      }
+
+    template <class Y, class D>
+    shared_ptr& operator =(unique_ptr<Y, D>&& r)
+      {
+        if (_ref != r._ref) {
+          __ptr = static_cast<void*>(r.__ptr);
+          if (_ref != NULL) {
+            _ref->unlink();
+          }
+          _ref = r._ref;
+          if (_ref != NULL) {
+            _ref->link();
+            _ref->weak_unlink();
+          }
+        } else if (_ref != NULL) {
+          _ref->weak_unlink();
+        }
+        r._ref = NULL;
+        // r.__ptr = NULL;
+        return *this;
+      }
+
+    // 20.7.2.2.4, modifiers:
+    void swap(shared_ptr& r) noexcept
+      {
+	typedef element_type* pointer;
+	if (_ref != r._ref) {
+          ::std::swap<pointer>(__ptr, r.__ptr);
+          ::std::swap<shared_ref>(_ref, r._ref);
+        }
+      }
+
+    void reset() noexcept
+      { // shared_ptr().swap(*this);
+        if (_ref != NULL) {
+          _ref->unlink();
+          _ref = NULL;
+        }
+      }
+
+    template <class Y>
+    void reset(Y* p)
+      { shared_ptr(p).swap(*this); }
+
+    template <class Y, class D>
+    void reset(Y* p, D d)
+      { shared_ptr(p, d).swap(*this); }
+
+    template <class Y, class D, class A>
+    void reset(Y* p, D d, A a)
+      { shared_ptr(p, d, std::move(a)).swap(*this); }
+
+    // 20.7.2.2.5, observers:
+    void* get() const noexcept
+      { return __ptr; }
+    void* operator->() const noexcept
+      { return get(); }
+    long use_count() const noexcept
+      { return _ref == NULL ? 0L : _ref->count(); }
+    bool unique() const noexcept
+      { return _ref == NULL ? false : _ref->count() == 1L; }
+
+    explicit operator bool() const noexcept
+      { return __ptr != NULL; }
+
+    template <class U>
+    bool owner_before(shared_ptr<U> const& b) const;
+
+    template <class U>
+    bool owner_before(weak_ptr<U> const& b) const;
+
+  private:
+    template <class Y> friend class shared_ptr;
+    template <class Y> friend class weak_ptr;
+    template <class Y, class... Args> friend shared_ptr<Y> make_shared(Args&&... args);
+    template <class Y, class A, class... Args> friend shared_ptr<Y> allocate_shared(const A& a, Args&&... args);
+    template <class Y, class U> friend shared_ptr<Y> static_pointer_cast(const shared_ptr<U>& r) noexcept;
+    template <class Y, class U> friend shared_ptr<Y> dynamic_pointer_cast(const shared_ptr<U>& r) noexcept;
+    template <class Y, class U> friend shared_ptr<Y> const_pointer_cast(const shared_ptr<U>& r) noexcept;
+    template <class D, class TT> friend D* get_deleter(const shared_ptr<TT>& p) noexcept;
+
+    void* __ptr;
+    __shared_ref_base* _ref;
+  };
+
+  // 20.7.2.2.6, shared_ptr creation
+
+  #if 0
+  // variadic templates not treated by frama-clang?
+  
+  template<class T, class A, class... Args>
+  shared_ptr<T> allocate_shared(const A& a, Args&&... args)
+  {
+    typedef typename std::__shared_ref_intrusive<T,A> iptr_type;
+    typedef typename A::template rebind<iptr_type>::other allocator_type;
+
+    allocator_type _a(std::move(a));
+
+    void* m = _a.allocate(1);
+    try {
+      iptr_type* ip = ::new (m) iptr_type(_a, std::forward<Args>(args)...);
+
+      return shared_ptr<T>(ip);
+    }
+    catch (...) {
+      _a.deallocate(static_cast<iptr_type*>(m), 1);
+      throw;
+    }
+  }
+
+  template <class T, class... Args>
+  shared_ptr<T> make_shared(Args&&... args)
+  {
+    typedef typename std::__shared_ref_intrusive<T,std::allocator<typename std::remove_const<T>::type> > iptr_type;
+    std::allocator<iptr_type> _a;
+
+    void* m = _a.allocate(1);
+    try {
+      iptr_type* ip = ::new (m) iptr_type(_a, std::forward<Args>(args)...);
+
+      return shared_ptr<T>(ip);
+    }
+    catch (...) {
+      _a.deallocate(static_cast<iptr_type*>(m), 1);
+      throw;
+    }
+
+  }
+  # endif
+
+  // 20.7.2.2.7, shared_ptr comparisons:
+  template<class T, class U>
+  bool operator ==(const shared_ptr<T>& a, const shared_ptr<U>& b) noexcept
+  { return a.get() == b.get(); }
+
+  template<class T, class U>
+  bool operator !=(const shared_ptr<T>& a, const shared_ptr<U>& b) noexcept
+  { return !(a == b); }
+
+  template<class T, class U>
+  bool operator <(const shared_ptr<T>& a, const shared_ptr<U>& b) noexcept
+  { return a.get() < b.get(); }
+
+  template<class T, class U>
+  bool operator >(const shared_ptr<T>& a, const shared_ptr<U>& b) noexcept
+  { return b < a; }
+
+  template<class T, class U>
+  bool operator <=(const shared_ptr<T>& a, const shared_ptr<U>& b) noexcept
+  { return !(a > b); }
+
+  template<class T, class U>
+  bool operator >=(const shared_ptr<T>& a, const shared_ptr<U>& b) noexcept
+  { return !(a < b); }
+
+  template <class T>
+  bool operator ==(const shared_ptr<T>& a, nullptr_t) noexcept
+  { return !(bool)a; }
+
+  template <class T>
+  bool operator ==(nullptr_t, const shared_ptr<T>& b) noexcept
+  { return !(bool)b; }
+
+  template <class T>
+  bool operator !=(const shared_ptr<T>& a, nullptr_t) noexcept
+  { return (bool)a; }
+
+  template <class T>
+  bool operator !=(nullptr_t, const shared_ptr<T>& b) noexcept
+  { return (bool)b; }
+
+  template <class T>
+  bool operator <(const shared_ptr<T>& a, nullptr_t) noexcept
+  { return a.get() < nullptr; }
+
+  template <class T>
+  bool operator <(nullptr_t, const shared_ptr<T>& b) noexcept
+  { return nullptr < b.get(); }
+
+  template <class T>
+  bool operator <=(const shared_ptr<T>& a, nullptr_t) noexcept
+  { return !(a > nullptr); }
+
+  template <class T>
+  bool operator <=(nullptr_t, const shared_ptr<T>& b) noexcept
+  { return !(nullptr > b); }
+
+  template <class T>
+  bool operator >(const shared_ptr<T>& a, nullptr_t) noexcept
+  { return nullptr < a.get(); }
+
+  template <class T>
+  bool operator >(nullptr_t, const shared_ptr<T>& b) noexcept
+  { return b.get() < nullptr; }
+
+  template <class T>
+  bool operator >=(const shared_ptr<T>& a, nullptr_t) noexcept
+  { return !(a < nullptr); }
+
+  template <class T>
+  bool operator >=(nullptr_t, const shared_ptr<T>& b) noexcept
+  { return !(nullptr < b); }
+
+  // 20.7.2.2.8, shared_ptr specialized algorithms:
+
+  template <class T>
+  void swap(shared_ptr<T>& a, shared_ptr<T>& b) noexcept
+  { a.swap(b); }
+
+  // 20.7.2.2.9, shared_ptr casts:
+
+  template <class T, class U>
+  shared_ptr<T> static_pointer_cast(const shared_ptr<U>& r) noexcept
+  {
+    shared_ptr<T> p;
+
+    if (r._ref != NULL) {
+      p.__ptr = static_cast<T*>(r.get());
+      p._ref = r._ref->ref();
+      p._ref->link();
+    }
+
+    return p;
+  }
+
+  template <class T, class U>
+  shared_ptr<T> dynamic_pointer_cast(const shared_ptr<U>& r) noexcept
+  {
+    shared_ptr<T> p;
+
+    if (r._ref != NULL) {
+      p.__ptr = dynamic_cast<T*>(r.get());
+      p._ref = r._ref->ref();
+      p._ref->link();
+    }
+
+    return p;
+  }
+
+  template <class T, class U>
+  shared_ptr<T> const_pointer_cast(const shared_ptr<U>& r) noexcept
+  {
+    shared_ptr<T> p;
+
+    if (r._ref != NULL) {
+      p.__ptr = const_cast<T*>(r.get());
+      p._ref = r._ref->ref();
+      p._ref->link();
+    }
+
+    return p;
+  }
+
+  // 20.7.2.2.10, shared_ptr get_deleter:
+
+  template <class D, class T>
+  D* get_deleter(const shared_ptr<T>& p) noexcept
+  {
+    // try {
+    if (p._ref != NULL) {
+      void* d =  p._ref->get_deleter();
+      if (d != NULL) {
+        return &reinterpret_cast<__shared_ref_deleter<T,D>*>(d)->_d;
+      }
+    }
+    // }
+    // catch (/* const std::bad_cast& */ ...) {
+    // }
+    return reinterpret_cast<D*>(NULL);
+  }
+
+  // 20.7.2.2.11, shared_ptr I/O:
+
+  template <class E, class T> class basic_ostream;
+
+  template <class E, class T, class Y>
+  basic_ostream<E,T>& operator <<(basic_ostream<E,T>& os, const shared_ptr<Y>& p)
+  {
+    os << p.get();
+    return os;
+  }
+
+  template<class T>
+  class weak_ptr
+  {
+  public:
+    typedef T element_type;
+
+    // 20.7.2.3.1, constructors
+    constexpr weak_ptr() noexcept :
+			  __ptr(NULL),
+			  _ref(NULL)
+    { }
+
+    template <
+      class Y,
+      class = typename enable_if<is_convertible<Y*,T*>::value>::type>
+    weak_ptr(const shared_ptr<Y>& r) noexcept :
+				      _ref(r._ref == NULL ? NULL : r._ref->ref())
+    {
+      if (_ref != NULL) {
+	__ptr = r.__ptr;
+	_ref->weak_link();
+      } else {
+	__ptr = NULL;
+      }
+    }
+
+    weak_ptr(const weak_ptr& r) noexcept :
+				 _ref(/* r._ref == NULL ? NULL : */ r.expired() ? NULL : r._ref->ref())
+    {
+      if (_ref != NULL) {
+	__ptr = r.__ptr;
+	_ref->weak_link();
+      } else {
+	__ptr = NULL;
+      }
+    }
+
+    template <
+      class Y,
+      class = typename enable_if<is_convertible<Y*,T*>::value>::type>
+    weak_ptr(const weak_ptr<Y>& r) noexcept :
+				    _ref(/* r._ref == NULL ? NULL : */ r.expired() ? NULL : r._ref->ref())
+    {
+      if (_ref != NULL) {
+	__ptr = r.__ptr;
+	_ref->weak_link();
+      } else {
+	__ptr = NULL;
+      }
+    }
+
+    // 20.7.2.3.2, destructor
+    ~weak_ptr()
+    {
+      if (_ref != NULL) {
+	_ref->weak_unlink();
+      }
+    }
+
+    // 20.7.2.3.3, assignment
+    weak_ptr& operator =(const weak_ptr& r) noexcept
+    { // weak_ptr(r).swap(*this);
+      if (_ref != r._ref) {
+	__ptr = r.__ptr;
+	if (_ref != NULL) {
+	  _ref->weak_unlink();
+	}
+	_ref = r._ref;
+	if (_ref != NULL) {
+	  _ref->weak_link();
+	}          
+      }
+      return *this;
+    }
+
+    template <
+      class Y,
+      class = typename enable_if<is_convertible<Y*,T*>::value>::type>
+    weak_ptr& operator =(const weak_ptr<Y>& r) noexcept
+    {
+      if (_ref != r._ref) {
+	__ptr = static_cast<T*>(r.__ptr);
+	if (_ref != NULL) {
+	  _ref->weak_unlink();
+	}
+	_ref = r._ref;
+	if (_ref != NULL) {
+	  _ref->weak_link();
+	}          
+      }
+      return *this;
+    }
+
+    template <
+      class Y,
+      class = typename enable_if<is_convertible<Y*,T*>::value>::type>
+    weak_ptr& operator =(const shared_ptr<Y>& r) noexcept
+    {
+      if (_ref != r._ref) {
+	__ptr = static_cast<T*>(r.__ptr);
+	if (_ref != NULL) {
+	  _ref->weak_unlink();
+	}
+	_ref = r._ref;
+	if (_ref != NULL) {
+	  _ref->weak_link();
+	}          
+      }
+      return *this;
+    }
+
+    // 20.7.2.3.4, modifiers
+    void swap(weak_ptr& r) noexcept
+    {
+      if (_ref != r._ref) {
+	typedef element_type* pointer;
+	::std::swap<pointer>(__ptr, r.__ptr);
+	::std::swap<shared_ref>(_ref, r._ref);
+      }
+    }
+
+    void reset() noexcept
+    { // weak_ptr().swap(*this);
+      if (_ref != NULL) {
+	_ref->weak_unlink();
+	_ref = NULL;
+	// __ptr = NULL;
+      }
+    }
+
+    // 20.7.2.3.5, observers
+    long use_count() const noexcept
+    { return _ref == NULL ? 0L : _ref->count(); }
+
+    bool expired() const noexcept
+    { return (_ref == NULL) || (_ref->count() == 0); }
+
+    shared_ptr<T> lock() const noexcept
+    {
+      if (expired()) {
+	return shared_ptr<T>();
+      }
+      return shared_ptr<T>(*this);
+    }
+
+    template <class U>
+    bool owner_before(shared_ptr<U> const& b);
+
+    template <class U>
+    bool owner_before(weak_ptr<U> const& b);
+
+  private:
+    template <class Y> friend class weak_ptr;
+    template <class Y> friend class shared_ptr;
+
+    T* __ptr;
+    __shared_ref_base* _ref;
+    
+  };
+
+  // 20.7.2.3.6, specialized algorithms
+  template <class T>
+  void swap(weak_ptr<T>& a, weak_ptr<T>& b) noexcept
+  { a.swap(b); }
+
+  // 20.7.2.3.7, Class template owner_less  [util.smartptr.ownerless]
+
+  template <class T> struct owner_less;
+
+  template <class T>
+  struct owner_less<shared_ptr<T> >
+  {
+    typedef bool result_type;
+    typedef shared_ptr<T> first_argument_type;
+    typedef shared_ptr<T> second_argument_type;
+
+    bool operator()(shared_ptr<T> const& x, shared_ptr<T> const& y) const
+    { return x.owner_before(y); }
+    bool operator()(shared_ptr<T> const& x, weak_ptr<T> const& y) const
+    { return x.owner_before(y); }
+    bool operator()(weak_ptr<T> const& x, shared_ptr<T> const& y) const
+    { return x.owner_before(y); }
+  };
+
+  template <class T>
+  struct owner_less<weak_ptr<T> >
+  {
+    typedef bool result_type;
+    typedef weak_ptr<T> first_argument_type;
+    typedef weak_ptr<T> second_argument_type;
+
+    bool operator()(weak_ptr<T> const& x, weak_ptr<T> const& y) const
+    { return x.owner_before(y); }
+    bool operator()(shared_ptr<T> const& x, weak_ptr<T> const& y) const
+    { return x.owner_before(y); }
+    bool operator()(weak_ptr<T> const& x, shared_ptr<T> const& y) const
+    { return x.owner_before(y); }
+  };
+
+  // namespace detail {
+
+  template <class T,bool>
+  struct __enable_shared_from_this
+  {
+    static void pass(shared_ptr<T>&)
+    { }
+  };
+
+  template <class T>
+  struct __enable_shared_from_this<T,true>
+  {
+    static void pass(shared_ptr<T>& t)
+    {
+      static_cast<enable_shared_from_this<T>&>(*t).w = t;
+    }
+  };
+
+  // } // namespace detail
+
+  template <class T>
+  class enable_shared_from_this
+  {
+  protected:
+    constexpr enable_shared_from_this() noexcept :
+        w()
+      { }
+    enable_shared_from_this(const enable_shared_from_this&) noexcept
+      { }
+    enable_shared_from_this& operator =(const enable_shared_from_this&) noexcept
+      { return *this; }
+    ~enable_shared_from_this()
+      { }
+
+  public:
+    shared_ptr<T> shared_from_this()
+      { return shared_ptr<T>(w); }
+    shared_ptr<T const> shared_from_this() const
+      { return shared_ptr<T const>(w); }
+
+  private:
+    friend class __enable_shared_from_this<T,true>;
+    weak_ptr<T> w;
+  };
+
+}
+#endif
+// Local Variables:
+// mode: c++
+// End:

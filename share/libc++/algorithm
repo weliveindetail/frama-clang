@@ -1,0 +1,337 @@
+/**************************************************************************/
+/*                                                                        */
+/*  This file is part of Frama-Clang                                      */
+/*                                                                        */
+/*  Copyright (C) 2012-2020                                               */
+/*    CEA (Commissariat à l'énergie atomique et aux énergies              */
+/*         alternatives)                                                  */
+/*                                                                        */
+/*  you can redistribute it and/or modify it under the terms of the GNU   */
+/*  Lesser General Public License as published by the Free Software       */
+/*  Foundation, version 2.1.                                              */
+/*                                                                        */
+/*  It is distributed in the hope that it will be useful,                 */
+/*  but WITHOUT ANY WARRANTY; without even the implied warranty of        */
+/*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         */
+/*  GNU Lesser General Public License for more details.                   */
+/*                                                                        */
+/*  See the GNU Lesser General Public License version 2.1                 */
+/*  for more details (enclosed in the file LICENSE).                      */
+/*                                                                        */
+/**************************************************************************/
+
+#ifndef __STD_ALGORITHM
+#define __STD_ALGORITHM
+#include <initializer_list>
+#include <functional>
+#include <utility>
+#include <iterator>
+
+namespace std {
+
+  template <class InputIterator, class Predicate>
+  bool all_of(InputIterator first, InputIterator last, Predicate pred) {
+    InputIterator& it = first;
+    while(it < last) {
+      if (!pred(*it)) return false;
+      it++;
+    }
+    return true;
+  };
+
+  template <class InputIterator, class Predicate>
+  bool any_of(InputIterator first, InputIterator last, Predicate pred) {
+    InputIterator& it = first;
+    while (it < last) {
+      if (pred(*it)) return true;
+      it++;
+    }
+    return false;
+  };
+
+  template <class InputIterator, class Predicate>
+  bool none_of(InputIterator first, InputIterator last, Predicate pred) {
+    return
+      all_of<InputIterator, unary_negate<Predicate>>(
+        first, last, not1<Predicate>(pred));
+  };
+
+  template<class InputIterator, class Function>
+  Function for_each(InputIterator first, InputIterator last, Function f) {
+    InputIterator& it = first;
+    while (it < last) { f(std::move(*it)); it++; }
+    return std::move(f);
+  };
+
+  template<class InputIterator, class T>
+  InputIterator find(InputIterator first, InputIterator last, const T& value) {
+    InputIterator& it = first;
+    while (it < last) {
+      if (*it == value) { return it; }
+      it++;
+    }
+    return last;
+  };
+
+  template<class InputIterator, class Predicate>
+  InputIterator find_if(
+    InputIterator first, InputIterator last, Predicate pred) {
+    InputIterator& it = first;
+    while (it < last) {
+      if (pred(*it)) { return it; }
+      it++;
+    }
+    return last;
+  };
+
+  template<class InputIterator, class Predicate>
+  InputIterator find_if_not(
+    InputIterator first, InputIterator last, Predicate pred) {
+    std::reference_wrapper<Predicate> rpred = pred;
+    return
+      find_if<InputIterator, unary_negate<decltype(rpred)>>(
+        first, last, not1<decltype(rpred)>(pred));
+  };
+
+  template<class ForwardIterator1, class ForwardIterator2>
+  ForwardIterator1
+  find_end(ForwardIterator1 first1, ForwardIterator1 last1,
+           ForwardIterator2 first2, ForwardIterator2 last2) {
+    ForwardIterator1& start = first1;
+    ForwardIterator1& res = last1;
+    while (start < last1 - (last2 - first2)) {
+      ForwardIterator1& it1 = start;
+      ForwardIterator2& it2 = first2;
+      while (it2 < last2) {
+        if (*it1 != *it2) break;
+        it1++;
+        it2++;
+      }
+      if (it2 == last2) res = start;
+      start++;
+    }
+    return res;
+  };
+
+  template<class ForwardIterator1, class ForwardIterator2,
+           class BinaryPredicate>
+  ForwardIterator1
+  find_end(ForwardIterator1 first1, ForwardIterator1 last1,
+           ForwardIterator2 first2, ForwardIterator2 last2,
+           BinaryPredicate pred) {
+    ForwardIterator1& start = first1;
+    ForwardIterator1& res = last1;
+    while (start < last1 - (last2 - first2)) {
+      ForwardIterator1& it1 = start;
+      ForwardIterator2& it2 = first2;
+      while (it2 < last2) {
+        if (!pred(*it1, *it2)) break;
+        it1++;
+        it2++;
+      }
+      if (it2 == last2) res = start;
+      start++;
+    }
+    return res;
+  };
+
+  template<class InputIterator, class ForwardIterator>
+  InputIterator
+  find_first_of(InputIterator first1, InputIterator last1,
+                ForwardIterator first2, ForwardIterator last2) {
+    InputIterator it1 = first1;
+    while(it1 < last1) {
+      InputIterator& it2 = first2;
+      while (it2 < last2) {
+        if (*it1 == *it2) return it1;
+        it2++;
+      }
+      it1++;
+    }
+    return last1;
+  };
+
+  template<class InputIterator, class ForwardIterator,
+           class BinaryPredicate>
+  InputIterator
+  find_first_of(InputIterator first1, InputIterator last1,
+                ForwardIterator first2, ForwardIterator last2,
+                BinaryPredicate pred) {
+    InputIterator& it1 = first1;
+    while(it1 < last1) {
+      InputIterator it2 = first2;
+      while (it2 < last2) {
+        if (pred(*it1, *it2)) return it1;
+        it2++;
+      }
+      it1++;
+    }
+    return last1;
+  };
+
+  template<class ForwardIterator>
+  ForwardIterator adjacent_find(ForwardIterator first, ForwardIterator last) {
+    ForwardIterator& it = first;
+    while(it+1 < last) {
+      if (*it == *(it+1)) return it;
+      it++;
+    }
+    return last;
+  };
+
+  template<class ForwardIterator, class BinaryPredicate>
+  ForwardIterator adjacent_find(
+    ForwardIterator first, ForwardIterator last, BinaryPredicate pred) {
+    ForwardIterator& it = first;
+    while(it+1 < last) {
+      if (pred(*it, *(it+1))) return it;
+      it++;
+    }
+    return last;
+  };
+
+  template<class InputIterator, class T>
+  typename iterator_traits<InputIterator>::difference_type
+  count(InputIterator first, InputIterator last, const T& value) {
+    typename iterator_traits<InputIterator>::difference_type c = 0;
+    InputIterator& it = first;
+    while (it < last) {
+      if (*it == value) c++;
+      it++;
+    }
+    return c;
+  };
+
+  template<class InputIterator, class Predicate>
+  typename iterator_traits<InputIterator>::difference_type
+  count_if(InputIterator first, InputIterator last, Predicate pred) {
+    typename iterator_traits<InputIterator>::difference_type c = 0;
+    InputIterator& it = first;
+    while (it < last) {
+      if (pred(*it)) c++;
+      it++;
+    }
+    return c;
+  };
+
+  template<class InputIterator1, class InputIterator2>
+  pair<InputIterator1, InputIterator2>
+  mismatch(InputIterator1 first1, InputIterator1 last1,
+           InputIterator2 first2) {
+    InputIterator1& it1 = first1;
+    InputIterator2& it2 = first2;
+    while (it1 < last1) {
+      if (*it1 != *it2) return make_pair(it1, it2);
+      it1++;
+      it2++;
+    }
+    return make_pair(it1,it2);
+  };
+
+template<class InputIterator1, class InputIterator2,
+class BinaryPredicate>
+pair<InputIterator1, InputIterator2>
+mismatch(InputIterator1 first1, InputIterator1 last1,
+         InputIterator2 first2, BinaryPredicate pred) {
+    InputIterator1& it1 = first1;
+    InputIterator2& it2 = first2;
+    while (it1 < last1) {
+      if (!pred(*it1, *it2)) return make_pair(it1, it2);
+      it1++;
+      it2++;
+    }
+    return make_pair(it1,it2);
+};
+
+  template<class InputIterator1, class InputIterator2>
+  bool equal(InputIterator1 first1, InputIterator1 last1,
+             InputIterator2 first2) {
+    InputIterator1& it1 = first1;
+    InputIterator2& it2 = first2;
+    while (it1 < last1) {
+      if (*it1 != *it2) return false;
+      it1++;
+      it2++;
+    }
+    return true;
+  };
+
+template<class InputIterator1, class InputIterator2,
+class BinaryPredicate>
+bool equal(InputIterator1 first1, InputIterator1 last1,
+InputIterator2 first2, BinaryPredicate pred) {
+  InputIterator1& it1 = first1;
+  InputIterator2& it2 = first2;
+  while (it1 < last1) {
+    if (!pred(*it1, *it2)) return false;
+    it1++;
+    it2++;
+  }
+  return true;
+};
+
+template<class ForwardIterator1, class ForwardIterator2>
+bool is_permutation(ForwardIterator1 first1, ForwardIterator1 last1,
+                    ForwardIterator2 first2) {
+  if (equal<ForwardIterator1, ForwardIterator2>(first1, last1, first2))
+    return true;
+  ForwardIterator2 last2 = first2 + (last1 - first1);
+  for (ForwardIterator1 it1 = first1; it1 < last1; it1++) {
+    if (
+      count<
+      ForwardIterator1, typename iterator_traits<ForwardIterator1>::value_type>(
+        first1,last1,*it1)
+      !=
+      count<
+      ForwardIterator2, typename iterator_traits<ForwardIterator2>::value_type>(
+        first2,last2,*it1))
+      return false;
+  }
+  return true;
+};
+
+  // pred is supposed to be an equivalence relation. Hence, we can just
+  // count the number of equivalent element in both containers for each
+  // element of the first container, as for the first is_permutation above.
+  // TODO: write appropriate ACSL++ spec
+  template<class ForwardIterator1, class ForwardIterator2,
+           class BinaryPredicate>
+  bool is_permutation(ForwardIterator1 first1, ForwardIterator1 last1,
+                      ForwardIterator2 first2, BinaryPredicate pred) {
+    ForwardIterator2 last2 = first2 + (last1 - first1);
+    for (ForwardIterator1 it1 = first1; it1 < last1; it1++) {
+      auto upred =
+        [pred,it1](typename iterator_traits<ForwardIterator1>::value_type x)
+        { return pred(*it1,x); };
+      if (
+        count_if<ForwardIterator1, decltype(upred)> (first1, last1, upred)
+        !=
+        count_if<ForwardIterator2, decltype(upred)> (first2, last2, upred))
+        return false;
+    }
+    return true;
+  };
+
+
+  // Mutating sequence operations
+
+  // Copy
+
+  template<class InputIterator, class OutputIterator>
+  OutputIterator copy(InputIterator first, InputIterator last,
+                      OutputIterator result) {
+    for (InputIterator it = first; it < last; it++) {
+      *result = *it;
+      result++;
+    }
+    return result;
+  }
+
+}
+#endif
+
+/*
+Local Variables:
+mode: C++
+End:
+*/

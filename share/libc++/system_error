@@ -1,0 +1,229 @@
+/**************************************************************************/
+/*                                                                        */
+/*  This file is part of Frama-Clang                                      */
+/*                                                                        */
+/*  Copyright (C) 2012-2020                                               */
+/*    CEA (Commissariat à l'énergie atomique et aux énergies              */
+/*         alternatives)                                                  */
+/*                                                                        */
+/*  you can redistribute it and/or modify it under the terms of the GNU   */
+/*  Lesser General Public License as published by the Free Software       */
+/*  Foundation, version 2.1.                                              */
+/*                                                                        */
+/*  It is distributed in the hope that it will be useful,                 */
+/*  but WITHOUT ANY WARRANTY; without even the implied warranty of        */
+/*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         */
+/*  GNU Lesser General Public License for more details.                   */
+/*                                                                        */
+/*  See the GNU Lesser General Public License version 2.1                 */
+/*  for more details (enclosed in the file LICENSE).                      */
+/*                                                                        */
+/**************************************************************************/
+
+#ifndef _STD_SYSTEM_ERROR
+#define _STD_SYSTEM_ERROR
+
+#include "features.h"
+#include "__fc_machdep.h"
+#include <type_traits>
+#include <stdexcepts>
+
+namespace std {
+
+  class error_condition;
+
+  class error_code;
+
+  class error_category {
+  public:
+    virtual ~error_category() noexcept;
+    error_category(const error_category&) = delete;
+    error_category& operator=(const error_category&) = delete;
+    virtual const char* name() const noexcept = 0;
+    virtual error_condition default_error_condition(int ev) const noexcept;
+    virtual bool equivalent(int code, const error_condition& condition) const
+      noexcept;
+    virtual bool equivalent(const error_code& code, int condition) const
+      noexcept;
+    virtual string message(int ev) const = 0;
+    bool operator==(const error_category& rhs) const noexcept;
+    bool operator!=(const error_category& rhs) const noexcept;
+    bool operator<(const error_category& rhs) const noexcept;
+  };
+
+  const error_category& generic_category() noexcept;
+  const error_category& system_category() noexcept;
+
+  class error_code {
+  public:
+    error_code() noexcept;
+    error_code(int val, const error_category& cat) noexcept;
+    template <class ErrorCodeEnum>
+    error_code(ErrorCodeEnum e) noexcept;
+    void assign(int val, const error_category& cat) noexcept;
+    template <class ErrorCodeEnum>
+    error_code& operator=(ErrorCodeEnum e) noexcept;
+    void clear() noexcept;
+    int value() const noexcept;
+    const error_category& category() const noexcept;
+    error_condition default_error_condition() const noexcept;
+    string message() const;
+    explicit operator bool() const noexcept;
+  private:
+    int val_;
+    const error_category* cat_;
+  };
+
+  class system_error : public runtime_error {
+  public:
+    system_error(error_code ec, const string& what_arg);
+    system_error(error_code ec, const char* what_arg);
+    system_error(error_code ec);
+    system_error(int ev, const error_category& ecat,
+                 const string& what_arg);
+    system_error(int ev, const error_category& ecat, const char* what_arg);
+    system_error(int ev, const error_category& ecat);
+    const error_code& code() const noexcept;
+    const char* what() const noexcept;
+  };
+
+  template <class T>
+  struct is_error_code_enum : public false_type {};
+
+  template <class T>
+  struct is_error_condition_enum : public false_type {};
+};
+
+#include <ostream>
+
+namespace std {
+  bool operator<(const error_code& lhs, const error_code& rhs) noexcept;
+  template <class charT, class traits>
+  basic_ostream<charT,traits>&
+  operator<<(basic_ostream<charT,traits>& os, const error_code& ec) noexcept;
+
+  class error_condition {
+  public:
+    error_condition() noexcept;
+    error_condition(int val, const error_category& cat) noexcept;
+    template <class ErrorConditionEnum>
+    error_condition(ErrorConditionEnum e) noexcept;
+    void assign(int val, const error_category& cat) noexcept;
+    template<class ErrorConditionEnum>
+    error_condition& operator=(ErrorConditionEnum e) noexcept;
+    void clear() noexcept;
+    int value() const noexcept;
+    const error_category& category() const noexcept;
+    string message() const;
+    explicit operator bool() const noexcept;
+  private:
+    int val_;
+    const error_category* cat_; // exposition only
+  };
+
+  bool operator<(const error_condition& lhs, const error_condition& rhs) 
+    noexcept;
+
+  enum class errc {
+      address_family_not_supported = __FC_EAFNOSUPPORT,
+      address_in_use = __FC_EADDRINUSE,
+      address_not_available = __FC_EADDRNOTAVAIL,
+      already_connected = __FC_EISCONN,
+      argument_list_too_long = __FC_E2BIG,
+      argument_out_of_domain = __FC_EDOM,
+      bad_address = __FC_EFAULT,
+      bad_file_descriptor = __FC_EBADF,
+      bad_message = __FC_EBADMSG,
+      broken_pipe = __FC_EPIPE,
+      connection_aborted = __FC_ECONNABORTED,
+      connection_already_in_progress = __FC_EALREADY,
+      connection_refused = __FC_ECONNREFUSED,
+      connection_reset = __FC_ECONNRESET,
+      cross_device_link = __FC_EXDEV,
+      destination_address_required = __FC_EDESTADDRREQ,
+      device_or_resource_busy = __FC_EBUSY,
+      directory_not_empty = __FC_ENOTEMPTY,
+      executable_format_error = __FC_ENOEXEC,
+      file_exists = __FC_EEXIST,
+      file_too_large = __FC_EFBIG,
+      filename_too_long = __FC_ENAMETOOLONG,
+      function_not_supported = __FC_ENOSYS,
+      host_unreachable = __FC_EHOSTUNREACH,
+      identifier_removed = __FC_EIDRM,
+      illegal_byte_sequence = __FC_EILSEQ,
+      inappropriate_io_control_operation = __FC_ENOTTY,
+      interrupted = __FC_EINTR,
+      invalid_argument = __FC_EINVAL,
+      invalid_seek = __FC_ESPIPE,
+      io_error = __FC_EIO,
+      is_a_directory = __FC_EISDIR,
+      message_size = __FC_EMSGSIZE,
+      network_down = __FC_ENETDOWN,
+      network_reset = __FC_ENETRESET,
+      network_unreachable = __FC_ENETUNREACH,
+      no_buffer_space = __FC_ENOBUFS,
+      no_child_process = __FC_ECHILD,
+      no_link = __FC_ENOLINK,
+      no_lock_available = __FC_ENOLCK,
+      no_message_available = __FC_ENODATA,
+      no_message = __FC_ENOMSG,
+      no_protocol_option = __FC_ENOPROTOOPT,
+      no_space_on_device = __FC_ENOSPC,
+      no_stream_resources = __FC_ENOSR,
+      no_such_device_or_address = __FC_ENXIO,
+      no_such_device = __FC_ENODEV,
+      no_such_file_or_directory = __FC_ENOENT,
+      no_such_process = __FC_ESRCH,
+      not_a_directory = __FC_ENOTDIR,
+      not_a_socket = __FC_ENOTSOCK,
+      not_a_stream = __FC_ENOSTR,
+      not_connected = __FC_ENOTCONN,
+      not_enough_memory = __FC_ENOMEM,
+      not_supported = __FC_ENOTSUP,
+      operation_canceled = __FC_ECANCELED,
+      operation_in_progress = __FC_EINPROGRESS,
+      operation_not_permitted = __FC_EPERM,
+      operation_not_supported = __FC_ENOTSUP,
+      operation_would_block = __FC_EWOULDBLOCK,
+      owner_dead = __FC_EOWNERDEAD,
+      permission_denied = __FC_EACCES,
+      protocol_error = __FC_EPROTO,
+      protocol_not_supported = __FC_EPROTONOSUPPORT,
+      read_only_file_system = __FC_EROFS,
+      resource_deadlock_would_occur = __FC_EDEADLK,
+      resource_unavailable_try_again = __FC_EAGAIN,
+      result_out_of_range = __FC_ERANGE,
+      state_not_recoverable = __FC_ENOTRECOVERABLE,
+      stream_timeout = __FC_ETIME,
+      text_file_busy = __FC_ETXTBSY,
+      timed_out = __FC_ETIMEDOUT,
+      too_many_files_open_in_system = __FC_ENFILE,
+      too_many_files_open = __FC_EMFILE,
+      too_many_links = __FC_EMLINK,
+      too_many_symbolic_link_levels = __FC_ELOOP,
+      value_too_large = __FC_EOVERFLOW,
+      wrong_protocol_type = __FC_EPROTOTYPE,
+      };
+
+  template <> struct is_error_condition_enum<errc> : true_type { };
+    error_code make_error_code(errc e) noexcept;
+  error_condition make_error_condition(errc e) noexcept;
+  bool operator==(const error_code& lhs, const error_code& rhs) noexcept;
+  bool operator==(const error_code& lhs, const error_condition& rhs) noexcept;
+  bool operator==(const error_condition& lhs, const error_code& rhs) noexcept;
+  bool operator==(const error_condition& lhs, const error_condition& rhs)
+    noexcept;
+  bool operator!=(const error_code& lhs, const error_code& rhs) noexcept;
+  bool operator!=(const error_code& lhs, const error_condition& rhs) noexcept;
+  bool operator!=(const error_condition& lhs, const error_code& rhs) noexcept;
+  bool operator!=(const error_condition& lhs, const error_condition& rhs)
+    noexcept;
+  template <class T> struct hash;
+  template <> struct hash<error_code>;
+}
+
+#endif
+
+// Local Variables:
+// mode: c++
+// End:

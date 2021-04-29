@@ -1,0 +1,68 @@
+/**************************************************************************/
+/*                                                                        */
+/*  This file is part of Frama-Clang                                      */
+/*                                                                        */
+/*  Copyright (C) 2012-2020                                               */
+/*    CEA (Commissariat à l'énergie atomique et aux énergies              */
+/*         alternatives)                                                  */
+/*                                                                        */
+/*  you can redistribute it and/or modify it under the terms of the GNU   */
+/*  Lesser General Public License as published by the Free Software       */
+/*  Foundation, version 2.1.                                              */
+/*                                                                        */
+/*  It is distributed in the hope that it will be useful,                 */
+/*  but WITHOUT ANY WARRANTY; without even the implied warranty of        */
+/*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         */
+/*  GNU Lesser General Public License for more details.                   */
+/*                                                                        */
+/*  See the GNU Lesser General Public License version 2.1                 */
+/*  for more details (enclosed in the file LICENSE).                      */
+/*                                                                        */
+/**************************************************************************/
+
+#ifndef __STD_TYPEINFO
+
+#define __STD_TYPEINFO
+
+#include <cstddef>
+#include <exception>
+
+namespace std {
+  class type_info {
+  public:
+    virtual ~type_info() noexcept;
+    type_info(const char*);
+    bool operator==(const type_info& rhs) const noexcept;
+    bool operator!=(const type_info& rhs) const noexcept;
+    bool before(const type_info& rhs) const noexcept;
+    size_t hash_code() const noexcept;
+    const char* name() const;
+    type_info(const type_info& rhs) = delete;
+    type_info& operator=(const type_info& rhs) = delete;
+  };
+
+  class bad_cast : public exception {
+  public:
+    bad_cast() noexcept;
+    bad_cast(const bad_cast&) noexcept;
+    bad_cast& operator=(const bad_cast&) noexcept;
+    virtual const char* what() const noexcept;
+  };
+
+  class bad_typeid : public exception {
+  public:
+    bad_typeid() noexcept;
+    bad_typeid(const bad_typeid&) noexcept;
+    bad_typeid& operator=(const bad_typeid&) noexcept;
+    virtual const char* what() const noexcept;
+  };
+
+}
+
+#endif
+
+/*
+  Local Variables:
+  mode: C++
+  End:
+*/
