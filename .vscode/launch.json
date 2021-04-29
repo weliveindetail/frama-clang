@@ -1,0 +1,22 @@
+{
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "lldb",
+      "request": "launch",
+      "name": "Debug",
+      "program": "${workspaceFolder}/bin/framaCIRGen",
+      "args": [
+        "-target", "x86_64-pc-linux-gnu", "-D__FC_MACHDEP_X86_64",
+        "-std=c++11", "-nostdinc",
+        "-I", "/usr/local/share/frama-c/frama-clang/libc++",
+        "-I", "/usr/local/share/frama-c/libc",
+        "--stop-annot-error", "-v", "-o", "/tmp/clang_ast9f12fdast",
+        "/home/examples/frama-clang/05-exceptions/works.cpp"
+      ],
+    }
+  ]
+}
