@@ -1,0 +1,27 @@
+.DS_Store
+.bashrc
+*.o.tmp
+*.log
+
+# Generated output files of vscode "Makefile Tools" extension
+.Makefile.plugin.generated
+log/
+top/
+Frama_Clang.check_mli_exists
+META.frama-c-frama_clang
+
+# Build artifacts in source-tree
+*.d
+*.o
+*.cmi
+*.cmo
+*.cmt
+*.cmti
+*.cmx
+bin/
+gen_ast
+intermediate_format.c
+intermediate_format.h
+intermediate_format.mli
+intermediate_format_parser.ml
+intermediate_format_parser.mli
