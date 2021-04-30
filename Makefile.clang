@@ -65,11 +65,10 @@ ifeq ("$(CHECK_AST_CONSTRUCTION)","no")
 $(Frama_Clang_DIR)/intermediate_format.o: CFLAGS+=-DNDEBUG
 endif
 
-ifeq ("$(CLANG_DEBUG)","yes")
+# For now always build in debug mode.
 CXXFLAGS+=-g
 CFLAGS+=-g
 CLANG_LINKFLAGS+=-g
-endif
 
 # Use clang for compilation and lld for linking.
 CC=clang-11
