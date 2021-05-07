@@ -68,3 +68,25 @@ fully qualified C++ name (provided it refers to an existing function
 in the code under analysis of course). Note however that it is
 currently not possible to distinguish between overloaded functions
 using this mechanism.
+
+# Debug Notes
+
+Link frama-clang against an LLVM 11.1.0 debug build:
+
+```
+> cd /home
+> git clone --single-branch --branch release/11.x --depth 1 https://github.com/llvm/llvm-project
+> mkdir llvm-build
+> cd llvm-build
+> export CC=clang-11
+> export CXX=clang++-11
+> cmake -GNinja -DCMAKE_BUILD_TYPE=Debug -DLLVM_TARGETS_TO_BUILD=host -DLLVM_ENABLE_PROJECTS=clang -DLLVM_BUILD_LLVM_DYLIB=On -DLLVM_ENABLE_RTTI=On -DLLVM_ABI_BREAKING_CHECKS=FORCE_OFF /home/llvm-project/llvm
+> ninja libLLVM-11.so clangFrontend clangDriver clangParse clangSema clangAnalysis clangEdit clangAST clangLex clangSerialization clangBasic
+```
+
+Use these modified settings in Makefile.config:
+```
+CLANG_LINKFLAGS=-L/home/llvm-build/lib/
+CLANG_BIN_DIR=/home/llvm-build/bin/
+LLVM_LIBS=-L/home/llvm-build/lib/ -lLLVM-11
+```
