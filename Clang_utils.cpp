@@ -24,6 +24,8 @@
 
 #include "Clang_utils.h"
 #include "ClangVisitor.h"
+#include <clang/AST/Type.h>
+#include <llvm/Support/Casting.h>
 
 extern "C" {
 
@@ -1857,7 +1859,12 @@ Clang_utils::makePlainType(
                 exp_node_Constant(compilation_constant_IntCst(
                   IINT,ICLITERAL,arrayType->getNumElements())))));
         return typ_Array(arrayKind);
-      }
+    }
+    case clang::Type::UnaryTransform: {
+      auto utt = llvm::dyn_cast<const clang::UnaryTransformType>(type);
+      auto integer_type = utt->getUnderlyingType();
+      return makePlainType(loc, integer_type, declRegistration, isPOD);
+    }
     case clang::Type::BlockPointer:
         unsupported_kind = "block pointer"; break;
     case clang::Type::Complex:
@@ -2877,7 +2884,7 @@ Clang_utils::logicArithmeticPromotion(
         return elaborated->isSugared()
           ? logicArithmeticPromotion(loc, elaborated->desugar().getTypePtr())
           : NULL;
-      }
+    }
     default: break;
   }
   return NULL;
