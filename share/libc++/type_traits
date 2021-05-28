@@ -64,7 +64,7 @@ namespace std {
   template <class T> struct is_rvalue_reference;
   template <class T> struct is_member_object_pointer;
   template <class T> struct is_member_function_pointer;
-  template <class T> struct is_enum;
+  template <class T> struct is_enum: public __boolean<__is_enum(T)>{};
   template <class T> struct is_union;
 
   // see https://en.cppreference.com/w/cpp/types/is_class
@@ -282,9 +282,14 @@ namespace std {
   // helper types
   template< bool B, class T, class F >
   using conditional_t = typename conditional<B,T,F>::type;
-  
+
   template <class... T> struct common_type;
-  template <class T> struct underlying_type;
+  template <bool, class T> struct __underlying_type_t {};
+  template <class T> struct __underlying_type_t<true, T> {
+    typedef __underlying_type(T) type;
+  };
+  template <class T>
+  struct underlying_type: __underlying_type_t<is_enum<T>::value,T> {};
   template <class> class result_of;
   template <class F, class... ArgTypes> class result_of<F(ArgTypes...)> {
     public:
