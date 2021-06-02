@@ -8,7 +8,7 @@ let
             "rev" = "6ad3b6bcd58aa84052a15305a1d127838cd5c87b";
             "ref" = "feature/upgrade-opam2nix";
     };
-    pkgs = import "${src}/pkgs.nix";
+    pkgs = import "${src}/pkgs.nix" {};
  in
  {
   src = src;
