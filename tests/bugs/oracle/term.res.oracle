@@ -3,11 +3,6 @@
 Now output intermediate result
 [wp] Running WP plugin...
 [wp] Warning: Missing RTE guards
-[wp] tests/bugs/term.cpp:11: Warning: Terminates not implemented yet (skipped).
-[wp] tests/bugs/term.cpp:17: Warning: Terminates not implemented yet (skipped).
-[wp] tests/bugs/term.cpp:43: Warning: Terminates not implemented yet (skipped).
-[wp] tests/bugs/term.cpp:26: Warning: Terminates not implemented yet (skipped).
-[wp] tests/bugs/term.cpp:34: Warning: Terminates not implemented yet (skipped).
 [wp] 3 goals scheduled
 [wp] [Qed] Goal typed_Z2m2_ensures : Valid
 [wp] [Qed] Goal typed_Z2m3_c_ensures : Valid
