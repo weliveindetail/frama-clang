@@ -1,0 +1,4 @@
+tests/pp/empty3.cpp:2:6: error: [pp] Missing preprocessor directive (ignoring line): #
+//@ #
+     ^
+code generation aborted due to one compilation error

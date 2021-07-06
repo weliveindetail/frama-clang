@@ -1,0 +1,29 @@
+[kernel] Parsing tests/val_analysis/cast_op.cc (external front-end)
+Now output intermediate result
+[eva] Analyzing a complete application starting at main
+[eva] Computing initial state
+[eva] Initial state computed
+[eva:initial-state] Values of globals at initialization
+  _frama_c_vmt_header ∈ {0}
+  _frama_c_rtti_name_info.name ∈ {{ "A" }}
+                         {.base_classes; .number_of_base_classes; .pvmt} ∈
+                         {0}
+  _frama_c_vmt[0] ∈ {0}
+[eva] done for function main
+[eva] ====== VALUES COMPUTED ======
+[eva:final-states] Values at end of function A::Ctor:
+  a ∈ {0}
+[eva:final-states] Values at end of function A::Ctor:
+  x ∈ {2}
+  __fc_tmp_0.x ∈ {2}
+[eva:final-states] Values at end of function A::Dtor:
+  
+[eva:final-states] Values at end of function conversion(int):
+  a.x ∈ {1}
+  b.x ∈ {3} or UNINITIALIZED
+  __retres ∈ {1; 3}
+[eva:final-states] Values at end of function main:
+  a.x ∈ {1}
+  x ∈ {3}
+  b.x ∈ {3}
+  __fc_tmp_0.x ∈ {2}

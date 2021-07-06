@@ -1,0 +1,4 @@
+FRAMAC_SHARE/libc/signal.h:208:47: types are not convertible
+FRAMAC_SHARE/libc/signal.h:223:28: Expecting ';' after requires clause
+FRAMAC_SHARE/libc/time.h:219:45: types are not convertible
+FRAMAC_SHARE/libc/time.h:266:43: types are not convertible

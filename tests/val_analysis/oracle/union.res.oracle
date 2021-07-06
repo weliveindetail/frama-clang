@@ -1,0 +1,29 @@
+[kernel] Parsing tests/val_analysis/union.cc (external front-end)
+Now output intermediate result
+[kernel] Warning: Assuming declared function Frama_C_memcpy can't throw any exception
+[kernel] Warning: Assuming declared function Frama_C_memcpy can't throw any exception
+[kernel:annot:missing-spec] tests/val_analysis/union.cc:8: Warning: 
+  Neither code nor specification for function Frama_C_memcpy, generating default assigns from the prototype
+[eva] Analyzing a complete application starting at main
+[eva] Computing initial state
+[eva] Initial state computed
+[eva:initial-state] Values of globals at initialization
+  _frama_c_vmt_header ∈ {0}
+  _frama_c_rtti_name_info.name ∈ {{ "A" }}
+                         {.base_classes; .number_of_base_classes; .pvmt} ∈
+                         {0}
+  _frama_c_vmt[0] ∈ {0}
+[eva] done for function main
+[eva] ====== VALUES COMPUTED ======
+[eva:final-states] Values at end of function f:
+  __retres ∈ {42}
+[eva:final-states] Values at end of function A::Ctor:
+  
+[eva:final-states] Values at end of function A::Ctor:
+  __fc_tmp_1{.x; .y[bits 0 to 31]} ∈ {42}
+[eva:final-states] Values at end of function main:
+  a{.x; .y[bits 0 to 31]} ∈ {42}
+  __fc_tmp_0 ∈ UNINITIALIZED
+  b ∈ {42}
+  __fc_tmp_1{.x; .y[bits 0 to 31]} ∈ {42}
+  __retres ∈ {0}

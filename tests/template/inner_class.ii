@@ -1,0 +1,10 @@
+template <unsigned> struct A {
+  struct {
+    struct { int x; } s2;
+  } s1;
+};
+
+int main() {
+  A<1> x;
+  x.s1.s2.x = 0;
+}

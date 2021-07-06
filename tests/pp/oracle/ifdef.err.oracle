@@ -1,0 +1,4 @@
+tests/pp/ifdef.cpp:9:3: error: "Failure3"
+#       error "Failure3"
+        ^
+1 error generated.

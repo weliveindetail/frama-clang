@@ -1,0 +1,4 @@
+tests/pp/include.cpp:5:11: fatal error: 'asd' file not found
+# include "asd"
+          ^~~~~
+1 error generated.

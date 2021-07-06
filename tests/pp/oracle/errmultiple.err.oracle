@@ -1,0 +1,2 @@
+tests/pp/errmultiple.cpp:5:3: [lexer error]  "Failure1"
+tests/pp/errmultiple.cpp:6:1: [lexer error]  "Failure2"

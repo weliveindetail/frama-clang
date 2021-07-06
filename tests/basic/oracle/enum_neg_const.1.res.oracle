@@ -1,0 +1,5 @@
+[kernel] Parsing tests/basic/enum_neg_const.cpp (external front-end)
+Now output intermediate result
+[fclang] tests/basic/enum_neg_const.cpp:6: User Error: 
+  Enum constant has value -2^63
+[kernel] Plug-in fclang aborted: invalid user input.

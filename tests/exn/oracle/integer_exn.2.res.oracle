@@ -1,0 +1,49 @@
+[kernel] Parsing tests/exn/integer_exn.cpp (external front-end)
+Now output intermediate result
+[eva] Analyzing a complete application starting at main
+[eva] Computing initial state
+[eva] Initial state computed
+[eva:initial-state] Values of globals at initialization
+  x ∈ {0}
+  y ∈ {2}
+  __fc_exn ∈ {0}
+[eva] done for function main
+[eva] ====== VALUES COMPUTED ======
+[eva:final-states] Values at end of function throw_foop:
+  __fc_exn.exn_uncaught ∈ {1}
+          .exn_kind ∈ {2}
+          .exn_obj{.__fc_E_Z3foo; .__fc_pE_Z3foo; .__fc_pi; .__fc_i} ∈
+          {{ (? *)&y }}
+[eva:final-states] Values at end of function throw_2:
+  __fc_exn.exn_uncaught ∈ {1}
+          .exn_kind ∈ {0}
+          .exn_obj{.__fc_E_Z3foo; .__fc_pE_Z3foo; .__fc_pi; .__fc_i} ∈ {2}
+[eva:final-states] Values at end of function throw_2p:
+  __fc_exn{.exn_uncaught; .exn_kind} ∈ {1}
+          .exn_obj{.__fc_E_Z3foo; .__fc_pE_Z3foo; .__fc_pi; .__fc_i} ∈
+          {{ (? *)&x }}
+[eva:final-states] Values at end of function throw_foo:
+  __fc_exn.exn_uncaught ∈ {1}
+          .exn_kind ∈ {3}
+          .exn_obj{.__fc_E_Z3foo; .__fc_pE_Z3foo; .__fc_pi; .__fc_i} ∈ {2}
+[eva:final-states] Values at end of function catch_exn1:
+  __retres ∈ {0; 1; 2; 3}
+  __fc_exn.exn_uncaught ∈ {0}
+          .exn_kind ∈ {0; 1; 2; 3}
+          .exn_obj{.__fc_E_Z3foo; .__fc_pE_Z3foo; .__fc_pi; .__fc_i} ∈
+          {{ NULL + {2} ; (? *)&x ; (? *)&y }}
+[eva:final-states] Values at end of function catch_exn2:
+  __retres ∈ {0; 1; 2; 3}
+  __fc_exn.exn_uncaught ∈ {0}
+          .exn_kind ∈ {0; 1; 2; 3}
+          .exn_obj{.__fc_E_Z3foo; .__fc_pE_Z3foo; .__fc_pi; .__fc_i} ∈
+          {{ NULL + {2} ; (? *)&x ; (? *)&y }}
+[eva:final-states] Values at end of function main:
+  x ∈ {2}
+  y ∈ {0}
+  z ∈ {6}
+  t ∈ {4}
+  __fc_exn.exn_uncaught ∈ {0}
+          .exn_kind ∈ {1}
+          .exn_obj{.__fc_E_Z3foo; .__fc_pE_Z3foo; .__fc_pi; .__fc_i} ∈
+          {{ (? *)&x }}

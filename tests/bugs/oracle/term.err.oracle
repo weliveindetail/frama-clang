@@ -1,0 +1,3 @@
+tests/bugs/term.cpp:4:1: terminates clause in behavior
+tests/bugs/term.cpp:35:1: requires clause after terminates
+tests/bugs/term.cpp:44:1: at most one terminates clause is allowed

@@ -1,0 +1,59 @@
+#ifndef _STD_CSTDLIB
+#define _STD_CSTDLIB
+extern "C" {
+#include <stdlib.h>
+}
+
+namespace std {
+  using ::atof;
+  using ::atoi;
+  using ::atol;
+  using ::atoll;
+  using ::strtod;
+  using ::strtof;
+  using ::strtold;
+  using ::strtol;
+  using ::strtoll;
+  using ::strtoul;
+  using ::strtoull;
+  using ::rand;
+  using ::srand;
+  using ::calloc;
+  using ::malloc;
+  using ::free;
+  using ::realloc;
+  using ::abort;
+  using ::atexit;
+  using ::at_quick_exit;
+  using ::exit;
+  using ::_Exit;
+  using ::getenv;
+  using ::putenv;
+  using ::setenv;
+  using ::unsetenv;
+  using ::quick_exit;
+  using ::system;
+  using ::bsearch;
+  using ::qsort;
+  using ::abs;
+  using ::labs;
+  using ::llabs;
+  using ::div_t;
+  using ::ldiv_t;
+  using ::lldiv_t;
+  using ::div;
+  using ::ldiv;
+  using ::lldiv;
+  using ::mblen;
+  using ::mbtowc;
+  using ::wctomb;
+  using ::mbstowcs;
+  using ::wcstombs;
+}
+#endif
+
+/*
+Local Variables:
+mode: C++
+End:
+*/

@@ -1,0 +1,61 @@
+tests/val_analysis/anonymous_union.cc:2:[kernel] warning: Calling undeclared function Frama_C_memcpy. Old style K&R code?
+[value] Analyzing a complete application starting at main
+[value] Computing initial state
+[value] Initial state computed
+[value] Values of globals at initialization
+[value] computing for function one <- main.
+        Called from tests/val_analysis/anonymous_union.cc:40.
+[value] computing for function A::Ctor <- one <- main.
+        Called from tests/val_analysis/anonymous_union.cc:14.
+tests/val_analysis/anonymous_union.cc:2:[value] Function A::Ctor: precondition got status valid.
+[value] Recording results for A::Ctor
+[value] Done for function A::Ctor
+[value] computing for function A::Ctor <- one <- main.
+        Called from tests/val_analysis/anonymous_union.cc:18.
+tests/val_analysis/anonymous_union.cc:2:[value] Call to builtin memcpy(({{ &__temp_name_06__ }},{{ &ret }},{2}))
+[value] Recording results for A::Ctor
+[value] Done for function A::Ctor
+[value] Recording results for one
+[value] Done for function one
+[value] computing for function A::Ctor <- main.
+        Called from tests/val_analysis/anonymous_union.cc:40.
+tests/val_analysis/anonymous_union.cc:2:[value] Call to builtin memcpy(({{ &a }},{{ &__temp_name_06__ }},{2}))
+[value] Recording results for A::Ctor
+[value] Done for function A::Ctor
+[value] Recording results for main
+[value] done for function main
+[value] ====== VALUES COMPUTED ======
+[value] Values at end of function A::Ctor:
+[value] Values at end of function A::Ctor:
+          ret.___anon_field_1__{.raw[bits 0 to 9]; .str.prec; } ∈
+             {0} or UNINITIALIZED
+             .___anon_field_1__{.raw[bits 10 to 14]; .str.main; } ∈
+             {1} or UNINITIALIZED
+             .___anon_field_1__{.raw[bits 15 to 15]; .str.type; } ∈
+             {0} or UNINITIALIZED
+          a.___anon_field_1__{.raw[bits 0 to 9]; .str.prec; } ∈
+           {0} or UNINITIALIZED
+           .___anon_field_1__{.raw[bits 10 to 14]; .str.main; } ∈
+           {1} or UNINITIALIZED
+           .___anon_field_1__{.raw[bits 15 to 15]; .str.type; } ∈
+           {0} or UNINITIALIZED
+          __temp_name_06__.___anon_field_1__{.raw[bits 0 to 9]; .str.prec; } ∈ {0}
+                          .___anon_field_1__{.raw[bits 10 to 14]; .str.main; } ∈
+                          {1}
+                          .___anon_field_1__{.raw[bits 15 to 15]; .str.type; } ∈
+                          {0}
+[value] Values at end of function one:
+          ret.___anon_field_1__{.raw[bits 0 to 9]; .str.prec; } ∈ {0}
+             .___anon_field_1__{.raw[bits 10 to 14]; .str.main; } ∈ {1}
+             .___anon_field_1__{.raw[bits 15 to 15]; .str.type; } ∈ {0}
+          a ∈ UNINITIALIZED
+          __temp_name_06__.___anon_field_1__{.raw[bits 0 to 9]; .str.prec; } ∈ {0}
+                          .___anon_field_1__{.raw[bits 10 to 14]; .str.main; } ∈
+                          {1}
+                          .___anon_field_1__{.raw[bits 15 to 15]; .str.type; } ∈
+                          {0}
+[value] Values at end of function main:
+          a.___anon_field_1__{.raw[bits 0 to 9]; .str.prec; } ∈ {0}
+           .___anon_field_1__{.raw[bits 10 to 14]; .str.main; } ∈ {1}
+           .___anon_field_1__{.raw[bits 15 to 15]; .str.type; } ∈ {1}
+          __res ∈ {0}

@@ -1,0 +1,5 @@
+/* test that a pre-processed files can contain ACSL comments with macros */
+#define NULL 0
+
+/*@ ensures \result == NULL; */
+int main () { return 0; }

@@ -1,0 +1,159 @@
+[kernel] Parsing tests/val_analysis/virtual_base_sema.cpp (external front-end)
+Now output intermediate result
+[eva] Analyzing a complete application starting at main
+[eva] Computing initial state
+[eva] Initial state computed
+[eva:initial-state] Values of globals at initialization
+  _frama_c_vmt_header ∈ {0}
+  _frama_c_rtti_name_info.name ∈ {{ "A" }}
+                         {.base_classes; .number_of_base_classes; .pvmt} ∈
+                         {0}
+  _frama_c_vmt[0] ∈ {0}
+  _frama_c_vmt_header.table ∈ {{ &_frama_c_vmt[0] }}
+                     .table_size ∈ {1}
+                     .rtti_info ∈ {{ &_frama_c_rtti_name_info }}
+  _frama_c_vmt_header_for_shift_0 ∈ {0}
+  _frama_c_rtti_name_info.name ∈ {{ "B" }}
+                         .base_classes ∈ {{ &_frama_c_base_classes[0] }}
+                         .number_of_base_classes ∈ {1}
+                         .pvmt ∈ {{ &_frama_c_vmt_header }}
+  _frama_c_base_classes[0].value ∈ {{ &_frama_c_rtti_name_info }}
+                       [0].shift_object ∈ {-4}
+                       [0].shift_vmt ∈ {0}
+  _frama_c_vmt[0].method_ptr ∈ {0}
+              [0].shift_this ∈ {4}
+  _frama_c_base_classes[0] ∈ {0}
+  _frama_c_vmt_header.table ∈ {{ &_frama_c_vmt[0] }}
+                     .table_size ∈ {1}
+                     .rtti_info ∈ {{ &_frama_c_rtti_name_info }}
+  _frama_c_rtti_name_info.name ∈ {{ "B_frama_c_bare" }}
+                         .base_classes ∈ {{ &_frama_c_base_classes[0] }}
+                         .number_of_base_classes ∈ {0}
+                         .pvmt ∈ {{ &_frama_c_vmt_header }}
+  _frama_c_vmt_header.table ∈ {{ &_frama_c_vmt[0] }}
+                     .table_size ∈ {1}
+                     .rtti_info ∈ {{ &_frama_c_rtti_name_info }}
+  _frama_c_vmt_header_for_shift_0 ∈ {0}
+  _frama_c_rtti_name_info.name ∈ {{ "C" }}
+                         .base_classes ∈ {{ &_frama_c_base_classes[0] }}
+                         .number_of_base_classes ∈ {1}
+                         .pvmt ∈ {{ &_frama_c_vmt_header }}
+  _frama_c_base_classes[0].value ∈ {{ &_frama_c_rtti_name_info }}
+                       [0].shift_object ∈ {-4}
+                       [0].shift_vmt ∈ {0}
+  _frama_c_vmt[0].method_ptr ∈ {0}
+              [0].shift_this ∈ {4}
+  _frama_c_base_classes[0] ∈ {0}
+  _frama_c_vmt_header.table ∈ {{ &_frama_c_vmt[0] }}
+                     .table_size ∈ {1}
+                     .rtti_info ∈ {{ &_frama_c_rtti_name_info }}
+  _frama_c_rtti_name_info.name ∈ {{ "C_frama_c_bare" }}
+                         .base_classes ∈ {{ &_frama_c_base_classes[0] }}
+                         .number_of_base_classes ∈ {0}
+                         .pvmt ∈ {{ &_frama_c_vmt_header }}
+  _frama_c_vmt_header.table ∈ {{ &_frama_c_vmt[0] }}
+                     .table_size ∈ {2}
+                     .rtti_info ∈ {{ &_frama_c_rtti_name_info }}
+  _frama_c_vmt_header_for_shift_1.table ∈ {{ &_frama_c_vmt[1] }}
+                                 .table_size ∈ {1}
+                                 .rtti_info ∈
+                                 {{ &_frama_c_rtti_name_info }}
+  _frama_c_vmt_header_for_shift_0 ∈ {0}
+  _frama_c_rtti_name_info.name ∈ {{ "D" }}
+                         .base_classes ∈ {{ &_frama_c_base_classes[0] }}
+                         .number_of_base_classes ∈ {3}
+                         .pvmt ∈ {{ &_frama_c_vmt_header }}
+  _frama_c_base_classes[0].value ∈ {{ &_frama_c_rtti_name_info }}
+                       [0]{.shift_object; .shift_vmt} ∈ {0}
+                       [1].value ∈ {{ &_frama_c_rtti_name_info }}
+                       [1].shift_object ∈ {-4}
+                       [1].shift_vmt ∈ {1}
+                       [2].value ∈ {{ &_frama_c_rtti_name_info }}
+                       [2].shift_object ∈ {-8}
+                       [2].shift_vmt ∈ {0}
+  _frama_c_vmt[0].method_ptr ∈ {0}
+              [0].shift_this ∈ {8}
+              [1].method_ptr ∈ {0}
+              [1].shift_this ∈ {4}
+  _frama_c_base_classes[0].value ∈ {{ &_frama_c_rtti_name_info }}
+                       [0]{.shift_object; .shift_vmt} ∈ {0}
+                       [1].value ∈ {{ &_frama_c_rtti_name_info }}
+                       [1].shift_object ∈ {-4}
+                       [1].shift_vmt ∈ {1}
+                       [2] ∈ {0}
+  _frama_c_vmt_header.table ∈ {{ &_frama_c_vmt[0] }}
+                     .table_size ∈ {2}
+                     .rtti_info ∈ {{ &_frama_c_rtti_name_info }}
+  _frama_c_rtti_name_info.name ∈ {{ "D_frama_c_bare" }}
+                         .base_classes ∈ {{ &_frama_c_base_classes[0] }}
+                         .number_of_base_classes ∈ {2}
+                         .pvmt ∈ {{ &_frama_c_vmt_header }}
+[eva] tests/val_analysis/virtual_base_sema.cpp:21: 
+  starting to merge loop iterations
+[eva:alarm] tests/val_analysis/virtual_base_sema.cpp:11: Warning: 
+  signed overflow.
+  assert
+  -2147483648 ≤
+  ((struct _Z1A *)((char *)__cast_tmp_3 + __virtual_tmp_1->shift_this))->x + 1;
+[eva:alarm] tests/val_analysis/virtual_base_sema.cpp:11: Warning: 
+  signed overflow.
+  assert
+  ((struct _Z1A *)((char *)__cast_tmp_3 + __virtual_tmp_1->shift_this))->x + 1
+  ≤ 2147483647;
+[eva] done for function main
+[eva] ====== VALUES COMPUTED ======
+[eva:final-states] Values at end of function B_frama_c_bare::Ctor:
+  __cast_tmp_2 ∈ {{ (struct B *)&d }}
+  __cast_tmp_3 ∈ {{ (struct B *)&d }}
+  __virtual_tmp_1 ∈ {{ &_frama_c_vmt[0] }}
+  d._frama_c__Z1B.pvmt ∈ {{ &_frama_c_vmt_header }}
+   ._frama_c__Z1C.pvmt ∈ {{ &_frama_c_local_vmt_header_for_shift_1 + {1} }}
+   ._frama_c__Z1A ∈ {0}
+[eva:final-states] Values at end of function C_frama_c_bare::Ctor:
+  __cast_tmp_6 ∈ {{ (struct C *)&d._frama_c__Z1C }}
+  __cast_tmp_7 ∈ {{ (struct C *)&d._frama_c__Z1C }}
+  __virtual_tmp_3 ∈ {{ &_frama_c_vmt[0] }}
+  d._frama_c__Z1B.pvmt ∈ {{ &_frama_c_vmt_header }}
+   ._frama_c__Z1C.pvmt ∈ {{ &_frama_c_vmt_header }}
+   ._frama_c__Z1A.x ∈ {3}
+[eva:final-states] Values at end of function A::Ctor:
+  d{._frama_c__Z1B; ._frama_c__Z1C} ∈ UNINITIALIZED
+   ._frama_c__Z1A ∈ {0}
+[eva:final-states] Values at end of function A::Dtor:
+  
+[eva:final-states] Values at end of function B::Dtor:
+  
+[eva:final-states] Values at end of function C::Dtor:
+  
+[eva:final-states] Values at end of function D::Ctor:
+  frama_c_vmt_index ∈ {2}
+  _frama_c_local_vmt[0].method_ptr ∈ {0} or UNINITIALIZED
+                    [0].shift_this ∈ {4; 8} or UNINITIALIZED
+                    [1].method_ptr ∈ {0} or UNINITIALIZED
+                    [1].shift_this ∈ {4; 8} or UNINITIALIZED
+  _frama_c_local_vmt_header.table ∈ {{ &_frama_c_local_vmt[0] }}
+                           .table_size ∈ {2}
+                           .rtti_info ∈ {{ &_frama_c_rtti_name_info }}
+  _frama_c_local_vmt_for_shift_1 ∈ {{ &_frama_c_local_vmt[1] }}
+  _frama_c_local_vmt_header_for_shift_1.table ∈
+                                       {{ &_frama_c_local_vmt[1] }}
+                                       .table_size ∈ {1}
+                                       .rtti_info ∈
+                                       {{ &_frama_c_rtti_name_info }}
+  __cast_tmp_8 ∈ {{ &d }}
+  __cast_tmp_9 ∈ {{ &d }}
+  __virtual_tmp_4 ∈ {{ &_frama_c_vmt[0] }}
+  d._frama_c__Z1B.pvmt ∈ {{ &_frama_c_vmt_header }}
+   ._frama_c__Z1C.pvmt ∈ {{ &_frama_c_vmt_header_for_shift_1 }}
+   ._frama_c__Z1A.x ∈ {7}
+[eva:final-states] Values at end of function D::Dtor:
+  
+[eva:final-states] Values at end of function D::Dtor:
+  
+[eva:final-states] Values at end of function main:
+  d._frama_c__Z1B.pvmt ∈ {{ &_frama_c_vmt_header }}
+   ._frama_c__Z1C.pvmt ∈ {{ &_frama_c_vmt_header_for_shift_1 }}
+   ._frama_c__Z1A.x ∈ {7}
+  __cast_tmp_12 ∈ {{ &d }}
+  __virtual_tmp_6 ∈ {{ &_frama_c_vmt[0] }}
+  __retres ∈ {7}

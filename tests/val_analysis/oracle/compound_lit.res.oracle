@@ -1,0 +1,23 @@
+[value] Analyzing a complete application starting at main
+[value] Computing initial state
+[value] Initial state computed
+[value] Values of globals at initialization
+[value] computing for function operator= <- main.
+        Called from tests/val_analysis/compound_lit.cc:6.
+tests/val_analysis/compound_lit.cc:2:[value] Function operator=: precondition got status valid.
+[value] Recording results for operator=
+[value] Done for function operator=
+tests/val_analysis/compound_lit.cc:7:[value] Assertion got status valid.
+[value] Recording results for main
+[value] done for function main
+[value] ====== VALUES COMPUTED ======
+[value] Values at end of function operator=:
+          __res ∈ {{ &a }}
+          a.x ∈ {0}
+           .y ∈ {1}
+[value] Values at end of function main:
+          a.x ∈ {0}
+           .y ∈ {1}
+          __constr_expr_0.x ∈ {0}
+                         .y ∈ {1}
+          __res ∈ {0}

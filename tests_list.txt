@@ -1,0 +1,155 @@
+Vieux tests de cxx à refaire passer
+
+tests/specs/ghost.cc Ghost code identified as function spec
+tests/specs/ghost_field.cc Ghost code identified as assertion
+
+tests/val_analysis/anonymous_union.cc ACSL++ can't parse annotations
+tests/val_analysis/compound_lit.cc Compound literals are not supported.
+tests/val_analysis/fptr.cc Function pointers are not supported
+tests/val_analysis/local_var.cc Assertion failed in ACSLComponent.h
+tests/val_analysis/minmax.cc ACSL++ can't parse annotations
+
+Work in progress (parsed by FramaCIRGen, check whether OCaml back-end works)
+tests/basic/packed.cc Need to take attributes into account. Cf issue 236
+tests/basic/union2.cc local union is not translated in intermediate AST.
+                      See issue 237
+
+tests/class/alloc.cc Need better support for new operator. See issue 238
+tests/class/invariants.cc Invariant is not correctly translated
+
+tests/slicing/basic_slice.cc Inadequate comment at line 17
+
+tests/template/fwd_decl.cc Instantiation of template with class defined
+                           after template. Need to refine intermediate AST
+
+tests/template/template.cc need to declare malloc/free when encountering
+                           new/delete
+tests/val_analysis/alloc.cc need to declare malloc/free when encountering
+                            new/delete
+tests/val_analysis/fwd_decl.cc Unsupported forward-decl of struct inside class
+tests/val_analysis/recv.cc need to declare malloc/free when encountering
+                           new/delete
+
+Tests from FhG (or others)
+tests/class/overload_const_bts1541.cpp (overloading const/non const)
+
+Do not put anything other than names of working tests below Tests OK: this list
+is used by the Makefile for working-tests target.
+Tests OK:
+tests/basic/cast.cc
+tests/basic/bitfields.cc
+tests/basic/c_link.cc
+tests/basic/default_args.cc
+tests/basic/empty_arg_list_bts1506.cpp
+tests/basic/enum.cc
+tests/basic/extern.cc
+tests/basic/fun_call_lval_bts1542.cpp
+tests/basic/opt.cc
+tests/basic/forward.cc
+tests/basic/init.cc
+tests/basic/incomplete_array_bts1746.cpp
+tests/basic/namespace.cc
+tests/basic/null_to_pointer_bts1524.cpp
+tests/basic/parse_string_newline_bts1745.cpp
+tests/basic/ptr.cc
+tests/basic/sizeof.cc
+tests/basic/sizeof_enum_bts1545.cpp
+tests/basic/static.cc
+tests/basic/static_variable_bts1760.cc
+tests/basic/sw.cc
+tests/basic/tdef.cc
+tests/basic/test001.cc
+tests/basic/test002.cc
+tests/basic/test003.cc
+tests/basic/test004.cc
+tests/basic/test005.cc
+tests/basic/test006.cc
+tests/basic/test007.cc
+tests/basic/test008.cc
+tests/basic/union.cc
+tests/basic/union3.cc
+tests/basic/union_packed.cc
+tests/basic/use_of_temps_bts1544.cpp
+tests/basic/varargs.cc
+tests/basic/vd.cc
+tests/basic/empty_fun.cc
+tests/class/array_object_bts1739.cpp
+tests/class/cast_op.cc
+tests/class/class_global.cc
+tests/class/constr.cc
+tests/class/default_arg.cc
+tests/class/default_const_bts1527.cpp
+tests/class/empty_class_bts1547.cpp
+tests/class/explicit_destructor_bts1528.cpp
+tests/class/loop_local_var_bts1521.cpp
+tests/class/names.cc
+tests/class/namespace.cc
+tests/class/ostream_bts1752.cpp
+tests/class/overload_const_bts1541.cpp
+tests/class/rt_val.cc
+tests/class/simple_classe.cc
+tests/class/simple_private.cc
+tests/class/typedef_in_class_bts1540.cpp
+tests/class/used_before_decl_bts1526.cpp
+tests/class/simple_virtual.cc
+tests/class/virtual_method.cc
+tests/class/virtual_for_shift.cc
+tests/class/virtual_for_shift2.cc
+tests/class/virtual_for_shift3.cc
+tests/specs/addr_of_bts1535.cpp
+tests/specs/annot_in_class_bts1610.cpp
+tests/specs/assigns.cc
+tests/specs/behaviors.cc
+tests/specs/class.cc
+tests/specs/class_name_as_type_bts_1511.cc
+tests/specs/clean_local_env_bts1605.cpp
+tests/specs/comment_bts1529.cpp
+tests/specs/comparisons.cc
+tests/specs/contract_with_ref_bts1517.cpp
+tests/specs/external_logic_def_bts1512.cc
+tests/specs/field_name_bts1513.cc
+tests/specs/forall_bts1525.cpp
+tests/specs/lex.cc
+tests/specs/logic.cc
+tests/specs/logic_defs.cc
+tests/specs/logic_func_old_bts1618.cpp
+tests/specs/loop_inv_in_class_bts1543.cpp
+tests/specs/inv.cc
+tests/specs/nothing_bts1514.cc
+tests/specs/new_with_ptr_fields_bts1613.cpp
+tests/specs/operator_definition_bts1508.cpp
+tests/specs/parenthesis-bts1509.cc
+tests/specs/result_bts1515.cc
+tests/specs/ternary_op_bts1532.cpp
+tests/specs/this_in_spec_bts1534.cpp
+tests/specs/true_as_term_bts1617.cpp
+tests/specs/valid_bts1523.cpp
+tests/specs/valid_bts1661.cpp
+tests/template/17_4_11.cc
+tests/template/fwd_decl2.cc
+tests/template/func.cc
+tests/template/global_var_instantiation_bts1552.cpp
+tests/template/simple_template.cc
+tests/template/template_impl_arg.cc
+tests/template/template_spec_bts1551.cpp
+tests/template/typedef_bts1531.cpp
+tests/val_analysis/annot.cc
+tests/val_analysis/anon_enum.cc
+tests/val_analysis/cast_op.cc
+tests/val_analysis/comment.cc
+tests/val_analysis/copy_arg.cc
+tests/val_analysis/logic_def.cc
+tests/val_analysis/loop.cc
+tests/val_analysis/namespace.cc
+tests/val_analysis/nested.cc
+tests/val_analysis/out_def.cc
+tests/val_analysis/overload.cc
+tests/val_analysis/prune.cc
+tests/val_analysis/ptr.cc
+tests/val_analysis/qualified.cc
+tests/val_analysis/result.cc
+tests/val_analysis/tdef.cc
+tests/val_analysis/type_annot.cc
+tests/val_analysis/union.cc
+tests/val_analysis/union_struct.cc
+

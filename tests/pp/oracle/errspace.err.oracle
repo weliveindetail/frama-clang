@@ -1,0 +1,4 @@
+tests/pp/errspace.cpp:5:5: error: "Failure"
+        #  error "Failure"
+           ^
+1 error generated.

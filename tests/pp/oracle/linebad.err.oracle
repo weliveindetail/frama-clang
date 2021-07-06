@@ -1,0 +1,1 @@
+tests/pp/linebad.cpp:5:1: [lexer error] The number token in a #line directive must be all digits: zzz

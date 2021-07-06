@@ -1,0 +1,8 @@
+tests/pp/comment2.cpp:5:3: warning: '/*' within block comment
+# /* asdasd */
+  ^
+tests/pp/comment2.cpp:5:2: [lexer error] Missing preprocessor directive (ignoring line): # /* asdasd 
+tests/pp/comment2.cpp:7:2: error: expected unqualified-id
+*/
+ ^
+code generation aborted due to one compilation error

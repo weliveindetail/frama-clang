@@ -1,0 +1,4 @@
+tests/pp/first.cpp:5:2: error: "Failure2"
+#error "Failure2"
+ ^
+1 error generated.

@@ -1,0 +1,4 @@
+FILEREG:.*\.\(cc\|cpp\|ii\)$
+MACRO: CXX -cxx-c++stdlib-path share/libc++ -cxx-clang-command="bin/framaCIRGen"
+OPT:-print -wp @CXX@ 
+##FILTER:/bin/sed -e '/^#[^\n]*/d' -e "s|${FRAMAC_SHARE}|FRAMAC_SHARE|g"

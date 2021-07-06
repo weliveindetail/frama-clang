@@ -1,0 +1,11 @@
+[kernel] Parsing tests/val_analysis/tdef.cc (external front-end)
+Now output intermediate result
+[eva] Analyzing a complete application starting at main
+[eva] Computing initial state
+[eva] Initial state computed
+[eva:initial-state] Values of globals at initialization
+  
+[eva] done for function main
+[eva] ====== VALUES COMPUTED ======
+[eva:final-states] Values at end of function main:
+  x ∈ {0}

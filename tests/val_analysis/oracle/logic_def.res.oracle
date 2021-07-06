@@ -1,0 +1,18 @@
+[kernel] Parsing tests/val_analysis/logic_def.cc (external front-end)
+Now output intermediate result
+[eva] Analyzing a complete application starting at main
+[eva] Computing initial state
+[eva] Initial state computed
+[eva:initial-state] Values of globals at initialization
+  _frama_c_vmt_header ∈ {0}
+  _frama_c_rtti_name_info.name ∈ {{ "X" }}
+                         {.base_classes; .number_of_base_classes; .pvmt} ∈
+                         {0}
+  _frama_c_vmt[0] ∈ {0}
+[eva] done for function main
+[eva] ====== VALUES COMPUTED ======
+[eva:final-states] Values at end of function X::Ctor:
+  x.x ∈ {42}
+[eva:final-states] Values at end of function main:
+  x.x ∈ {42}
+  __retres ∈ {0}

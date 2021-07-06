@@ -1,0 +1,15 @@
+#ifndef __STD_FC_DEFINE_IOS_BASE_SEEKDIR
+
+#define __STD_FC_DEFINE_IOS_BASE_SEEKDIR
+
+#include <bitset>
+
+namespace std {
+    typedef bitset<3> ios_base_seekdir;
+}
+
+#endif
+
+// Local Variables:
+// mode: c++
+// End:

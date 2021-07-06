@@ -1,0 +1,50 @@
+share/cxx_builtin.cc:18:[kernel] warning: Encountered linkage specification "\"FRAMAC\""
+[value] Analyzing a complete application starting at main
+[value] Computing initial state
+[value] Initial state computed
+[value] Values of globals at initialization
+        Frama_C_entropy_source ∈ [--..--]
+[value] computing for function A::Ctor <- main.
+        Called from tests/val_analysis/local_var.cc:9.
+tests/val_analysis/local_var.cc:4:[value] Function A::Ctor: precondition got status valid.
+[value] computing for function CXX_constructor <- A::Ctor <- main.
+        Called from tests/val_analysis/local_var.cc:4.
+[value] using specification for function CXX_constructor
+[kernel] warning: No code nor implicit assigns clause for function CXX_constructor, generating default assigns from the prototype
+tests/val_analysis/local_var.cc:4:[value] Function CXX_constructor, behavior constructor: precondition got status valid.
+tests/val_analysis/local_var.cc:4:[value] Function CXX_constructor, behavior constructor: postcondition got status unknown.
+[value] Done for function CXX_constructor
+tests/val_analysis/local_var.cc:4:[value] Function A::Ctor: postcondition got status unknown.
+[value] Recording results for A::Ctor
+[value] Done for function A::Ctor
+tests/val_analysis/local_var.cc:10:[value] Assertion got status unknown.
+[value] computing for function A::Dtor <- main.
+        Called from tests/val_analysis/local_var.cc:9.
+tests/val_analysis/local_var.cc:4:[value] Function A::Dtor: precondition got status unknown.
+tests/val_analysis/local_var.cc:4:[value] Function A::Dtor: precondition got status valid.
+tests/val_analysis/local_var.cc:4:[value] Assertion got status unknown.
+[value] computing for function CXX_destructor <- A::Dtor <- main.
+        Called from tests/val_analysis/local_var.cc:4.
+[value] using specification for function CXX_destructor
+[kernel] warning: No code nor implicit assigns clause for function CXX_destructor, generating default assigns from the prototype
+tests/val_analysis/local_var.cc:4:[value] Function CXX_destructor, behavior destructor: precondition got status valid.
+tests/val_analysis/local_var.cc:4:[value] Function CXX_destructor, behavior destructor: postcondition got status unknown.
+[value] Done for function CXX_destructor
+tests/val_analysis/local_var.cc:4:[value] Function A::Dtor: postcondition got status unknown.
+[value] Recording results for A::Dtor
+[value] Done for function A::Dtor
+tests/val_analysis/local_var.cc:13:[value] Assertion got status unknown.
+[value] Recording results for main
+[value] done for function main
+[value] ====== VALUES COMPUTED ======
+[value] Values at end of function A::Ctor:
+          a ∈ [--..--] or UNINITIALIZED
+[value] Values at end of function A::Dtor:
+          __tmp1__ ∈ {{ &a }}
+          a ∈ [--..--]
+[value] Values at end of function main:
+          x ∈ {{ &a }}
+          a.x ∈ {2}
+          __tmp7__ ∈ {{ &a }}
+          __tmp8__ ∈ {{ &a }}
+          __res ∈ {0}

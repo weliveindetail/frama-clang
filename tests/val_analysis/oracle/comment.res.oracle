@@ -1,0 +1,22 @@
+[kernel] Parsing tests/val_analysis/comment.cc (external front-end)
+Now output intermediate result
+[eva] Analyzing a complete application starting at main
+[eva] Computing initial state
+[eva] Initial state computed
+[eva:initial-state] Values of globals at initialization
+  _frama_c_vmt_header ∈ {0}
+  _frama_c_rtti_name_info.name ∈ {{ "Point" }}
+                         {.base_classes; .number_of_base_classes; .pvmt} ∈
+                         {0}
+  _frama_c_vmt[0] ∈ {0}
+[eva:alarm] tests/val_analysis/comment.cc:24: Warning: 
+  function move_y: precondition dy ≢ 0 got status invalid.
+[eva] done for function main
+[eva] ====== VALUES COMPUTED ======
+[eva:final-states] Values at end of function move_x:
+  o._x ∈ {1}
+   ._y ∈ {0}
+[eva:final-states] Values at end of function Point::Ctor:
+  o ∈ {0}
+[eva:final-states] Values at end of function main:
+  NON TERMINATING FUNCTION

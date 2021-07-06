@@ -1,0 +1,11 @@
+[kernel] Parsing tests/val_analysis/pretty_main.cpp (external front-end)
+Now output intermediate result
+[eva] Analyzing a complete application starting at g
+[eva] Computing initial state
+[eva] Initial state computed
+[eva:initial-state] Values of globals at initialization
+  
+[eva] done for function g
+[eva] ====== VALUES COMPUTED ======
+[eva:final-states] Values at end of function g:
+  __retres ∈ {-1; 1}

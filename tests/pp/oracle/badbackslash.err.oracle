@@ -1,0 +1,5 @@
+tests/pp/badbackslash.cpp:4:12: error: [lexer] Expected an identifier after the backslash: :
+requires  \: \true;
+           ^
+tests/pp/badbackslash.cpp:4:12: unexpected token 'operator -> :' when starting to parse a term
+1 error generated.

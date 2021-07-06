@@ -1,0 +1,4 @@
+tests/pp/true2.cpp:4:11: warning: [lexer] White space not permitted between the \ and the identifier
+ensures \ true;
+          ^
+1 warning generated.

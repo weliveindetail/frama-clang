@@ -1,0 +1,112 @@
+#+TITLE: AST Description Language
+
+This file gives a brief overview of the common AST description language that
+is used to generates bindings for the various target languages.
+
+* Syntax
+The syntax is roughly inspired from OCaml. Here is the BNF:
+ - ident is an identifier ([a-zA-Z_][a-zA-Z_0-9]*)
+ - string a string litteral (surrounded by double quotes ")
+ - cst-int is an integer [0-9]+
+
+file ::= entry | entry file
+entry ::= "type" ident = defn ";;"
+defn ::= sum-cons-list | record ["pretty" ":" pretty-directive]
+sum-cons-list ::= sum-cons | sum-cons sum-cons-list
+record ::= "{" ne-arg-list "}"
+sum-cons ::= "|" ident "{" arg-list "}" ["pretty" ":" pretty-directive]
+arg-list ::= | ne-arg-list
+ne-arg-list ::= arg arg-list
+arg ::= ident ":" typ ";"
+typ ::= ident | typ "option" | typ "list"
+pretty-directive ::= string pretty-args
+pretty-args ::= empty | ident pretty-args | cst-int pretty-args
+
+- A file describes a list of types, which can be either a sum (union) or a
+record. Arguments of the constructors of a sum type are named.
+- types can be either other types defined in the file (they are mutually
+recursive) or the following predefined types:
+  - int
+  - int64
+  - bool
+  - string
+  - location (of the form (file1,line1,char1,file2,line2,char2))
+  - typ option indicates that 0 or 1 element of typ may be present
+  - typ list indicates that any number of elements may be present
+- The pretty clause (currently not supported) is supposed to be used
+to generate a pretty printer.  The string is in fact an OCaml format
+directive, that explains how the elements of the given constructor or
+product should be pretty printed. The pretty-args can be either the names
+of the elements or their order of appearance (for a product). A %a directive
+in the format string must correspond to two arguments: the pretty-printing
+function (defaults to "pretty" for using the generated function corresponding
+to the type of the element) and the element's name.
+
+Example of an AST file
+#+BEGIN_SRC ast
+  type foo =
+    | Cons { field1: typ;  }
+      pretty: "%a" pretty field1
+    | Cons2 { }
+      pretty: "Foo";;
+  type prod = { field: bla; id: int } pretty: "%a * %d" pretty 1 2 ;;
+#+END_SRC
+
+* tree intermediate format
+In order to communicate ASTs between various languages, the following format
+for trees is used:
+- each line contains a node's value after an even number of spaces. The value
+can be:
+  - the name of a constructor for union types
+  - "tuple" for a product
+  - "loc" for a location
+  - a string constant for a string
+  - an integer constant for an integer
+  - "true" or "false" for a boolean
+  - "Cons" for a non-empty list
+  - "nil" for an empty list or an empty opt [1]
+- children of a node come immediatly after their parent and
+  contain two more spaces of indentation
+
+* Supported back-end languages
+gen_ast can export these declarations to the following languages. For each of
+them, the list of exported constructions is given
+
+** OCaml
+*** data types
+ - one OCaml type per definition (sum or record)
+*** parser from tree
+*** generated files
+ - ast_name.mli and ast_name_parser.ml given an ast_name.ast description
+** C
+*** data types
+ - struct for records
+ - discriminated unions for sum types, i.e. a struct with
+   - one enumerated field for discriminating the constructor
+   - one union field corresponding to the possible cases
+ - option means a possibly NULL pointer
+ - list have a predefined type of their own.
+ - as an optimization, a sum type with only constant constructors is
+   translated as an enumeration only.
+
+*** constructor helpers
+ - each constructor gives rise to a function building an appropriate value
+
+*** destructors
+ - each type comes with its free_type destructor
+
+*** printer to tree
+ - one function per type.
+
+*** generated files
+ - ast_name.h (types and prototypes) and ast_name.c (implementation)
+
+* Compilation
+ - gen_ast.ml, as well as the generated OCaml files, rely on stream parsing,
+which is only available through camlp4o: just add -pp camlp4o
+on your OCaml command line.
+
+* Notes
+[1] This precludes using foo opt opt or foo list opt, as we cannot distinguish
+between an empty option or a option containing the empty (option/list)
+

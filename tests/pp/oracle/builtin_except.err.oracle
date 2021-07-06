@@ -1,0 +1,1 @@
+tests/pp/builtin_except.cc:3:53: unknown identifier 'Frama_C_entropy_source'

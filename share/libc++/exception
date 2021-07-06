@@ -1,0 +1,78 @@
+/**************************************************************************/
+/*                                                                        */
+/*  This file is part of Frama-Clang                                      */
+/*                                                                        */
+/*  Copyright (C) 2012-2018                                               */
+/*    CEA (Commissariat à l'énergie atomique et aux énergies              */
+/*         alternatives)                                                  */
+/*                                                                        */
+/*  you can redistribute it and/or modify it under the terms of the GNU   */
+/*  Lesser General Public License as published by the Free Software       */
+/*  Foundation, version 2.1.                                              */
+/*                                                                        */
+/*  It is distributed in the hope that it will be useful,                 */
+/*  but WITHOUT ANY WARRANTY; without even the implied warranty of        */
+/*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         */
+/*  GNU Lesser General Public License for more details.                   */
+/*                                                                        */
+/*  See the GNU Lesser General Public License version 2.1                 */
+/*  for more details (enclosed in the file LICENSE).                      */
+/*                                                                        */
+/**************************************************************************/
+
+#ifndef _STD_EXCEPTION
+#define _STD_EXCEPTION
+
+#include <cstring>
+
+namespace std {
+  class exception {
+  public:
+    exception(); // noexcept
+    exception(const exception& exn); // noexcept
+    exception& operator=(const exception& exn); // noexcept;
+    virtual ~exception();
+    virtual const char* what() const;
+  };
+
+  class bad_exception : public exception {
+  public:
+    bad_exception(); // noexcept
+    bad_exception(const bad_exception&); // noexcept;
+    bad_exception& operator=(const bad_exception&); // noexcept;
+    virtual const char* what() const; // noexcept;
+  };
+
+  typedef void* exception_ptr;
+  exception_ptr current_exception(); // noexcept;
+
+  class nested_exception {
+  public:
+    nested_exception(); // noexcept;
+    nested_exception(const nested_exception&); // noexcept = default;
+    nested_exception& operator=(const nested_exception&);// noexcept = default;
+    virtual ~nested_exception(); // = default;
+    __attribute__((noreturn)) void rethrow_nested() const;
+    exception_ptr nested_ptr() const; // noexcept;
+  };
+
+  typedef void (*unexpected_handler)();
+  unexpected_handler get_unexpected(); // noexcept;
+  unexpected_handler set_unexpected(unexpected_handler f); // noexcept;
+  __attribute__((noreturn)) void unexpected();
+  typedef void (*terminate_handler)();
+  terminate_handler get_terminate(); // noexcept;
+  terminate_handler set_terminate(terminate_handler f); // noexcept;
+  __attribute__((noreturn)) void terminate(); // noexcept;
+  bool uncaught_exception(); // noexcept;
+  __attribute__((noreturn)) void rethrow_exception(exception_ptr p);
+  template<class E> exception_ptr make_exception_ptr(E e); // noexcept;
+  template <class T> void throw_with_nested(T& t) __attribute__((noreturn));
+  template <class E> void rethrow_if_nested(const E& e);
+}
+
+#endif
+
+// Local Variables:
+// mode: c++
+// End:

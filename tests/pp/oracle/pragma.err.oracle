@@ -1,0 +1,4 @@
+tests/pp/pragma.cpp:5:6: error: [pp] Preprocessor directive is not permitted in ACSL++ annotation (ignoring line): # pragma asdasdasd
+        # pragma asdasdasd
+          ^
+code generation aborted due to one compilation error

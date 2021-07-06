@@ -1,0 +1,90 @@
+/**************************************************************************/
+/*                                                                        */
+/*  This file is part of Frama-Clang                                      */
+/*                                                                        */
+/*  Copyright (C) 2012-2018                                               */
+/*    CEA (Commissariat à l'énergie atomique et aux énergies              */
+/*         alternatives)                                                  */
+/*                                                                        */
+/*  you can redistribute it and/or modify it under the terms of the GNU   */
+/*  Lesser General Public License as published by the Free Software       */
+/*  Foundation, version 2.1.                                              */
+/*                                                                        */
+/*  It is distributed in the hope that it will be useful,                 */
+/*  but WITHOUT ANY WARRANTY; without even the implied warranty of        */
+/*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         */
+/*  GNU Lesser General Public License for more details.                   */
+/*                                                                        */
+/*  See the GNU Lesser General Public License version 2.1                 */
+/*  for more details (enclosed in the file LICENSE).                      */
+/*                                                                        */
+/**************************************************************************/
+
+//
+// Description:
+//   Implementation of the template functions of a generic descent parser.
+//
+
+#include "DescentParse.h"
+
+namespace Parser {
+
+template<typename CharType>
+void
+TTextBuffer<CharType>::completeRead(const CharType* string, int length) {
+   int place = _current->capacity();
+   while (length > place) {
+      _current->append(string, place);
+      length -= place;
+      string += place;
+      performMove();
+      place = _current->capacity();
+   };
+   _current->append(string, length);
+}
+
+template<typename CharType>
+void
+TTextBuffer<CharType>::completeRead(const StringBuffer& source, size_t sourcePosition, size_t sourceCount) {
+   int place = _current->capacity();
+   while ((int) sourceCount > place) {
+      _current->append(source, sourcePosition, place);
+      sourcePosition += place;
+      sourceCount -= place;
+      performMove();
+      place = _current->capacity();
+   };
+   _current->append(source, sourcePosition, sourceCount);
+}
+
+template<typename CharType>
+void
+TTextBuffer<CharType>::completeWrite(StringBuffer& out) {
+   out.reserve(_current->capacity()*_buffers.size() + _current->length());
+   typename BuffersList::iterator iterEnd = _buffers.end();
+   for (typename BuffersList::iterator iter = _buffers.begin(); iter != iterEnd; ++iter) {
+      StringBuffer* buffer = *iter;
+      out.append(*buffer);
+      delete buffer;
+      *iter = NULL;
+   };
+   _buffers.clear();
+   out.append(*_current);
+   _current->clear();
+}
+
+template<typename CharType>
+CharType
+TTextBuffer<CharType>::completeQueryChar(int index) const {
+   typename BuffersList::const_iterator iterEnd = _buffers.end();
+   for (typename BuffersList::const_iterator iter = _buffers.begin(); iter != iterEnd; ++iter) {
+      StringBuffer* current = *iter;
+      if (index < (int) current->length())
+         return current->at(index);
+      index -= current->length();
+   };
+   return _current->at(index);
+}
+
+} // end of namespace Parser
+

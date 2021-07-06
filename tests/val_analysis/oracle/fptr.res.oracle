@@ -1,0 +1,28 @@
+[value] Analyzing a complete application starting at main
+[value] Computing initial state
+[value] Initial state computed
+[value] Values of globals at initialization
+[value] computing for function A::Ctor <- main.
+        Called from tests/val_analysis/fptr.cc:11.
+tests/val_analysis/fptr.cc:4:[value] Function A::Ctor: precondition got status valid.
+[value] Recording results for A::Ctor
+[value] Done for function A::Ctor
+[value] computing for function call <- main.
+        Called from tests/val_analysis/fptr.cc:12.
+tests/val_analysis/fptr.cc:5:[value] Function call: precondition got status valid.
+[value] computing for function foo <- call <- main.
+        Called from tests/val_analysis/fptr.cc:5.
+[value] Recording results for foo
+[value] Done for function foo
+[value] Recording results for call
+[value] Done for function call
+[value] Recording results for main
+[value] done for function main
+[value] ====== VALUES COMPUTED ======
+[value] Values at end of function foo:
+[value] Values at end of function call:
+[value] Values at end of function A::Ctor:
+          a.f ∈ {{ &foo }}
+[value] Values at end of function main:
+          a.f ∈ {{ &foo }}
+          __res ∈ {0}

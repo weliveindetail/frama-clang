@@ -1,0 +1,2 @@
+// include mechanism
+int x;

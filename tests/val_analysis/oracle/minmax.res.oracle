@@ -1,0 +1,44 @@
+share/cxx_builtin.cc:18:[kernel] warning: Encountered linkage specification "\"FRAMAC\""
+[value] Analyzing a complete application starting at main
+[value] Computing initial state
+[value] Initial state computed
+[value] Values of globals at initialization
+        Frama_C_entropy_source ∈ [--..--]
+[value] computing for function min<int> <- main.
+        Called from tests/val_analysis/minmax.cc:5.
+share/cxx_builtin.cc:24:[value] Function min<int>: precondition got status valid.
+share/cxx_builtin.cc:24:[value] Function min<int>: precondition got status valid.
+[value] Recording results for min<int>
+[value] Done for function min<int>
+[value] computing for function max<int> <- main.
+        Called from tests/val_analysis/minmax.cc:7.
+share/cxx_builtin.cc:28:[value] Function max<int>: precondition got status valid.
+share/cxx_builtin.cc:28:[value] Function max<int>: precondition got status valid.
+[value] Recording results for max<int>
+[value] Done for function max<int>
+[value] computing for function max_assgn<int> <- main.
+        Called from tests/val_analysis/minmax.cc:8.
+share/cxx_builtin.cc:38:[value] Function max_assgn<int>: precondition got status valid.
+share/cxx_builtin.cc:38:[value] Function max_assgn<int>: precondition got status valid.
+[value] computing for function max<int> <- max_assgn<int> <- main.
+        Called from share/cxx_builtin.cc:39.
+[value] Recording results for max<int>
+[value] Done for function max<int>
+[value] Recording results for max_assgn<int>
+[value] Done for function max_assgn<int>
+[value] Recording results for main
+[value] done for function main
+[value] ====== VALUES COMPUTED ======
+[value] Values at end of function max<int>:
+          __res ∈ {{ &y }}
+[value] Values at end of function min<int>:
+          __res ∈ {{ &x }}
+[value] Values at end of function max_assgn<int>:
+          __res ∈ {{ &x }}
+          x ∈ {2}
+[value] Values at end of function main:
+          x ∈ {2}
+          y ∈ {2}
+          z ∈ {1}
+          t ∈ {2}
+          __res ∈ {0}

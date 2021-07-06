@@ -1,0 +1,37 @@
+##################
+# Objective Caml #
+##################
+| ".*\.mly"      -> frame open:"/*" line:"*" close:"*/"
+| ".*\.ml[il4]?.*" -> frame open:"(*" line:"*" close:"*)"
+
+############
+# C source #
+############
+| ".*\.h"      -> frame open:"/*" line:"*" close:"*/"
+| ".*\.i"      -> frame open:"/*" line:"*" close:"*/"
+| ".*\.c"      -> frame open:"/*" line:"*" close:"*/"
+| ".*\.cc"     -> frame open:"/*" line:"*" close:"*/"
+| ".*\.cpp"    -> frame open:"/*" line:"*" close:"*/"
+| "DescentParse.template" -> frame open:"/*" line:"*" close:"*/"
+
+#############
+# Configure #
+#############
+| ".*config\.h\.in" -> frame open:"/*"  line:"*" close:"*/"
+| ".*configure\..*" -> frame open:"#"  line:"#" close:"#"
+
+############
+# Makefile #
+############
+| ".*Make.*" -> frame open:"#"  line:"#" close:"#"
+
+#######
+# ast #
+#######
+| ".*\.ast" -> frame open:"(*" line: "*" close: "*)"
+
+#######
+# STL #
+#######
+
+| "[^.]*" -> frame open: "/*" line:"*" close: "*/"

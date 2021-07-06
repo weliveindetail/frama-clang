@@ -1,0 +1,8 @@
+/* dummy test to check that C++ pre-processed files are correctly handled */
+
+struct A { int x; A(int _x=0): x(_x) {}};
+
+int main () {
+  A a(5);
+  return a.x;
+}

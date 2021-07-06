@@ -1,0 +1,2 @@
+tests/pp/keyword.cpp:8:42: invalid implicit conversion: ???? to ????
+tests/pp/keyword.cpp:8:42: unknown type comparison for the operator !=

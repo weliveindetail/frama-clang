@@ -1,0 +1,43 @@
+/**
+\mainpage The Frama-Clang documentation
+
+Frama-Clang is a Frama-C plug-in for parsing C++ files,
+based on Clang, the C/C++/Objective-C front-end of the LLVM compiler
+infrastructure. \n\n
+
+Once installed, Frama-Clang will be automatically called by Frama-C's kernel
+whenever a C++ source file is encountered. More precisely, files ending 
+with .cpp, .C, .cxx, .c++ or .cc will be treated as C++ files. \n
+
+Options of the plug-in are the following.
+\li -cxx-demangling tells Frama-C to display C++ global 
+  identifiers with their fully-qualified name (e.g. ::A::x)
+\li -cxx-demangling-short| tells Frama-C to display global 
+  C++ identifiers with their unqualified name (e.g. x)
+\li -cxx-keep-mangling tells Frama-C to display global C++
+  identifiers with the name they have in the C translation (e.g. 
+  _Z1A1x, that allows to distinguish between overloaded symbols.
+  This mangled name is computed from the fully-qualified C++ name
+  according to the rules described in the Itanium C++ ABI.
+\li -cxx-cstdlib-path <path> specifies where to look for standard
+  C library headers (default is the path to Frama-C's headers)
+\li -cxx-c++stdlib-path <path> specifies where to look for
+  standard C++ library headers (default is the path to Frama-Clang headers,
+  which are very incomplete)
+\li -cxx-nostdinc do not include in the search paths 
+  Frama-C's C/C++ standard headers location
+\li -cxx-clang-command <cmd> allows to change the name of the
+  command that launches clang and its plugin that outputs the intermediate AST.
+  This should only be needed if the front-end as a whole has not been installed
+  properly.
+
+\n
+
+Frama-Clang calls FramaCIRGen that automatically converts C++ translation units
+into an AST CIL-compatible and so a Frama-C compatible AST. \n
+
+The main classes of FramaCIRGen are FramaCIRGenAction and
+FramaCIRGenAction::Visitor.
+*/
+
+

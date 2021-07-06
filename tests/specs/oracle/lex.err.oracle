@@ -1,0 +1,2 @@
+tests/specs/lex.cc:4:11: axiom foo should be declared inside an axiomatic
+tests/specs/lex.cc:9:11: axiom foo1 should be declared inside an axiomatic

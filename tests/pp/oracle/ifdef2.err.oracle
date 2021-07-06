@@ -1,0 +1,4 @@
+tests/pp/ifdef2.cpp:10:4: error: "Failure"
+#  error "Failure"
+   ^
+1 error generated.

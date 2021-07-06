@@ -1,0 +1,4 @@
+[kernel] Parsing tests/pp/define.cpp (external front-end)
+[kernel] User Error: Failed to parse C++ file. See Clang messages for more information
+[kernel] User Error: stopping on file "tests/pp/define.cpp" that has errors.
+[kernel] Frama-C aborted: invalid user input.

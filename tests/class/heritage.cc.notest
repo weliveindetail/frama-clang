@@ -1,0 +1,70 @@
+#define __cplusplus
+#include <stdio.h>
+
+class Point {
+public:
+  Point () { _x =0; _y=0;}
+  Point (int x, int y);
+  Point (const Point& p);
+  void move_x (int);
+  void move_y (int);
+  void move (int, int);
+  int get_x () const { return _x;}
+  int get_y () const { return _y;}
+  virtual void affiche();
+protected:
+  int _x;
+  int _y;
+};
+
+Point::Point (int x, int y) { _x = x; _y = y;}
+
+Point::Point(const Point& p) { _x = p._x; _y = p._y; }
+
+void Point::move_x(int dx) { _x += dx;}
+void Point::move_y(int dy) { _y += dy;}
+
+void Point::move(int dx, int dy) 
+{ this->move_x(dx); this->move_y(dy); };
+
+void Point::affiche () { printf("(%d,%d)",_x,_y); }
+
+class ColoredPoint: public Point {
+public:
+  ColoredPoint(): Point() { _color = 0; };
+  ColoredPoint(int x1, int y1, unsigned int c = 0): Point(x1,y1) {_color = c;};
+  ColoredPoint(const ColoredPoint&);
+  ColoredPoint(const Point&);
+  virtual void affiche();
+protected:
+  unsigned int _color;
+};
+
+ColoredPoint::ColoredPoint(const ColoredPoint& p) {
+  _x = p._x; _y = p._y; _color = p._color;
+}
+
+ColoredPoint::ColoredPoint(const Point& p){
+  _x = p.get_x(); _y = p.get_y(); _color = 0;
+}
+
+void ColoredPoint::affiche() {
+  if (!_color) { Point::affiche(); } 
+  else
+    {
+      printf("(%d,%d): color #%u",_x,_y,_color);
+    }
+}
+
+int main () {
+  Point o;
+  Point a(1,1);
+  a.move(1,-1);
+  ColoredPoint b(1,1,1);
+  Point *foo = &a;
+  foo->affiche();
+  foo = &b;
+  foo->affiche();
+  b.affiche();
+  return 0;
+}

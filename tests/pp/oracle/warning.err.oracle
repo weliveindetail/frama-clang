@@ -1,0 +1,4 @@
+tests/pp/warning.cpp:6:5: warning: M		 __LINE__
+        #  warning M             __LINE__
+           ^
+1 warning generated.

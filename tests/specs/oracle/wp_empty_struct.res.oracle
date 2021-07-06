@@ -1,0 +1,9 @@
+[kernel] Parsing tests/specs/wp_empty_struct.cpp (external front-end)
+Now output intermediate result
+[wp] Running WP plugin...
+[wp] Warning: Missing RTE guards
+[wp] 2 goals scheduled
+[wp] [Qed] Goal typed_ZN6Point2E3foo_ensures_2 : Valid
+[wp] [Qed] Goal typed_ZN6Point2E3foo_ensures : Valid
+[wp] Proved goals:    2 / 2
+  Qed:             2

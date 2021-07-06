@@ -1,0 +1,1 @@
+tests/pp/linecomment.cpp:5:1: [lexer error] No line number to read (ignoring #line directive)

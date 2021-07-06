@@ -1,0 +1,4 @@
+tests/template/template_autofriend.cpp:7:1: warning: declaration does not declare anything
+a::b<char>;
+^~~~~~~~~~
+1 warning generated.

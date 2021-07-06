@@ -1,0 +1,1 @@
+tests/pp/sstruct.cpp:10:17: unexpected end of input after a struct/union/class token, beginning a type

@@ -1,0 +1,52 @@
+share/malloc.cc:14:[kernel] warning: Encountered linkage specification "\"FRAMAC\""
+[value] Analyzing a complete application starting at main
+[value] Computing initial state
+[value] Initial state computed
+[value] Values of globals at initialization
+        __fc_random_counter ∈ {0}
+        __fc_rand_max ∈ {32767}
+        x ∈ {0}
+        base ∈ {0}
+        next_free ∈ {0}
+[value] computing for function malloc <- main.
+        Called from tests/val_analysis/alloc.cc:18.
+[value] Recording results for malloc
+[value] Done for function malloc
+[value] computing for function A::Ctor <- main.
+        Called from tests/val_analysis/alloc.cc:18.
+tests/val_analysis/alloc.cc:13:[value] Function A::Ctor: precondition got status valid.
+[value] Recording results for A::Ctor
+[value] Done for function A::Ctor
+[value] computing for function A::Dtor <- main.
+        Called from tests/val_analysis/alloc.cc:19.
+tests/val_analysis/alloc.cc:14:[value] Function A::Dtor: precondition got status valid.
+[value] Recording results for A::Dtor
+[value] Done for function A::Dtor
+[value] computing for function free <- main.
+        Called from tests/val_analysis/alloc.cc:19.
+[value] Recording results for free
+[value] Done for function free
+[value] Recording results for main
+[value] done for function main
+[value] ====== VALUES COMPUTED ======
+[value] Values at end of function A::Ctor:
+          x ∈ {1}
+          __malloc_MEMORY[bits 0 to 31] ∈ {1}
+                         [4..137438953471] ∈ UNINITIALIZED
+[value] Values at end of function A::Dtor:
+          x ∈ {0}
+[value] Values at end of function free:
+[value] Values at end of function malloc:
+          addr ∈ {{ &__malloc_MEMORY }}
+          __res ∈ {{ &__malloc_MEMORY }}
+          base ∈ {{ &__malloc_MEMORY }}
+          next_free ∈ {4}
+[value] Values at end of function main:
+          x ∈ {0}
+          e_new_name_0 ∈ {{ &__malloc_MEMORY }}
+          a ∈ {{ &__malloc_MEMORY }}
+          __res ∈ {0}
+          base ∈ {{ &__malloc_MEMORY }}
+          next_free ∈ {4}
+          __malloc_MEMORY[bits 0 to 31] ∈ {1}
+                         [4..137438953471] ∈ UNINITIALIZED

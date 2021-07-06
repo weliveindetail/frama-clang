@@ -1,0 +1,111 @@
+/**************************************************************************/
+/*                                                                        */
+/*  This file is part of Frama-Clang                                      */
+/*                                                                        */
+/*  Copyright (C) 2012-2018                                               */
+/*    CEA (Commissariat à l'énergie atomique et aux énergies              */
+/*         alternatives)                                                  */
+/*                                                                        */
+/*  you can redistribute it and/or modify it under the terms of the GNU   */
+/*  Lesser General Public License as published by the Free Software       */
+/*  Foundation, version 2.1.                                              */
+/*                                                                        */
+/*  It is distributed in the hope that it will be useful,                 */
+/*  but WITHOUT ANY WARRANTY; without even the implied warranty of        */
+/*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         */
+/*  GNU Lesser General Public License for more details.                   */
+/*                                                                        */
+/*  See the GNU Lesser General Public License version 2.1                 */
+/*  for more details (enclosed in the file LICENSE).                      */
+/*                                                                        */
+/**************************************************************************/
+
+#ifndef _STD_STREAMBUF
+#define _STD_STREAMBUF
+
+#include <__fc_define_char_traits_char>
+#include <ios>
+#include <locale>
+
+namespace std {
+  template <class charT, class traits> class basic_streambuf {
+    typedef charT char_type;
+    typedef typename traits::int_type int_type;
+    typedef typename traits::pos_type pos_type;
+    typedef typename traits::off_type off_type;
+    typedef traits traits_type;
+
+    virtual ~basic_streambuf();
+
+    locale pubimbue(const locale& loc);
+    locale getloc() const;
+
+    basic_streambuf<char_type,traits>* pubsetbuf(char_type* s, streamsize n);
+    pos_type pubseekoff(off_type off, ios_base::seekdir way,
+                        ios_base::openmode which =
+                        ios_base::in | ios_base::out);
+    pos_type pubseekpos(pos_type sp,
+                        ios_base::openmode which =
+                        ios_base::in | ios_base::out);
+    int pubsync();
+    streamsize in_avail();
+    int_type snextc();
+    int_type sbumpc();
+    int_type sgetc();
+    streamsize sgetn(char_type* s, streamsize n);
+    // 27.6.3.2.4 Putback:
+    int_type sputbackc(char_type c);
+    int_type sungetc();
+    // 27.6.3.2.5 Put area:
+    int_type
+    sputc(char_type c);
+    streamsize sputn(const char_type* s, streamsize n);
+  protected:
+    basic_streambuf();
+    basic_streambuf(const basic_streambuf& rhs);
+    basic_streambuf& operator=(const basic_streambuf& rhs);
+
+    void swap(basic_streambuf& rhs);
+    // 27.6.3.3.2 Get area:
+    char_type* eback() const;
+    char_type* gptr() const;
+    char_type* egptr() const;
+    void gbump(int n);
+    void setg(char_type* gbeg, char_type* gnext, char_type* gend);
+    // 27.6.3.3.3 Put area:
+    char_type* pbase() const;
+    char_type* pptr() const;
+    char_type* epptr() const;
+    void pbump(int n);
+    void setp(char_type* pbeg, char_type* pend);
+    // 27.6.3.4 virtual functions:
+    // 27.6.3.4.1 Locales:
+    virtual void imbue(const locale& loc);
+    // 27.6.3.4.2 Buffer management and positioning:
+    virtual basic_streambuf<char_type,traits>*
+    setbuf(char_type* s, streamsize n);
+    virtual pos_type seekoff(
+      off_type off, ios_base::seekdir way,
+      ios_base::openmode which = ios_base::in | ios_base::out);
+    virtual pos_type seekpos(
+      pos_type sp, ios_base::openmode which = ios_base::in | ios_base::out);
+    virtual int sync();
+    // 27.6.3.4.3 Get area:
+    virtual streamsize showmanyc();
+    virtual streamsize xsgetn(char_type* s, streamsize n);
+    virtual int_type underflow();
+    virtual int_type uflow();
+    // 27.6.3.4.4 Putback:
+    virtual int_type pbackfail(int_type c = traits::eof());
+    // 27.6.3.4.5 Put area:
+    virtual streamsize xsputn(const char_type* s, streamsize n);
+    virtual int_type overflow (int_type c = traits::eof());
+  };
+
+}
+
+#endif
+
+// Local Variables:
+// mode: c++
+// End:

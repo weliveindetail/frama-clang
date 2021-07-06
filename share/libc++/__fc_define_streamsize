@@ -1,0 +1,13 @@
+#ifndef __STD_FC_DEFINE_STREAMSIZE
+
+#define __STD_FC_DEFINE_STREAMSIZE
+
+namespace std {
+    typedef __PTRDIFF_T streamsize;
+}
+
+#endif
+
+// Local Variables:
+// mode: c++
+// End:

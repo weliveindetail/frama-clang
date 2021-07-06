@@ -1,0 +1,7 @@
+void a();
+static __typeof(a) b __attribute__((__weakref__("a")));
+
+int main () {
+  a();
+  b();
+}

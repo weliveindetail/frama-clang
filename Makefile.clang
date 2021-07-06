@@ -1,0 +1,111 @@
+##########################################################################
+#                                                                        #
+#  This file is part of Frama-Clang                                      #
+#                                                                        #
+#  Copyright (C) 2012-2018                                               #
+#    CEA (Commissariat à l'énergie atomique et aux énergies              #
+#         alternatives)                                                  #
+#                                                                        #
+#  you can redistribute it and/or modify it under the terms of the GNU   #
+#  Lesser General Public License as published by the Free Software       #
+#  Foundation, version 2.1.                                              #
+#                                                                        #
+#  It is distributed in the hope that it will be useful,                 #
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of        #
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         #
+#  GNU Lesser General Public License for more details.                   #
+#                                                                        #
+#  See the GNU Lesser General Public License version 2.1                 #
+#  for more details (enclosed in the file LICENSE).                      #
+#                                                                        #
+##########################################################################
+
+##===- tools/frama-c/Makefile --------------------------*- Makefile -*-===##
+#
+##===----------------------------------------------------------------------===##
+
+### Clang specific Makefile. Don't call it directly, use the targets from
+### main Makefile
+
+### NB: This directory is supposed to be placed in clang/tools, which itself
+### should reside in llvm/tools. LLVM Makefile does not seem robust enough to
+### support a completely external compilation.
+
+TOOLNAME = framaCIRGen
+
+PLUGIN_DIR ?= .
+
+Frama_Clang_DIR=$(PLUGIN_DIR)
+
+include $(PLUGIN_DIR)/Makefile.common
+
+.PHONY: default clean install doc
+
+OBJS=\
+  $(addprefix $(PLUGIN_DIR)/, \
+     Clang_utils.o intermediate_format.o ACSLComment.o ACSLLogicType.o   \
+     ACSLTermOrPredicate.o ACSLLoopAnnotation.o ACSLStatementAnnotation.o\
+     ACSLGlobalAnnotation.o ACSLCodeAnnotation.o ACSLFunctionContract.o  \
+     ACSLComponent.o ACSLLexer.o ACSLParser.o                            \
+     ACSLToken.o DescentParse.o RTTITable.o VisitTable.o                 \
+     ClangVisitor.o FramaCIRGen.o)
+
+DEPS=$(OBJS:.o=.d)
+CXXFLAGS?=$(CLANG_CXXFLAGS)
+CXXFLAGS+=-Wno-enum-compare -DCLANG_BIN_DIR=\"$(CLANG_BIN_DIR)\"
+CFLAGS?=$(CLANG_CFLAGS)
+CFLAGS+=-Wno-enum-compare
+
+# enabling non-null assertions for AST construction would require
+# some refactoring in RTTITable.cpp. Still TODO at this point.
+CHECK_AST_CONSTRUCTION?=no
+
+ifeq ("$(CHECK_AST_CONSTRUCTION)","no")
+$(Frama_Clang_DIR)/intermediate_format.o: CFLAGS+=-DNDEBUG
+endif
+
+ifeq ("$(CLANG_DEBUG)","yes")
+CXXFLAGS+=-g
+CFLAGS+=-g
+CLANG_LINKFLAGS+=-g
+endif
+
+#LINK_COMPONENTS := $(TARGETS_TO_BUILD) asmparser support mc
+USEDLIBS = clangFrontend clangDriver clangParse clangSema clangAnalysis \
+           clangEdit clangAST clangLex clangSerialization clangBasic
+
+# for use in main Makefile
+default: $(PLUGIN_DIR)/bin/$(TOOLNAME)
+
+$(PLUGIN_DIR)/bin/$(TOOLNAME): $(OBJS) $(PLUGIN_DIR)/bin
+	$(PRINT_LINKING) $@
+	$(CXX) $(CLANG_LINKFLAGS) -o $@  \
+               $(OBJS) $(addprefix -l,$(USEDLIBS)) $(LLVM_LIBS) $(CLANG_SYSLIBS) $(CLANG_LINKFLAGS)
+
+$(PLUGIN_DIR)/bin:
+	$(MKDIR) $@
+
+clean:
+	$(PRINT_RM) 'FramaCIRGen'
+	rm -f $(PLUGIN_DIR)/bin/$(TOOLNAME) *.o *.d
+
+%.o: %.cpp
+	$(PRINT) 'Compiling    '$<
+	$(CXX) -c $(CXXFLAGS) -I $(CLANG_INCDIR) -I $(PLUGIN_DIR) \
+	           -MD -MF $(@:.o=.d) -o $@ $<
+
+%.o: %.c
+	$(PRINT) 'Compiling    '$<
+	$(CC) -c $(CFLAGS) -I $(CLANG_INCDIR) -I $(PLUGIN_DIR) -o $@ $<
+
+install:
+	$(PRINT_INSTALL) $(TOOLNAME) in $(BINDIR)
+	$(MKDIR) -p $(BINDIR)
+	cp $(PLUGIN_DIR)/bin/$(TOOLNAME) $(BINDIR)
+
+doc:
+	$(PRINT_MAKING) "FramaCIRGen documentation"
+	cd $(PLUGIN_DIR) && doxygen
+	cd $(PLUGIN_DIR)/doc/latex && make
+
+-include $(DEPS)

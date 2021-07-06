@@ -1,0 +1,310 @@
+/**************************************************************************/
+/*                                                                        */
+/*  This file is part of Frama-Clang                                      */
+/*                                                                        */
+/*  Copyright (C) 2012-2018                                               */
+/*    CEA (Commissariat à l'énergie atomique et aux énergies              */
+/*         alternatives)                                                  */
+/*                                                                        */
+/*  you can redistribute it and/or modify it under the terms of the GNU   */
+/*  Lesser General Public License as published by the Free Software       */
+/*  Foundation, version 2.1.                                              */
+/*                                                                        */
+/*  It is distributed in the hope that it will be useful,                 */
+/*  but WITHOUT ANY WARRANTY; without even the implied warranty of        */
+/*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         */
+/*  GNU Lesser General Public License for more details.                   */
+/*                                                                        */
+/*  See the GNU Lesser General Public License version 2.1                 */
+/*  for more details (enclosed in the file LICENSE).                      */
+/*                                                                        */
+/**************************************************************************/
+
+#ifndef _STD_TYPE_TRAITS
+#define _STD_TYPE_TRAITS
+
+#include <cstddef>
+
+namespace std {
+  template <class T, T v> struct integral_constant {
+    static constexpr T value = v;
+    typedef T value_type;
+    typedef integral_constant<T,v> type;
+    constexpr operator value_type() const { return value; }
+  };
+
+  template<bool b> struct __boolean: integral_constant<bool, b> { };
+
+  typedef __boolean<true> true_type;
+  typedef __boolean<false> false_type;
+
+  template <class A, class B> struct __or;
+
+  template<class B> struct __or<typename false_type::type, B>: public B { };
+  template<class B> struct __or<typename true_type::type, B>:
+    public true_type { };
+
+  template <class A, class B> struct __and;
+
+  template <class B> struct __and<false_type::type, B>: public false_type { };
+  template <class B> struct __and<true_type::type, B>: public B { };
+
+  template <class T> struct remove_cv; // forward declaration
+
+  template <class T> struct _is_void: public false_type { };
+  template <> struct _is_void<void>: public true_type { };
+  template <class T> struct is_void:
+    public _is_void<typename remove_cv<T>::type>::type {};
+
+  template <class T> struct is_integral;
+  template <class T> struct is_floating_point;
+  template <class T> struct is_array;
+  template <class T> struct is_pointer;
+  template <class T> struct is_lvalue_reference;
+  template <class T> struct is_rvalue_reference;
+  template <class T> struct is_member_object_pointer;
+  template <class T> struct is_member_function_pointer;
+  template <class T> struct is_enum;
+  template <class T> struct is_union;
+
+  // see https://en.cppreference.com/w/cpp/types/is_class
+  
+  // Helper variable template since C++17
+  // template< class T >
+  // inline constexpr bool is_class_v = is_class<T>::value;
+
+  // Possible implementation (depends on implementation of is_union)
+  // namespace detail {
+  //   template <class T> char test(int T::*);
+  //   struct two { char c[2]; };
+  //   template <class T> two test(...);
+  // } // namespace detail
+ 
+  // template <class T>
+  // struct is_class : std::integral_constant<bool, sizeof(test<T>(0))==1
+  //                                             && !std::is_union<T>::value> {};
+  template <class T> struct is_class;
+  template <class T> struct is_function;
+  template <class T> struct is_reference;
+  template <class T> struct is_arithmetic;
+  template <class T> struct is_fundamental;
+  template <class T> struct is_object;
+  template <class T> struct is_scalar;
+  template <class T> struct is_compound;
+  template <class T> struct is_member_pointer;
+  template <class T> struct is_const;
+  template <class T> struct is_volatile;
+  template <class T> struct is_trivial;
+  template <class T> struct is_trivially_copyable;
+  template <class T> struct is_standard_layout;
+  template <class T> struct is_pod;
+  template <class T> struct is_literal_type;
+  template <class T> struct is_empty;
+  template <class T> struct is_polymorphic;
+  template <class T> struct is_abstract;
+  template <class T> struct is_signed;
+  template <class T> struct is_unsigned;
+
+  template <class T> struct add_rvalue_reference; // forward decl
+
+  struct ok_type { int _x; };
+  struct ko_type { int _x; int _y; };
+
+  // C++11 Standard declares it in utility, but it is used in the traits
+  // below to check for the presence of a given constructor.
+  template <class T>
+  typename add_rvalue_reference<T>::type declval() noexcept;
+
+  template
+  <class T, class... Args,
+   typename _test = decltype(T(declval<Args>()...))>
+  ok_type _is_constructible(int);
+
+  template <class, class...> ko_type _is_constructible(...);
+
+  template <class T, class... Args> struct is_constructible:
+    integral_constant<
+    bool,
+    sizeof(decltype(_is_constructible<T,Args...>(0)))==sizeof(ok_type)>
+  { };
+
+  template <class T> struct is_default_constructible:
+    is_constructible<T> { };
+
+  template <class T> struct is_copy_constructible:
+    public is_constructible<T, const T&> { };
+
+  template <class T> struct is_move_constructible;
+
+  template <class T, class U> struct is_assignable:
+    __boolean<__is_assignable(T,U)> { };
+
+  template <class T> struct is_copy_assignable:
+    is_assignable<T&, const T&> { };
+
+  template <class T> struct is_move_assignable:
+    is_assignable<T&, T&&> { };
+
+  template <class T> struct is_destructible;
+  template <class T> struct is_trivially_default_constructible;
+  template <class T> struct is_trivially_copy_constructible;
+  template <class T, class... Args> struct is_trivially_constructible;
+  template <class T> struct is_trivially_move_constructible;
+  template <class T> struct is_trivially_copy_assignable;
+  template <class T> struct is_trivially_move_assignable;
+  template <class T, class U> struct is_trivially_assignable;
+  template <class T> struct is_trivially_destructible;
+
+  template <class T, class... Args, bool = noexcept(T(declval<Args>()...))>
+  ok_type _is_nothrow_constructible(int);
+
+  template<class T, class... Args> ko_type _is_nothrow_constructible(...);
+
+  template <class T, class... Args> struct is_nothrow_constructible:
+    public
+  __boolean<
+    sizeof(decltype(_is_nothrow_constructible<T,Args...>(0)))==sizeof(ok_type)>
+  { };
+
+  template <class T> struct is_nothrow_default_constructible:
+    public is_nothrow_constructible<T> { };
+
+  template <class T> struct is_nothrow_copy_constructible:
+    public is_nothrow_constructible<T, const T&> { };
+
+  template <class T> struct is_nothrow_move_constructible:
+    public is_nothrow_constructible<T, T&&> { };
+
+  template <class T, class U,
+            bool = noexcept(declval<T>()=declval<U>())>
+  ok_type _is_nothrow_assignable(int);
+  template <class, class> ko_type _is_nothrow_assignable(...);
+
+  template <class T, class U> struct is_nothrow_assignable:
+    public
+  __boolean<sizeof(decltype(_is_nothrow_assignable<T,U>(0)))==sizeof(ok_type)>
+  { };
+
+  template <class T> struct is_nothrow_copy_assignable:
+    public is_nothrow_assignable<T&, const T&> { };
+  template <class T> struct is_nothrow_move_assignable:
+    public is_nothrow_assignable<T&, T&&> { };
+
+  template <class T> struct is_nothrow_destructible;
+  template <class T> struct has_virtual_destructor;
+  template <class T> struct alignment_of;
+  template <class T> struct rank;
+  template <class T, unsigned I = 0> struct extent;
+
+  template <class T, class U> struct is_same: false_type { };
+  template <class T>struct is_same<T,T>: true_type { };
+
+  // see https://en.cppreference.com/w/cpp/types/void_t
+  template< class... >
+  using void_t = void;
+  // earlier compilers require a more complex definition of void_t, such as:
+  // template<typename... Ts> struct make_void { typedef void type;};
+  // template<typename... Ts> using void_t = typename make_void<Ts...>::type;
+  
+  // see https://en.cppreference.com/w/cpp/types/is_base_of
+  // namespace detail {
+  template <typename Base> std::true_type is_base_of_test_func(const volatile Base*);
+  template <typename Base> std::false_type is_base_of_test_func(const volatile void*);
+  template <typename Base, typename Derived>
+  using pre_is_base_of = decltype(is_base_of_test_func<Base>(std::declval<Derived*>()));
+ 
+  template <typename Base, typename Derived, typename = void>
+  struct pre_is_base_of2 : public std::true_type { };
+  // note std::void_t is a C++17 feature
+  template <typename Base, typename Derived>
+  struct pre_is_base_of2<Base, Derived, std::void_t<pre_is_base_of<Base, Derived>>> :
+    public pre_is_base_of<Base, Derived> { };
+  // } // namespace detail
+
+  // this is too complicated because we have no implementation of is_union
+  // and so no implementation of is_class
+  // so don't do this check
+  // template <typename Base, typename Derived> struct is_base_of :
+  //   public std::conditional_t<
+  //       std::is_class<Base>::value && std::is_class<Derived>::value,
+  //       pre_is_base_of2<Base, Derived>,
+  //       std::false_type> { };
+
+  template <class Base, class Derived>
+  struct is_base_of : pre_is_base_of2<Base, Derived> {};
+
+  template<typename From, typename To>
+  struct is_convertible: __boolean<__is_convertible_to(From,To)> { };
+
+  template <class T> struct remove_const { typedef T type; };
+  template <class T> struct remove_const<const T> { typedef T type; };
+
+  template <class T> struct remove_volatile { typedef T type; };
+  template <class T> struct remove_volatile<volatile T> { typedef T type; };
+
+  template <class T> struct remove_cv:
+    public remove_const<remove_volatile<T> > { };
+
+  template <class T> struct add_const;
+  template <class T> struct add_volatile;
+  template <class T> struct add_cv;
+
+  template <class T> struct remove_reference { typedef T type; };
+  template <class T> struct remove_reference<T&> { typedef T type; };
+  template <class T> struct remove_reference<T&&> { typedef T type; };
+
+  template <class T> struct add_lvalue_reference {
+    typedef typename remove_reference<T>::type& type;
+  };
+
+  template <class T> struct add_rvalue_reference {
+    typedef typename remove_reference<T>::type&& type;
+  };
+
+  template <class T> struct make_signed;
+  template <class T> struct make_unsigned;
+  template <class T> struct remove_extent;
+  template <class T> struct remove_all_extents;
+  template <class T> struct remove_pointer;
+  template <class T> struct add_pointer;
+  template <size_t Len, size_t Align> struct aligned_storage;
+  template <size_t Len, class... Types> struct aligned_union;
+  template <class T> struct decay;
+
+  template <bool, class T=void> struct enable_if;
+  template <class T> struct enable_if<true, T> { typedef T type; };
+  template <class T> struct enable_if<false, T> { };
+
+  template <bool, class T, class F> struct conditional;
+  template <class T, class F> struct conditional<true,T,F> { typedef T type; };
+  template <class T, class F> struct conditional<false,T,F> { typedef F type; };
+  // see https://en.cppreference.com/w/cpp/types/conditional
+  // helper types
+  template< bool B, class T, class F >
+  using conditional_t = typename conditional<B,T,F>::type;
+  
+  template <class... T> struct common_type;
+  template <class T> struct underlying_type;
+  template <class> class result_of;
+  template <class F, class... ArgTypes> class result_of<F(ArgTypes...)> {
+    public:
+    typedef F type;
+  };
+
+  template <class F, class... ArgTypes> class result_of<F(*)(ArgTypes...)> {
+    public:
+    typedef F type;
+  };
+
+  template <class F, class... ArgTypes> class result_of<F(&)(ArgTypes...)> {
+    public:
+    typedef F type;
+  };
+
+}
+
+#endif
+
+// Local Variables:
+// mode: c++
+// End:
