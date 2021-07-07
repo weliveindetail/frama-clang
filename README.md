@@ -21,11 +21,39 @@ Frama-Clang
   (i.e. the same version than the one that was used to compile Frama-C).
 - The corresponding camlp5 version
 
-The front-end can then be compiled with the traditional commands
+Build the front-end with [autotools](https://en.wikipedia.org/wiki/GNU_Autotools):
 ```
-./configure
-make
-make install
+> git clone https://git.frama-c.com/pub/frama-clang
+> cd frama-clang
+> export FRAMAC_SHARE=/usr/local/share/frama-c
+> autoconf
+> ./configure
+> make
+```
+
+In order to run tests, build frama-c from source:
+```
+> opam update
+> opam install why3
+> why3 --version
+Why3 platform, version 1.4.0
+> why3 config detect
+Found prover Alt-Ergo version 2.2.0, OK.
+...
+> git clone https://git.frama-c.com/pub/frama-c
+> cd frama-c
+> autoconf
+> ./configure
+...
+configure: wp: partial, gui not enabled
+> make install
+```
+
+Now reinstall the frama-clang plugin and run the tests like this:
+```
+> cd frama-clang
+> make install
+> make tests
 ```
 
 Depending on the exact configuration of the system, 
