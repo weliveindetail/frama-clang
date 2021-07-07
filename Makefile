@@ -92,6 +92,7 @@ $(Frama_Clang_DIR)/%.mli $(Frama_Clang_DIR)/%.c: \
 	$(PRINT_MAKING) "intermediate AST"
 	$(Frama_Clang_DIR)/gen_ast $<
 
+# Get verbose output by appending: SHELL='sh -x'
 CLANG_MAKE:=$(MAKE) PLUGIN_DIR=$(Frama_Clang_DIR) FRAMAC_SHARE=$(FRAMAC_SHARE) \
             -f $(Frama_Clang_DIR)/Makefile.clang
 
