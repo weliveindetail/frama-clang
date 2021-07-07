@@ -45,6 +45,7 @@
 /tests/stl/result/*
 /tests/pp/result/*
 /tests/ppwp/result/*
+/tests/wp-cache/cache/*
 /tests/ptests_config
 /bin/framaCIRGen
 META.frama-c-frama_clang
