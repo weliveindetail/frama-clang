@@ -55,7 +55,7 @@ namespace std {
   }
 
   template <class T> T&& forward(typename remove_reference<T>::type&& t) noexcept {
-    return t;
+    return static_cast<T&&>(t);
   }
 
   template <class T> typename remove_reference<T>::type&& move(T&& t) noexcept {

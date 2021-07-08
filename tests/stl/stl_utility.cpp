@@ -15,6 +15,7 @@ int f(int x) {
   std::swap<int,2>(A,B);
   int && z = std::forward<int>(x);
   int && t = std::forward<int>(z);
+  int && xr = std::forward<int>(x + 1);
   int && u = std::move<int>(42);
   int && v = std::move_if_noexcept<int>(y);
   S s1(2);

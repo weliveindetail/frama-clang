@@ -681,6 +681,13 @@ _Bool *forward<bool>(type *t)
 
 /*@ requires \valid(t);
     ensures \valid(\result); */
+int *forward<int>(type *t)
+{
+  return t;
+}
+
+/*@ requires \valid(t);
+    ensures \valid(\result); */
 type *move<int>(int *t)
 {
   return t;
@@ -989,6 +996,7 @@ int f(int x)
   int __retres;
   int A[2];
   int B[2];
+  int *xr;
   int *u;
   type *tmp_4;
   type *tmp_5;
@@ -1018,30 +1026,32 @@ int f(int x)
   swap<int,2>(& A,& B);
   int *z = forward<int>(& x);
   int *t = forward<int>(z);
-  int __clang_tmp_2 = 42;
-  u = move<int>(& __clang_tmp_2);
+  type __clang_tmp_2 = x + 1;
+  xr = forward<int>(& __clang_tmp_2);
+  int __clang_tmp_3 = 42;
+  u = move<int>(& __clang_tmp_3);
   int *v = move_if_noexcept<int>(& y);
   struct S s1;
   S::Ctor(& s1,2);
   struct S s2;
   S::Ctor(& s2,1);
-  _Bool const __clang_tmp_3 = (_Bool)(s1.x >= 0);
+  _Bool const __clang_tmp_4 = (_Bool)(s1.x >= 0);
   struct pair<int&,bool> ib;
-  pair<int&,bool>::Ctor(& ib,& x,& __clang_tmp_3);
+  pair<int&,bool>::Ctor(& ib,& x,& __clang_tmp_4);
   {
     struct pair<int&,bool> *tmp_3;
-    _Bool __clang_tmp_5 = (_Bool)(s2.x >= 0);
+    _Bool __clang_tmp_6 = (_Bool)(s2.x >= 0);
     struct pair<int,bool> __fc_tmp_4 =
-      make_pair<int&,bool>(& y,& __clang_tmp_5);
+      make_pair<int&,bool>(& y,& __clang_tmp_6);
     tmp_3 = operator=<int,bool,void>(& ib,& __fc_tmp_4);
     pair<int,bool>::Dtor((struct pair<int,bool> const *)(& __fc_tmp_4));
   }
   struct pair<int,double> p;
   pair<int,double>::Ctor(& p);
-  int const __clang_tmp_6 = 8;
-  double const __clang_tmp_7 = 4.0;
+  int const __clang_tmp_7 = 8;
+  double const __clang_tmp_8 = 4.0;
   struct pair<int,double> q;
-  pair<int,double>::Ctor(& q,& __clang_tmp_6,& __clang_tmp_7);
+  pair<int,double>::Ctor(& q,& __clang_tmp_7,& __clang_tmp_8);
   struct pair<int,double> *r = & q;
   swap<int,double>(& p,r);
   tmp_4 = get<0,int,double>(& p);
