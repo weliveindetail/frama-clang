@@ -7392,25 +7392,42 @@ bool FramacVisitor::VisitFunctionDecl(clang::FunctionDecl* Decl) {
         if (isInstance && Decl->getPrimaryTemplate())
           _clangUtils->popTemplateInstance(Decl->getPrimaryTemplate());
         if (!waitDeclarations.empty()) {
-          func->cons_translation_unit_decl.Function.body = opt_none();
-          translation_unit_decl copyFunc = translation_unit_decl_dup(func);
-          free(copyFunc->cons_translation_unit_decl.Function.body);
-          copyFunc->cons_translation_unit_decl.Function.body = body;
+          //
+          // The code below was commented out in order to allow analysis for a
+          // widely used C++ construct. For the moment, it might be useful to
+          // leave it here, so the approach can be revisited easily. Please find
+          // more details in the bugtracker:
+          // https://git.frama-c.com/pub/frama-c/-/issues/2564
+          //
+          // It appears that it was the intention to avoid duplicate definitions
+          // in the output AST and instead only emit declarations for first
+          // occurences. However, this also caused the frama-c engine to
+          // generate default definitions for such first occurences and ignore
+          // the actual implementations later on.
+          //
+          // The duplicate definitions don't seem harmful and the test suite
+          // still works well. Analysis will use only one of them and report
+          // the other one as uncovered.
+          //
+          //func->cons_translation_unit_decl.Function.body = opt_none();
+          //translation_unit_decl copyFunc = translation_unit_decl_dup(func);
+          //free(copyFunc->cons_translation_unit_decl.Function.body);
+          //copyFunc->cons_translation_unit_decl.Function.body = body;
           if (_parents.hasLexicalContext() && !_parents.isClass())
             _parents.add(func);
           else {
             _globals.insertContainer(func);
           };
-          if (decl_name->tag_decl_or_impl_name == DECLARATION) {
-            decl_name->cons_decl_or_impl_name.Declaration.name = strdup("");
-            qualified_name qual = _clangUtils->makeQualifiedName(*Decl);
-            free(const_cast<char*>(qual->decl_name));
-            qual->decl_name = name;
-            free_decl_or_impl_name(decl_name);
-            decl_name = decl_or_impl_name_Implementation(qual);
-          };
+          //if (decl_name->tag_decl_or_impl_name == DECLARATION) {
+          //  decl_name->cons_decl_or_impl_name.Declaration.name = strdup("");
+          //  qualified_name qual = _clangUtils->makeQualifiedName(*Decl);
+          //  free(const_cast<char*>(qual->decl_name));
+          //  qual->decl_name = name;
+          //  free_decl_or_impl_name(decl_name);
+          //  decl_name = decl_or_impl_name_Implementation(qual);
+          //};
           _tableForWaitingDeclarations.addIncompleteFunction(Decl,
-              waitDeclarations, copyFunc);
+              waitDeclarations, func);
           isGenerationEffective = false;
         }
       };
