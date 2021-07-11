@@ -202,6 +202,9 @@ ProcessArguments::process(char** argument, int& currentArgument) {
         else if (strcmp(argument[0],"--gen-impl-meth")==0) {
           _doesGenerateImplicitMethods=true;
           --currentArgument;
+        } else {
+          std::cout << "Ignore unknown argument: " << argument[0] << std::endl;
+          --currentArgument;
         }
         return true;
       default:
