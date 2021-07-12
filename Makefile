@@ -24,7 +24,7 @@
 ### we have two auxiliary Makefiles, one for each side of the front-end.
 ### We define here general targets that will operate on both sides.
 
-FCLANG_VERSION=0.0.10
+FCLANG_VERSION=0.0.11
 
 PLUGIN_DIR ?= .
 
