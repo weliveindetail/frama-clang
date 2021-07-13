@@ -35,3 +35,9 @@
 #######
 
 | "[^.]*" -> frame open: "/*" line:"*" close: "*/"
+
+########
+# Misc #
+########
+
+| ".*\.dox" -> frame open: "/*" line: "*" close: "*/"

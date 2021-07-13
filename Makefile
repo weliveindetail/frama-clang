@@ -52,11 +52,7 @@ else
 PLUGIN_NO_TESTS:=yes
 endif
 PLUGIN_DISTRIBUTED:=no
-PLUGIN_DISTRIB_EXTERNAL:=configure.ac configure Makefile Makefile.clang \
-Makefile.common Makefile.config.in gen_ast.ml *.cpp *.h \
-intermediate_format.ast DescentParse.template frama_Clang_config.ml.in \
-Doxyfile mainpage.dox README.md \
-$(addprefix share/libc++/,$(CXX_HEADERS))
+
 include $(FRAMAC_SHARE)/Makefile.dynamic
 
 $(Frama_Clang_DIR)/tests/ptests_config: $(Frama_Clang_DIR)/Makefile.config
