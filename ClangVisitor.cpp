@@ -6795,7 +6795,7 @@ bool FramacVisitor::VisitFunctionDecl(clang::FunctionDecl* Decl) {
   option /*statement list */ body = opt_none();
   option /*statement list */ delayedBody = NULL;
   option /* function_contract */ contract = opt_none();
-  clang::Decl::Kind declKind = Decl->getDeclContext()->getDeclKind();
+  clang::Decl::Kind contextKind = Decl->getDeclContext()->getDeclKind();
   bool hasParseTemplate = false;
   bool isImplicitFunction = false;
   if (Decl->doesThisDeclarationHaveABody()) {
@@ -6826,9 +6826,9 @@ bool FramacVisitor::VisitFunctionDecl(clang::FunctionDecl* Decl) {
       { bool shouldDelay = false;
         list /*<statement>*/ content = makeCodeBlock(Decl->getBody(),
             Decl->getDeclContext(), Decl,
-            (declKind == clang::Decl::TranslationUnit
-              || declKind == clang::Decl::LinkageSpec
-              || declKind == clang::Decl::Namespace) ? NULL : &shouldDelay);
+            (contextKind == clang::Decl::TranslationUnit
+              || contextKind == clang::Decl::LinkageSpec
+              || contextKind == clang::Decl::Namespace) ? NULL : &shouldDelay);
         if (!shouldDelay) {
           free(body);
           body = opt_some_container(content);
@@ -6848,9 +6848,9 @@ bool FramacVisitor::VisitFunctionDecl(clang::FunctionDecl* Decl) {
       bool shouldDelay = false;
       list /*<statement>*/ content = makeCodeBlock(Decl->getBody(),
           Decl->getDeclContext(), Decl,
-          (declKind == clang::Decl::TranslationUnit
-            || declKind == clang::Decl::LinkageSpec
-            || declKind == clang::Decl::Namespace) ? NULL : &shouldDelay);
+          (contextKind == clang::Decl::TranslationUnit
+            || contextKind == clang::Decl::LinkageSpec
+            || contextKind == clang::Decl::Namespace) ? NULL : &shouldDelay);
       if (!shouldDelay) {
         free(body);
         body = opt_some_container(content);
@@ -6876,8 +6876,9 @@ bool FramacVisitor::VisitFunctionDecl(clang::FunctionDecl* Decl) {
   }
 
   bool isGenerationEffective = true;
-  if (declKind == clang::Decl::TranslationUnit
-      || declKind == clang::Decl::LinkageSpec
+  if (contextKind == clang::Decl::TranslationUnit
+      || contextKind == clang::Decl::LinkageSpec
+      //|| contextKind == clang::Decl::Namespace
       /* !_parents.hasLexicalContext() */) {
     assert(!delayedBody);
     decl_or_impl_name decl_name = NULL;
