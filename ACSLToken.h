@@ -40,9 +40,9 @@ namespace Acsl { namespace DLexer {
  *  AbstractToken.
  */
 #define DefineStandardTokenMethods(Type)                                       \
-  virtual AbstractToken* _clone() const                                        \
+  AbstractToken* _clone() const override                                       \
     { return new Type(*this); }                                                \
-  Type* clone() const                                                          \
+  Type* clone() const override                                                 \
     { return (Type*) _clone(); }
 
 class Token;

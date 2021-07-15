@@ -5396,7 +5396,7 @@ public:
       _addresses = _endAddresses = NULL;
       return result;
     }
-  virtual RuleResult* clone() const
+  RuleResult* clone() const override
     { return new TermOrPredicateMemoryExtension(*this); }
 };
 
@@ -5460,7 +5460,7 @@ public:
       _commonType = NULL;
       return result;
     }
-  virtual RuleResult* clone() const { return new TermOrPredicateList(*this); }
+  RuleResult* clone() const override { return new TermOrPredicateList(*this); }
 };
 
 void

@@ -358,10 +358,10 @@ public:
     TParseState(const thisType& source)
       : inherited(source), _readMethod(source._readMethod),
         _object(source._object) {}
-    virtual VirtualParseState* clone() const { return new thisType(*this); }
+    VirtualParseState* clone() const override { return new thisType(*this); }
 
-    virtual ReadResult operator()(
-        TStateStack<TypeArguments>& stateStack, ParseArgument& arguments) 
+    ReadResult operator()(
+        TStateStack<TypeArguments>& stateStack, ParseArgument& arguments) override
       { return (_object->*_readMethod)(stateStack, arguments); }
     const ReadPointerMethod& getStateMethod() const { return _readMethod; }
     void change(TypeObject& object, ReadPointerMethod readMethod, int point)
