@@ -57,7 +57,7 @@ class Locations:
  public:
    ForwardList getResult() { return _locations; }
    Locations(location loc): _locations(), _loc(loc) { }
-   ~Locations() { if(_loc) { free(_loc); _loc=NULL; } }
+   ~Locations() override { if(_loc) { free(_loc); _loc=NULL; } }
    ReadResult readToken(Parser::State& state, Parser::Arguments& arguments);
  };
 
@@ -79,7 +79,7 @@ public:
   AssignsClause(location loc)
     : _clause(), _loc(loc), _modified(), _dependencies(),
       _isNothingDependency(false) {}
- ~AssignsClause() { if (_loc) { free(_loc); _loc=NULL;} }
+ ~AssignsClause() override { if (_loc) { free(_loc); _loc=NULL;} }
  ReadResult readToken(Parser::State& state, Parser::Arguments& arguments);
 };
 
@@ -100,7 +100,7 @@ public:
  public:
    ForwardList getResult() { return _clause; }
    AllocFreeClause(location loc): _clause(), _loc(loc) { }
-   ~AllocFreeClause() { if(_loc) { free(_loc); _loc=NULL; } }
+   ~AllocFreeClause() override { if(_loc) { free(_loc); _loc=NULL; } }
    ReadResult readToken(Parser::State& state, Parser::Arguments& arguments);
  };
 

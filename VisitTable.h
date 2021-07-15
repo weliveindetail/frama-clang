@@ -99,7 +99,7 @@ public:
       : KeyInfo(source), _root(source._root),
         _specificWaitDeclarations(source._specificWaitDeclarations) {}
 
-    virtual bool isSubKey() const { return true; }
+    bool isSubKey() const override { return true; }
     const clang::Decl* root() const { return _root; }
     const std::vector<const clang::Decl*>& getSpecificWaitDeclarations() const
       { return _specificWaitDeclarations; }
@@ -141,7 +141,7 @@ public:
         translation_unit_decl waitingAdditionalDefinition=NULL)
       : KeyInfo(key), _waitingFunDefinition(waitingDefinition),
         _waitingAdditionalFunDefinition(waitingAdditionalDefinition) {}
-    virtual ~MissingFunctionGeneration()
+    ~MissingFunctionGeneration() override
       { if (_waitingFunDefinition) {
           free_translation_unit_decl(_waitingFunDefinition);
           _waitingFunDefinition = NULL;
@@ -154,15 +154,15 @@ public:
     
     const std::vector<const clang::Decl*>& waitDeclarations() const
       { return _waitDeclarations; }
-    virtual bool isComplete() const
+    bool isComplete() const override
       { return !_waitingFunDefinition && _waitDeclarations.empty(); }
-    virtual void print(std::ostream& out) const;
-    virtual bool isGenerationMissing() const { return true; }
-    virtual bool isFunctionGenerationMissing() const { return true; }
-    virtual bool solve(const clang::Decl* decl, ForwardReferenceList& globals,
-        VisitTable& table);
-    virtual bool replaceWaitingBy(const clang::Decl* oldDecl,
-        const std::vector<const clang::Decl*>& newDecls);
+    void print(std::ostream& out) const override;
+    bool isGenerationMissing() const override { return true; }
+    bool isFunctionGenerationMissing() const override { return true; }
+    bool solve(const clang::Decl* decl, ForwardReferenceList& globals,
+        VisitTable& table) override;
+    bool replaceWaitingBy(const clang::Decl* oldDecl,
+        const std::vector<const clang::Decl*>& newDecls) override;
   };
 
   class MissingSubClassGeneration {
@@ -302,7 +302,7 @@ public:
         _subWaitDeclarations.swap(const_cast<MissingClassGeneration&>(
             source)._subWaitDeclarations);
       }
-    virtual ~MissingClassGeneration()
+    ~MissingClassGeneration() override
       { if (_waitingClassDeclaration) {
           free_translation_unit_decl(_waitingClassDeclaration);
           _waitingClassDeclaration = NULL;
@@ -347,17 +347,17 @@ public:
         return result;  
       }
 
-    virtual bool isClassGenerationMissing() const { return true; }
-    virtual bool isGenerationMissing() const { return true; }
-    virtual bool isComplete() const
+    bool isClassGenerationMissing() const override { return true; }
+    bool isGenerationMissing() const override { return true; }
+    bool isComplete() const override
       { return !_waitingClassDeclaration && _waitDeclarations.empty()
           && _subGenerations.empty() && _subWaitDeclarations.empty();
       }
-    virtual void print(std::ostream& out) const;
-    virtual bool solve(const clang::Decl* decl, ForwardReferenceList& globals,
-        VisitTable& table);
-    virtual bool replaceWaitingBy(const clang::Decl* oldDecl,
-        const std::vector<const clang::Decl*>& newDecls);
+    void print(std::ostream& out) const override;
+    bool solve(const clang::Decl* decl, ForwardReferenceList& globals,
+        VisitTable& table) override;
+    bool replaceWaitingBy(const clang::Decl* oldDecl,
+        const std::vector<const clang::Decl*>& newDecls) override;
     void removeSubWait(const clang::Decl* decl);
     /* class_decl */ list& getContent() const
       { assert(_waitingClassDeclaration->tag_translation_unit_decl==COMPOUND);
@@ -379,10 +379,10 @@ public:
         translation_unit_decl waitingDeclaration)
       : MissingClassGeneration(key, waitingDeclaration) {}
 
-    virtual void print(std::ostream& out) const { assert(false); }
-    virtual bool isInstanceClass() const { return true; }
-    virtual bool solve(const clang::Decl* decl, ForwardReferenceList& globals,
-        VisitTable& table) { assert(false); return false; }
+    void print(std::ostream& out) const override { assert(false); }
+    bool isInstanceClass() const override { return true; }
+    bool solve(const clang::Decl* decl, ForwardReferenceList& globals,
+        VisitTable& table) override { assert(false); return false; }
   };
 
   class MissingDecl : public KeyInfo {
@@ -395,11 +395,11 @@ public:
 
   public:
     MissingDecl(const clang::Decl* decl) : KeyInfo(decl) {}
-    virtual bool isMissingDecl() const { return true; }
-    virtual bool isComplete() const { return false /* _waitingDecls.empty() */;}
+    bool isMissingDecl() const override { return true; }
+    bool isComplete() const override { return false /* _waitingDecls.empty() */;}
 
     WaitingDecls& waitingDecls() { return _waitingDecls; }
-    virtual void print(std::ostream& out) const;
+    void print(std::ostream& out) const override;
   };
 
 private:

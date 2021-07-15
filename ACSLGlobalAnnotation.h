@@ -83,7 +83,7 @@ private:
   public:
     LabelList(): 
     _labels(NULL), _endLabels(NULL) { }
-    ~LabelList() {
+    ~LabelList() override {
       while(_labels) {
         free(_labels->element.container);
         list temp = _labels->next;
@@ -124,7 +124,7 @@ private:
   public:
     Parameters(location loc)
       : _params(NULL), _endParams(NULL), _loc(copy_loc(loc)) { }
-    ~Parameters()
+    ~Parameters() override
       { if(_loc) { free(_loc); _loc = NULL; }
         while (_params) {
           free_logic_arg_decl((logic_arg_decl) _params->element.container);
@@ -151,7 +151,7 @@ public:
       _reads(), _params(NULL), _qualificationId(NULL), _polyIdLabels(NULL),
       _codeOperator(DLexer::OperatorPunctuatorToken::TUndefined),
       _typeName(NULL) {}
-  ~GlobalAnnotation()
+  ~GlobalAnnotation() override
     { if (_loc) { free(_loc); _loc = NULL; };
       clear();
     }

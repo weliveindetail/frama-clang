@@ -630,7 +630,7 @@ public:
       _startLocation(NULL), _declContext(NULL), _doesRequireValue(true),
       _doesStopTypeAmbiguity(false),
       _possibleTypeResults(source._possibleTypeResults) {}
-  ~TermOrPredicate()
+  ~TermOrPredicate() override
     { if (_loc) { free_location(_loc); _loc = NULL; };
       if (_startLocation)
         { free_location(_startLocation); _startLocation = NULL; }
@@ -651,7 +651,7 @@ public:
     { _possibleTypeResults &= (1U << LTRType);
       return *this;
     }
-  virtual RuleResult* clone() const { return new TermOrPredicate(*this); }
+  RuleResult* clone() const override { return new TermOrPredicate(*this); }
   /// the only ambiguous states where all results may be possible are Begin
   /// and AfterLogicIdentifier.
   /// To conform with LALR(1) rules, the state AfterLogicIdentifier should

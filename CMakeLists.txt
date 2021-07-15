@@ -60,5 +60,7 @@ target_link_libraries(framaCIRGen
   )
 endif()
 
+target_compile_options(framaCIRGen PRIVATE -Wsuggest-override)
+
 install(TARGETS framaCIRGen
   RUNTIME DESTINATION bin)

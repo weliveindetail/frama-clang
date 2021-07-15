@@ -205,8 +205,8 @@ private:
 public:
   LogicVariable(const std::string& name, logic_var variable)
     : inherited(name), lvVariable(variable) {}
-  virtual ~LogicVariable() { free_logic_var(lvVariable); }
-  virtual Type getType() const { return TLogicVariable; }
+  ~LogicVariable() override { free_logic_var(lvVariable); }
+  Type getType() const override { return TLogicVariable; }
 };
 
 class GlobalContext::OverloadedLogicFunctions
@@ -224,13 +224,13 @@ public:
       bool isMethod=false)
     : inherited(name)
     { _logicFunctions.push_back(std::make_pair(isMethod, info)); }
-  virtual ~OverloadedLogicFunctions()
+  ~OverloadedLogicFunctions() override
     { Functions::iterator iterEnd = _logicFunctions.end();
       for (Functions::iterator iter = _logicFunctions.begin();
           iter != iterEnd; ++iter)
         free_logic_info(iter->second);
     }
-  virtual Type getType() const { return TOverloadedLogicFunctions; }
+  Type getType() const override { return TOverloadedLogicFunctions; }
   virtual bool isOperator() const { return false; }
   OverloadedLogicOperators& asOperator();
   void addFunction(logic_info info, bool isMethod=false)
@@ -248,7 +248,7 @@ public:
   OverloadedLogicOperators(const std::string& name, int codeOperator,
       logic_info info, bool isMethod=false)
     : inherited(name, info, isMethod), _codeOperator(codeOperator) {}
-  virtual bool isOperator() const { return true; }
+  bool isOperator() const override { return true; }
   int getCodeOperator() const { return _codeOperator; }
 };
 
@@ -264,8 +264,8 @@ private:
 public:
   LogicType(const std::string& name, logic_type_info type)
     : inherited(name), _type(type) {}
-  virtual ~LogicType() { free_logic_type_info(_type); }
-  virtual Type getType() const { return TLogicType; }
+  ~LogicType() override { free_logic_type_info(_type); }
+  Type getType() const override { return TLogicType; }
   logic_type_info type_info() const { return _type; }
 };
 
@@ -277,8 +277,8 @@ private:
 public:
   LogicConstructor(const std::string& name, logic_ctor_info constructor)
     : inherited(name), lciConstructor(constructor) {}
-  virtual ~LogicConstructor() { free_logic_ctor_info(lciConstructor); }
-  virtual Type getType() const { return TLogicConstructor; }
+  ~LogicConstructor() override { free_logic_ctor_info(lciConstructor); }
+  Type getType() const override { return TLogicConstructor; }
   logic_ctor_info getInfo() const { return lciConstructor; }
 };
 
@@ -292,14 +292,14 @@ private:
 public:
   Qualification(const std::string& name, tag_qualification t)
     : inherited(name), tag(t) {}
-  virtual ~Qualification()
+  ~Qualification() override
     { NestedContext::SonsSet::iterator iterEnd = mSons.end();
       for (NestedContext::SonsSet::iterator iter = mSons.begin();
           iter != iterEnd; ++iter)
         delete *iter;
     }
-  virtual Type getType() const { return TQualification; }
-  virtual NestedContext::SonsSet* ssons() { return &mSons; }
+  Type getType() const override { return TQualification; }
+  NestedContext::SonsSet* ssons() override { return &mSons; }
   bool hasRecordType() const { return tag == QSTRUCTORCLASS; }
   bool hasTemplateRecordType() const { return tag == QTEMPLATEINSTANCE; }
 
@@ -342,7 +342,7 @@ public:
         parameters = parameters->next;
       };
     }
-  virtual ~TemplateQualification()
+  ~TemplateQualification() override
     { while (_parameters) {
         free_template_parameter((template_parameter) _parameters
             ->element.container);
@@ -368,9 +368,9 @@ public:
       };
       return qualification_QTemplateInstance(name, result);
     }
-  virtual int compare(const NestedContext& c) const;
-  virtual Type getType() const { return TTemplateQualification; }
-  virtual NestedContext::SonsSet* ssons() { return &mSons; }
+  int compare(const NestedContext& c) const override;
+  Type getType() const override { return TTemplateQualification; }
+  NestedContext::SonsSet* ssons() override { return &mSons; }
   /* template_parameter */ list getParameters() const { return _parameters; }
   /* template_parameter */ list extractParameters()
     { list result = _parameters; _parameters = NULL; return result; }

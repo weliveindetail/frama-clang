@@ -124,13 +124,13 @@ public:
         exit(2);
       }
     }
-  ~FramaCIRGenAction()
+  ~FramaCIRGenAction() override
     { if (fclose(_outFile)==EOF) {
         std::cerr << "error closing output file.\n";
       };
     }
-  virtual std::unique_ptr<clang::ASTConsumer>
-    CreateASTConsumer(clang::CompilerInstance& CI, clang::StringRef InFile);
+  std::unique_ptr<clang::ASTConsumer>
+    CreateASTConsumer(clang::CompilerInstance& CI, clang::StringRef InFile) override;
 
 protected:
  
@@ -744,8 +744,8 @@ public:
 
   clang::CompilerInstance& compilerInstance() const
     { return _compilerInstance; }
-  virtual bool HandleComment(clang::Preprocessor &PP,
-      clang::SourceRange Comment);
+  bool HandleComment(clang::Preprocessor &PP,
+      clang::SourceRange Comment) override;
 };
 
 /*! @class LoopAnnotationOption
@@ -1447,7 +1447,7 @@ public:
   void setGenerateBareFunctions()
     { _clangUtils->setGenerateBareFunctions(); }
   void setVerbose() { _clangUtils->setVerbose(); }
-  ~FramacVisitor()
+  ~FramacVisitor() override
     { free(_clangUtils);
       free(_intermediateAST);
       if (_implicitThisStar) free_expression(_implicitThisStar);
@@ -1461,9 +1461,9 @@ public:
       AnnotationComment& comment,
       clang::DeclContext* clangContext);
 
-  bool HandleTopLevelDecl(clang::DeclGroupRef Decls);
+  bool HandleTopLevelDecl(clang::DeclGroupRef Decls) override;
 
-  virtual void HandleTranslationUnit(clang::ASTContext &context);
+  void HandleTranslationUnit(clang::ASTContext &context) override;
   void handleLexicalPostVisit(const clang::DeclContext* currentContext);
   void handleSemanticPostVisit(const clang::DeclContext* currentContext);
   void handlePostVisit(const clang::DeclContext* lexicalCurrentContext,
@@ -1551,7 +1551,7 @@ public:
     : inherited(source), _visitor(source._visitor),
       _isExternal(source._isExternal) {}
 
-  virtual void registerDecl(const clang::Decl* decl)
+  void registerDecl(const clang::Decl* decl) override
     { if (!_visitor._tableForWaitingDeclarations.hasVisited(decl)) {
         InstanceContexts::UnvisitedDecls::const_iterator
           iterEnd = _visitor.unvisitedNameDecls().end();
@@ -1598,7 +1598,7 @@ public:
   UnvisitedRegistration(const UnvisitedRegistration& source)
     : inherited(source), _unvisitedName(source._unvisitedName) {}
 
-  virtual void registerDecl(const clang::Decl* decl)
+  void registerDecl(const clang::Decl* decl) override
     { std::vector<const clang::Decl*> alternativeDecls;
       if (!_unvisitedName.getVisitor()._tableForWaitingDeclarations
           .hasVisited(decl, &alternativeDecls)) {
@@ -1625,7 +1625,7 @@ public:
         };
       }
     }
-  virtual VirtualDeclRegistration* getNameRegistration()
+  VirtualDeclRegistration* getNameRegistration() override
     { return &_unvisitedName; }
 };
 
@@ -1641,7 +1641,7 @@ public:
   VerifyNameRegistration(const VerifyNameRegistration& source)
     : inherited(source), _visitor(source._visitor) {}
 
-  virtual void registerDecl(const clang::Decl* decl)
+  void registerDecl(const clang::Decl* decl) override
     { if (!_visitor._tableForWaitingDeclarations.hasVisited(decl)) {
         clang::Decl::Kind kindDecl = decl->getKind();
         if ((kindDecl >= clang::Decl::firstRecord

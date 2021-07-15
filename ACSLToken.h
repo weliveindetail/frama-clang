@@ -176,7 +176,7 @@ private:
   std::string _content;
 
 protected:
-  virtual void _write(std::ostream& out, PersistentFormat& format) const;
+  void _write(std::ostream& out, PersistentFormat& format) const override;
 
 public:
   CommentToken() { inherited::setComment(); }
@@ -188,7 +188,7 @@ public:
   std::string& content() { return _content; }
   bool isSlashSlashComment() const
     { return _content[0] == '/' &&  _content[1] == '/'; }
-  virtual bool isValid() const
+  bool isValid() const override
     { return inherited::isValid() && inherited::getType() == TComment; }
 };
 
@@ -206,7 +206,7 @@ private:
   std::string _content;
 
 protected:
-  virtual void _write(std::ostream& out, PersistentFormat& format) const;
+  void _write(std::ostream& out, PersistentFormat& format) const override;
 
 public:
   IdentifierToken() { inherited::setIdentifier(); }
@@ -217,9 +217,9 @@ public:
 
   std::string& content() { return _content; }  // FIXME - this is assignable - is it good form?
   const std::string& content() const { return _content; }
-  virtual bool isValid() const
+  bool isValid() const override
     { return inherited::isValid() && inherited::getType() == TIdentifier; }
-  virtual std::string text() const
+  std::string text() const override
     { return _content;
     }
 
@@ -278,7 +278,7 @@ private:
 
 protected:
   DefineParameters(8, AbstractToken)
-  virtual void _write(std::ostream& out, PersistentFormat& format) const;
+  void _write(std::ostream& out, PersistentFormat& format) const override;
 
 public:
   KeywordToken() { setKeyword(); setFull(); }
@@ -289,12 +289,12 @@ public:
   Type getType() const    { return (Type) queryOwnField(); }
   KeywordToken& setType(Type type)
     { assert(!hasOwnField()); mergeOwnField(type); return *this; }
-  virtual bool isValid() const
+  bool isValid() const override
     { return inherited::isValid() && (inherited::getType() == TKeyword)
           && hasOwnField() && (queryOwnField() < TEnd);
     }
 
-  virtual std::string text() const;
+  std::string text() const override;
 
 };
 
@@ -325,7 +325,7 @@ protected:
 
   LiteralToken() { inherited::setLiteral(); }
   LiteralToken(const LiteralToken& source) : inherited(source) {}
-  virtual void _write(std::ostream& out, PersistentFormat& format) const;
+  void _write(std::ostream& out, PersistentFormat& format) const override;
   
 public:
   Type getType() const { assert(hasOwnField()); return (Type) queryOwnField(); }
@@ -336,7 +336,7 @@ public:
   bool isFloating() const { return queryOwnField() == TFloating; }
   bool isString() const { return queryOwnField() == TString; }
 
-  virtual bool isValid() const
+  bool isValid() const override
     { return inherited::isValid() && (AbstractToken::getType() == TLiteral)
         && hasOwnField() && (queryOwnField() < TEnd);
     }
@@ -361,7 +361,7 @@ protected:
   DefineSubParameters(Type, 2, INHERITED)
   DefineSubParameters(Extension, 3, Type)
 
-  virtual void _write(std::ostream& out, PersistentFormat& format) const;
+  void _write(std::ostream& out, PersistentFormat& format) const override;
 
 public:
   IntegerLiteralToken() : _value() { inherited::setInteger(); }
@@ -390,7 +390,7 @@ public:
   const std::string& getValue() const { return _value; }
   std::string& value() { return _value; }
 
-  virtual bool isValid() const
+  bool isValid() const override
     { return inherited::isValid() && LiteralToken::isInteger(); }
 };
 
@@ -405,7 +405,7 @@ public:
 protected: 
   DefineParameters(2, inherited);
 
-  virtual void _write(std::ostream& out, PersistentFormat& format) const;
+  void _write(std::ostream& out, PersistentFormat& format) const override;
 
 public:
   CharacterLiteralToken() { _value.wch = L'\0'; inherited::setCharacter(); }
@@ -432,7 +432,7 @@ public:
     if (queryOwnField() == TChar) _value.ch = c; else _value.wch = c;
   }
 
-  virtual bool isValid() const
+  bool isValid() const override
     { return inherited::isValid()
           && inherited::isCharacter() && hasOwnField();
     }
@@ -454,7 +454,7 @@ protected:
   DefineSubParameters(Type, 2, INHERITED)
   DefineSubParameters(Suffix, 2, Type)
 
-  virtual void _write(std::ostream& out, PersistentFormat& format) const;
+  void _write(std::ostream& out, PersistentFormat& format) const override;
 
 public:
   FloatingLiteralToken() : _real() { inherited::setFloating(); }
@@ -467,7 +467,7 @@ public:
   bool isFloat() const { return querySuffixField() == FSFloat; }
   bool isLongDouble() const { return querySuffixField() == FSLongDouble; }
 
-  virtual bool isValid() const
+  bool isValid() const override
       { return inherited::isValid() == inherited::isFloating(); }
   void setType(Type type) { assert(!hasTypeField()); mergeTypeField(type); }
   void mergeSuffix(FloatingSuffix suffix) { mergeSuffixField(suffix); }
@@ -482,7 +482,7 @@ private:
   std::string _content;
 
 protected:
-  virtual void _write(std::ostream& out, PersistentFormat& format) const;
+  void _write(std::ostream& out, PersistentFormat& format) const override;
 
 public:
   StringLiteralToken(const std::string& content)
@@ -493,7 +493,7 @@ public:
 
   std::string& content() { return _content; }
   const std::string& content() const { return _content; }
-  virtual bool isValid() const
+  bool isValid() const override
     { return inherited::isValid() && inherited::getType() == TString; }
 };
 
@@ -527,7 +527,7 @@ private:
 protected:
   DefineParameters(6, AbstractToken)
 
-  virtual void _write(std::ostream& out, PersistentFormat& format) const;
+  void _write(std::ostream& out, PersistentFormat& format) const override;
 
 public:
   OperatorPunctuatorToken() { setOperatorPunctuator(); setFull(); }
@@ -540,7 +540,7 @@ public:
   void clearFull() { clearFullField(); }
   OperatorPunctuatorToken& setType(Type type)
     { assert(!hasOwnField()); mergeOwnField(type); return *this; }
-  virtual bool isValid() const
+  bool isValid() const override
     { return inherited::isValid()
           && (inherited::getType() == TOperatorPunctuator)
           && hasOwnField() && (queryOwnField() < TEnd);
@@ -561,7 +561,7 @@ public:
         || (type >= TImplies && type <= TColonGT);
     }
 
-  virtual std::string text() const;
+  std::string text() const override;
 
   typedef std::unordered_map<std::string, Type> Map;
   typedef std::pair<std::string, OperatorPunctuatorToken::Type> Connection;

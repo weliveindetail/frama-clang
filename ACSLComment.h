@@ -58,17 +58,17 @@ public:
     : AnnotationComment(source), _startOfGhost(source._startOfGhost) {}
 
   /*! checks annotation for improper use of preprocessor directives, returns true if errors found */
-  virtual bool checkAnnotation(const std::string& text, clang::SourceLocation clangLocation, const clang::Sema* sema, std::string& revised) const;
+  bool checkAnnotation(const std::string& text, clang::SourceLocation clangLocation, const clang::Sema* sema, std::string& revised) const override;
 
-  virtual Kind getAnnotationKind(const std::string& text, clang::SourceLocation clangLocation, const clang::Sema* sema) const;
+  Kind getAnnotationKind(const std::string& text, clang::SourceLocation clangLocation, const clang::Sema* sema) const override;
 
-  virtual void parseGlobal(ForwardReferenceList& globals,
+  void parseGlobal(ForwardReferenceList& globals,
     ForwardReferenceList* classContent, const clang::DeclContext* clangContext,
     clang::ASTContext* astContext, clang::Sema* sema,
     clang::Scope* scope, Clang_utils* clangUtils,
-    const RTTITable& rttiTable, location loc);
+    const RTTITable& rttiTable, location loc) override;
 
-  virtual void parseGhostGlobal(
+  void parseGhostGlobal(
     //    ForwardReferenceList& globals,
     //ForwardReferenceList* classContent,
     clang::DeclContext* clangContext,
@@ -76,34 +76,34 @@ public:
     clang::Sema* sema,
     clang::Scope* scope,
     clang::CompilerInstance& compilerInstance,
-    clang::ASTConsumer* consumer);
+    clang::ASTConsumer* consumer) override;
 
-  virtual void parseGhostStatement(
+  void parseGhostStatement(
     clang::DeclContext* clangContext,
     clang::Sema* sema,
     clang::Scope* scope,
     clang::CompilerInstance& compilerInstance,
-    clang::ASTConsumer* consumer);
+    clang::ASTConsumer* consumer) override;
 
-  virtual void parseCodeAnnotation(ForwardReferenceList& codeContainer,
+  void parseCodeAnnotation(ForwardReferenceList& codeContainer,
     const clang::DeclContext* clangContext, clang::ASTContext* astContext,
     clang::Sema* sema, clang::Scope* scope, Clang_utils* clangUtils,
-    const RTTITable& rttiTable, location loc);
+    const RTTITable& rttiTable, location loc) override;
 
-  virtual /* code_annotation */ list parseLoopAnnotation(
+  /* code_annotation */ list parseLoopAnnotation(
     const clang::DeclContext* clangContext, clang::ASTContext* astContext,
     clang::Sema* sema, clang::Scope* scope, Clang_utils* clangUtils,
-    const RTTITable& rttiTable, location loc);
+    const RTTITable& rttiTable, location loc) override;
 
-  virtual void parseStatementAnnotation(ForwardReferenceList& codeContainer,
+  void parseStatementAnnotation(ForwardReferenceList& codeContainer,
     const clang::DeclContext* clangContext, clang::ASTContext* astContext,
     clang::Sema* sema, clang::Scope* scope, Clang_utils* clangUtils,
-    const RTTITable& rttiTable);
+    const RTTITable& rttiTable) override;
 
-  virtual void parseFunctionContract(option& /* function_contract */ contract,
+  void parseFunctionContract(option& /* function_contract */ contract,
     const clang::DeclContext* clangContext, clang::ASTContext* astContext,
     clang::Sema* sema, clang::Scope* scope, Clang_utils* clangUtils,
-    const RTTITable& rttiTable);
+    const RTTITable& rttiTable) override;
 
 private:
   void initFrom(const clang::Sema* sema);

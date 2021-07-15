@@ -120,7 +120,7 @@ public:
       _qualification(NULL), _declContext(NULL), _seenInt(false),
       _seenSigned(false), _doesStopSuffix(false),
       _loc(NULL) {}
-  ~LogicType()
+  ~LogicType() override
     { if (_typeResult) free_logic_type(_typeResult);
       if (_typedefResult) free_logic_type_def(_typedefResult);
       if (_loc) free_location(_loc);
