@@ -24,19 +24,23 @@ open Intermediate_format
 open Cabs
 open Cil
 
+(* Create global fresh name based on given prefix *)
 let fresh_names s =
   let nb = ref (-1) in
   fun () ->
     incr nb;
-    if !nb = 0 then s else s ^ "_" ^ string_of_int !nb
+    s ^ "_" ^ string_of_int !nb
 
 let lambda_def_name = "__fc_lambda_def"
 
-let lambda_apply_name = "__fc_lambda_apply"
+let lambda_unique_def_name = fresh_names lambda_def_name
 
-let new_lambda_def_name = fresh_names lambda_def_name
+let lambda_unique_overload_name id = "__fc_lambda_overload_" ^ Int64.to_string id
 
-let make_lambda_cons_name s1 = s1 ^ "_cons"
+(* Create fresh local name based on reserved prefix __fc_lambda_tmp *)
+let lambda_local_init_helper_name env = Convert_env.temp_name env "__fc_lambda_tmp"
+
+let closure_name = "__fc_closure"
 
 let fc_implicit_attr = "__fc_implicit"
 
@@ -168,8 +172,6 @@ let is_unsigned_kind = function
   | ILong | ILongLong -> false
   | IULong | IULongLong -> true
 
-let closure_name = "__fc_closure"
-
 let mk_expr_l expr_loc expr_node = { expr_loc; expr_node }
 
 let mk_expr env node = mk_expr_l (Convert_env.get_loc env) node
@@ -212,6 +214,12 @@ let mk_assign env dst src = mk_expr env (BINARY(ASSIGN, dst, src))
 let make_closure_access env id_name is_ref =
   let access = MEMBEROFPTR (mk_var env closure_name, id_name) in
   if is_ref then UNARY(MEMOF,mk_expr env access) else access
+
+let mk_signature res_type param_types = 
+  { result = res_type; parameter = param_types; variadic = false }
+
+let mk_arg_decl ty name loc =
+  { arg_type = ty; arg_name = name; arg_loc = loc; }
 
 let convert_variable env = function
   | Local({ decl_name = "__func__" }) ->
@@ -1336,7 +1344,7 @@ and convert_expr_node ?(drop_temp=false) env aux e does_remove_virtual =
             convert_expr env aux efalse does_remove_virtual
           in
           env, aux, QUESTION(econd, etrue, efalse)
-      | Lambda_call(lambda, args) ->
+      | Lambda_call(lambda, args, id) ->
         let loc = Convert_env.get_loc env in
         let env, aux, callee =
           convert_expr env aux lambda does_remove_virtual
@@ -1345,8 +1353,8 @@ and convert_expr_node ?(drop_temp=false) env aux e does_remove_virtual =
           convert_list_expr env aux args does_remove_virtual
         in
         let args = mk_addrof env callee :: args in
-        env, aux,
-        CALL(mk_expr_l loc (MEMBEROF (callee, lambda_apply_name)), args, [])
+        let mem_fn_name = lambda_unique_overload_name id in
+        env, aux, CALL(mk_expr_l loc (MEMBEROF (callee, mem_fn_name)), args, [])
       | Static_call(name, signature, kind, args, t, is_extern_c) ->
         let cname =
           if is_extern_c then name.decl_name
@@ -1709,104 +1717,149 @@ and convert_expr_node ?(drop_temp=false) env aux e does_remove_virtual =
       | InitializerList _ ->
         Frama_Clang_option.not_yet_implemented
           "Initializer list without Compound initialization"
-      | LambdaExpr(rt, args, closure, body) ->
+      | LambdaExpr(overloads, closures) ->
         let loc = Convert_env.get_loc env in
-        let closure_type = Cxx_utils.make_lambda_type rt args closure in
-        let closure_name = Mangling.mangle_cc_type closure_type in
-        let type_def = convert_lambda_type env closure_type rt args closure in
-        let env = Convert_env.add_c_global env type_def in
-        let cons_def =
-          convert_lambda_constructor env closure_type rt args closure
-        in
-        let env = Convert_env.add_c_global env cons_def in
-        let env = Convert_env.add_closure_info env closure in
-        let env, body_name, glob =
-          convert_lambda_body env closure_type rt args body
-        in
-        let env = Convert_env.add_c_global env glob in
-        let env = Convert_env.reset_closure env in
-        let lam_name = Convert_env.temp_name env "__fc_lam" in
-        let env = Convert_env.add_local_var env lam_name closure_type in
-        let lam_init =
-          init_lambda_object env closure_type lam_name body_name closure
-        in
-        let lam_decl =
-          DECDEF(
-            None,
-            ([ SpecCV CV_CONST; SpecType (Tstruct(closure_name, None,[]))],
-             [(lam_name, JUSTBASE, [], loc), NO_INIT ]),loc)
-        in
-        let aux = add_local_aux_def_init aux lam_decl lam_init in
-        env, aux, VARIABLE lam_name
+        let make_signature overload =
+          { result = overload.return_type;
+            parameter = List.map (fun arg -> arg.arg_type) overload.arg_decls;
+            variadic = false
+          } in
+        let signatures = List.map make_signature overloads in
+        let lam_type = Lambda (signatures, closures) in
+        let struct_name = Mangling.mangle_cc_type lam_type in
+        let env = lambda_create_def_struct env struct_name lam_type overloads closures in
+        let init_helper_name = lambda_local_init_helper_name env in
+        let (env, aux) =
+          lambda_create_init_helper env aux lam_type init_helper_name struct_name loc in
+        let (env, aux) = lambda_initialize_captures env aux lam_type struct_name init_helper_name closures in
+        let (env, aux) = convert_lambda_instantiations
+                            env init_helper_name lam_type
+                            overloads closures aux in
+        env, aux, VARIABLE init_helper_name
   in
   env, aux, mk_expr env node
 
-and convert_lambda_type env lambda_type result arguments closures =
-  let name = Mangling.mangle_cc_type lambda_type in
+(* Create the type definition for a function pointer to one lambda overload *)
+and lambda_init_overload_fptr lam_type ovl = 
+  let fn_ptr_param =
+    Cxx_utils.(force_ptr_to_const (obj_ptr (unqual_type lam_type))) in
+  let arg_types = (List.map (fun x -> x.arg_type) ovl.arg_decls) in
+  let fn_sig = mk_signature ovl.return_type (fn_ptr_param :: arg_types) in
+  Cxx_utils.unqual_type (Pointer (PFunctionPointer fn_sig))
+
+(* Create the definition of the struct that represents the lambda instance *)
+and lambda_create_def_struct env name lam_type overloads closures =
   let loc = Convert_env.get_loc env in
   let field_of_capture cap =
     let s, t = capture_name_type env cap in
     let rt, decl = convert_specifiers env t false in
     FIELD (rt, [ (s, decl JUSTBASE, [], loc), None ])
   in
-  let fields = List.map field_of_capture closures in
-  let obj_ptr =
-    Cxx_utils.(force_ptr_to_const (obj_ptr (unqual_type lambda_type)))
+  let field_of_functions ovl =
+    let fptr = lambda_init_overload_fptr lam_type ovl in
+    let name = lambda_unique_overload_name ovl.id in
+    let rt, decl = convert_specifiers env fptr false in
+    FIELD (rt, [(name, decl JUSTBASE, [], loc), None])
   in
-  let parameter = List.map (fun x -> x.arg_type) arguments in
-  let parameter = obj_ptr :: parameter in
-  let fptr =
-    Cxx_utils.unqual_type (
-      Pointer (PFunctionPointer { result; parameter; variadic = false }))
-  in
-  let rt, decl = convert_specifiers env fptr false in
-  let fptr_field =
-    FIELD (rt, [(lambda_apply_name, decl JUSTBASE, [], loc),None]) in
-  ONLYTYPEDEF (
-    [SpecType (Tstruct(name, Some (fptr_field :: fields),[]))],loc)
+  let cap_fields = List.map field_of_capture closures in
+  let fptr_fields = List.map field_of_functions overloads in
+  let struct_def = ONLYTYPEDEF (
+    [SpecType (Tstruct(name, Some (fptr_fields @ cap_fields),[]))],loc) in
+  Convert_env.add_c_global env struct_def
 
-and convert_lambda_constructor env lambda_type result arguments closures  =
+and lambda_create_init_helper env aux lam_type init_helper_name struct_name loc =
+  let init_helper_decl =
+    DECDEF(
+      None,
+      ([ SpecCV CV_CONST; SpecType (Tstruct(struct_name, None,[]))],
+        [(init_helper_name, JUSTBASE, [], loc), NO_INIT ]),loc);
+  in
+  let aux = add_local_aux_def aux init_helper_decl in
+  let env = Convert_env.add_local_var env init_helper_name lam_type in
+  (env, aux)
+
+(* Emit a function that initializes the captures for a local lambda instance.
+   We don't necessarily need a function for this, but doing it like this is a
+   more straightforward change. *)
+and lambda_initialize_captures env aux lam_type struct_name init_helper_name closures =
   let loc = Convert_env.get_loc env in
   let cloc = Convert_env.get_clang_loc env in
-  let lambda_name = Mangling.mangle_cc_type lambda_type in
-  let funcname = make_lambda_cons_name lambda_name in
-  let lam_type =
-    Cxx_utils.(force_ptr_to_const (obj_ptr (unqual_type lambda_type)))
-  in
-  let parameter = lam_type :: (List.map (fun x -> x.arg_type) arguments) in
-  let fptr_type =
-    Cxx_utils.unqual_type
-      (Pointer (PFunctionPointer { result; parameter; variadic = false }))
-  in
-  let lam_prm =
-    { arg_type = lam_type;
-      arg_name = closure_name;
-      arg_loc = cloc; }
-  in
-  let fptr_prm =
-    { arg_type = fptr_type;
-      arg_name = "__fc_func";
-      arg_loc = cloc; }
-  in
-  let closure_arg cap =
+  let make_arg_decl cap =
     let (arg_name, arg_type) = capture_name_type env cap in
     { arg_name; arg_type; arg_loc = cloc }
   in
-  let closure_prm = List.map closure_arg closures in
-  let args = lam_prm :: fptr_prm :: closure_prm in
+  let fn_ptr_param =
+    Cxx_utils.(force_ptr_to_const (obj_ptr (unqual_type lam_type))) in
+  let this_ptr = mk_arg_decl fn_ptr_param closure_name cloc in
+  let args = this_ptr :: (List.map make_arg_decl closures) in
+  let fn_name = struct_name ^ "_init_captures" in
   let env, proto =
-    make_prototype loc env funcname (FKConstructor true)
+    make_prototype loc env fn_name (FKConstructor true)
       (Cxx_utils.unqual_type Void) args false false
   in
   let body = List.map (make_assign_cap env) closures in
-  let body =
+  let env = Convert_env.add_c_global env (FUNDEF(None, proto, raw_block body, loc, loc)) in
+  let mk_arg cap = mk_var env (fst (capture_name_type env cap)) in
+  let lam = mk_addrof env (mk_var env init_helper_name) in
+  let actual_args = lam :: (List.map mk_arg closures) in
+  let f = mk_var env fn_name in
+  let call = mk_expr env (CALL(f,actual_args,[])) in
+  let inserted_call = make_computation env call in
+  let aux = add_local_aux_init aux inserted_call in
+  (env, aux)
+
+and convert_lambda_instantiations env init_helper_name lam_type overloads closures aux =
+  match overloads with
+  | [] -> (env, aux)
+  | ovl::overloads ->
+    let (env, aux) = convert_lambda_single_instance
+                        env init_helper_name lam_type
+                        ovl closures aux in
+                     convert_lambda_instantiations
+                        env init_helper_name lam_type
+                        overloads closures aux
+
+
+and convert_lambda_single_instance env init_helper_name lam_type ovl closures aux =
+  let cons_def =
+    convert_lambda_init env lam_type ovl
+  in
+  let env = Convert_env.add_c_global env cons_def in
+  let env = Convert_env.add_closure_info env closures in
+  let env, body_name, glob =
+    convert_lambda_body env lam_type ovl
+  in
+  let env = Convert_env.add_c_global env glob in
+  let env = Convert_env.reset_closure env in
+  let lam_init =
+    convert_lambda_init_call env lam_type init_helper_name ovl.id body_name
+  in
+  let aux = add_local_aux_init aux lam_init in
+  env, aux
+
+and convert_lambda_init env lam_type ovl =
+  let loc = Convert_env.get_loc env in
+  let cloc = Convert_env.get_clang_loc env in
+  let struct_name = Mangling.mangle_cc_type lam_type in
+  let ctor_name = struct_name ^ "_init_" ^ Int64.to_string ovl.id in
+  let fptr_type = lambda_init_overload_fptr lam_type ovl in
+  let fptr_arg_decl = mk_arg_decl fptr_type "__fc_func" cloc in
+  let fn_ptr_param =
+    Cxx_utils.(force_ptr_to_const (obj_ptr (unqual_type lam_type))) in
+  let this_ptr = mk_arg_decl fn_ptr_param closure_name cloc in
+  let args = [this_ptr; fptr_arg_decl] in
+  let env, proto =
+    make_prototype loc env ctor_name (FKConstructor true)
+      (Cxx_utils.unqual_type Void) args false false
+  in
+  let fn_name = lambda_unique_overload_name ovl.id in
+  let body_stmt =
     make_computation env
       (mk_assign env
-         (mk_expr env (make_closure_access env lambda_apply_name false))
+         (mk_expr env (make_closure_access env fn_name false))
          (mk_var env "__fc_func"))
-    :: body
   in
-  FUNDEF(None, proto, raw_block body, loc, loc)
+  FUNDEF(None, proto, raw_block [body_stmt], loc, loc)
 
 and make_assign_cap env cap =
   let name, typ = capture_name_type env cap in
@@ -1851,34 +1904,35 @@ and make_assign_cap env cap =
   in
   aux typ
 
-and convert_lambda_body env lam_type rt args body =
+and convert_lambda_body env lam_type lam_inst =
   let loc = Convert_env.get_loc env in
-  let name = new_lambda_def_name () in
-  let lam_type =
+  let name = lambda_unique_def_name () in
+  let fn_ptr_type =
     Cxx_utils.(force_ptr_to_const (obj_ptr (unqual_type lam_type)))
   in
-  let lam_prm =
-    { arg_type = lam_type;
+  let mem_fn_this_ptr =
+    { arg_type = fn_ptr_type;
       arg_name = closure_name;
       arg_loc = Convert_env.get_clang_loc env }
   in
+  let arg_decls = mem_fn_this_ptr :: lam_inst.arg_decls in
   let env, full_name =
-    make_prototype loc env name FKFunction rt (lam_prm :: args) false false
+    make_prototype loc env name FKFunction lam_inst.return_type arg_decls false false
   in
-  let benv = Convert_env.add_formal_parameters env args in
-  let cbody, benv = convert_stmt_list benv body false in
+  let benv = Convert_env.add_formal_parameters env arg_decls in
+  let cbody, benv = convert_stmt_list benv lam_inst.impl false in
   let env = Convert_env.unscope benv env in
   env, name, FUNDEF (None, full_name, raw_block cbody,loc,loc)
 
-and init_lambda_object
-    env closure_type lam_name body_name closure =
-  let closure_name = Mangling.mangle_cc_type closure_type in
-  let f = mk_var env (make_lambda_cons_name closure_name) in
-  let lam = mk_addrof env (mk_var env lam_name) in
+and convert_lambda_init_call
+    env lam_type init_helper_name id body_name =
+  let struct_name = Mangling.mangle_cc_type lam_type in
+  let f = mk_var env (struct_name ^ "_init_" ^ Int64.to_string id) in
+  let lam = mk_addrof env (mk_var env init_helper_name) in
   let ptr = mk_var env body_name in
-  let mk_arg cap = mk_var env (fst (capture_name_type env cap)) in
-  let args = List.map mk_arg closure in
-  let call = mk_expr env (CALL(f,lam :: ptr :: args,[])) in
+  (*let mk_arg cap = mk_var env (fst (capture_name_type env cap)) in
+  let args = List.map mk_arg closures in*)
+  let call = mk_expr env (CALL(f,[lam; ptr],[])) in
   make_computation env call
 
 and convert_expr ?drop_temp env aux e =

@@ -763,9 +763,6 @@ and get_dynamic_signature env e =
       let signature = get_dynamic_signature env ptr.econtent in
       get_signature_type env signature.result.plain_type
     | Temporary(_, ctyp, _, _) -> get_signature_type env ctyp.plain_type
-    | LambdaExpr(result, args, _, _) ->
-      let parameter = List.map (fun x -> x.arg_type) args in
-      { result; parameter; variadic = false }
     | _ -> fatal env "no function type information for expression"
 
 let add_closure_info env capture =

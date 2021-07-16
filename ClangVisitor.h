@@ -1109,7 +1109,9 @@ private:
   // finalize a call node, adding temporary or dereference when needed
   exp_node convert_result(FramaCIRGenAction::ExpressionGuard& guard,
     const clang::QualType& ret, exp_node call, const clang::Expr* expr);
-  exp_node make_lambda_expr(const clang::LambdaExpr* lam);
+  exp_node makeLambdaExpr(const clang::LambdaExpr* lam);
+  arg_decl makeArgDecl(clang::ParmVarDecl &param);
+  lambda_overload_instance makeLambdaExprInstance(const clang::FunctionDecl *meth);
   exp_node makeTemporaryObjectExpression(
       const clang::CXXTemporaryObjectExpr* constructor,
       bool* shouldDelay, /* statement */ list* receiver);

@@ -183,20 +183,25 @@ and pretty_type fmt typ =
       -> Format.fprintf fmt "union %a"
          pretty_qualified_name (name, tc)
   | Named (qname, _) -> pretty_qualified_name fmt (qname, TStandard)
-  | Lambda (proto, cap) ->
+  | Lambda (sigs, caps) -> pretty_generic_lambda fmt sigs caps
+
+and pretty_generic_lambda fmt signatures captures =
+  let pretty_capture fmt cap =
+    match cap with
+    | Cap_id (s,typ,is_ref) ->
+      Format.fprintf fmt "%a %s%s"
+        pretty_qual_type typ (if is_ref then "&" else "=") s
+    | Cap_this is_ref -> 
+      Format.fprintf fmt "%sthis" (if is_ref then "&" else "=")
+  in
+  let pretty_lambda lam =
     let pp_sep fmt () = Format.pp_print_string fmt ", " in
     Format.fprintf fmt "lambda %a [%a]-> %a"
-      (Format.pp_print_list ~pp_sep pretty_qual_type)
-      proto.parameter
-      (Format.pp_print_list ~pp_sep pretty_capture) cap
-      pretty_qual_type proto.result
-
-and pretty_capture fmt cap =
-  match cap with
-  | Cap_id (s,typ,is_ref) ->
-    Format.fprintf fmt "%a %s%s"
-      pretty_qual_type typ (if is_ref then "&" else "=") s
-  | Cap_this is_ref -> Format.fprintf fmt "%sthis" (if is_ref then "&" else "=")
+      (Format.pp_print_list ~pp_sep pretty_capture) captures
+      (Format.pp_print_list ~pp_sep pretty_qual_type) lam.parameter
+      pretty_qual_type lam.result
+  in
+  List.iter pretty_lambda signatures
 
 and pretty_specifier fmt spec =
   match spec with

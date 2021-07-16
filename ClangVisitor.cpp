@@ -576,28 +576,51 @@ exp_node FramacVisitor::make_initializer_list(
   return exp_node_InitializerList(elt_type_trans, init);
 }
 
-exp_node FramacVisitor::make_lambda_expr(const clang::LambdaExpr* lam) {
-  const clang::CXXMethodDecl* lam_meth = lam->getCallOperator();
-  qual_type lam_rt =
+arg_decl FramacVisitor::makeArgDecl(clang::ParmVarDecl &param) {
+  qual_type arg_type =
     makeDefaultExternalNameType(
-      lam_meth->getReturnTypeSourceRange().getBegin(),
-      lam_meth->getReturnType());
-  /* arg_decl */ list lam_args = NULL;
-  auto args = lam_meth->parameters();
-  for (auto it = args.rbegin(); it < args.rend(); it++) {
-    std::string name = (*it)->getNameAsString();
-    qual_type arg_type =
+      param.getLocation(), param.getOriginalType());
+  const char *name = copy_string(param.getNameAsString());
+  location loc = makeLocation(param.getSourceRange());
+  return arg_decl_cons(arg_type, name, loc);
+}
+
+template <typename T>
+static uint64_t pointerToInt(T *ptr) {
+  return static_cast<uint64_t>(reinterpret_cast<uintptr_t>(ptr));
+}
+
+lambda_overload_instance
+FramacVisitor::makeLambdaExprInstance(const clang::FunctionDecl *meth) {
+  qual_type result =
       makeDefaultExternalNameType(
-        (*it)->getLocation(), (*it)->getOriginalType());
-    location l = makeLocation((*it)->getSourceRange());
-    lam_args =
-      cons_container(arg_decl_cons(arg_type, copy_string(name), l),lam_args);
+          meth->getReturnTypeSourceRange().getBegin(),
+          meth->getReturnType());
+  list arg_decls = nullptr;
+  llvm::ArrayRef<clang::ParmVarDecl *> params = meth->parameters();
+  for (auto it = params.rbegin(); it < params.rend(); it++)
+    arg_decls = cons_container(makeArgDecl(**it), arg_decls);
+  list body_statements =
+      makeCodeBlock(meth->getBody(), meth->getDeclContext(), meth);
+  uint64_t addr = pointerToInt(meth);
+  assert(addr < (1ull << 63) && "Must fit in OCaml's signed int64");
+  return lambda_overload_instance_cons(result, arg_decls, addr, body_statements);
+}
+
+exp_node FramacVisitor::makeLambdaExpr(const clang::LambdaExpr* lam) {
+  list insts = nullptr;
+  if (const auto* generic_lambda = lam->getDependentCallOperator()) {
+    // C++14 generic lambdas can have multiple instantiations.
+    for (const clang::FunctionDecl *inst : generic_lambda->specializations())
+      insts = cons_container(makeLambdaExprInstance(inst), insts);
   }
-  /* closure */ list lam_closure =
-    _clangUtils->make_capture_list(lam->captures());
-  /* statement */ list lam_body =
-    makeCodeBlock(lam_meth->getBody(), lam_meth->getDeclContext(), lam_meth);
-  return exp_node_LambdaExpr(lam_rt, lam_args, lam_closure, lam_body);
+  else {
+    // Plain C++11 lambdas have a single signature and body.
+    const clang::FunctionDecl* plain_lambda = lam->getCallOperator();
+    insts = cons_container(makeLambdaExprInstance(plain_lambda), insts);
+  }
+  list captures = _clangUtils->make_capture_list(lam->captures());
+  return exp_node_LambdaExpr(insts, captures);
 }
 
 expression
@@ -1398,14 +1421,13 @@ void FramacVisitor::ensureBuiltinDeclaration(
 }
 
 bool FramacVisitor::is_lambda_call(const clang::CallExpr* call) {
-  if (call->getStmtClass() == clang::Stmt::CXXOperatorCallExprClass) {
-    const clang::CXXOperatorCallExpr* op =
-      llvm::dyn_cast<clang::CXXOperatorCallExpr>(call);
-    if (op->getOperator() == clang::OO_Call) {
-      if (call->getNumArgs() > 0) {
-        clang::QualType typ = call->getArg(0)->getType();
-        const clang::CXXRecordDecl* rec = typ->getAsCXXRecordDecl();
-        return (rec && rec->isLambda());
+  if (const auto* op = llvm::dyn_cast<clang::CXXOperatorCallExpr>(call)) {
+    if (op->getOperator() == clang::OO_Call && call->getNumArgs() > 0) {
+      clang::QualType typ = call->getArg(0)->getType();
+      if (const clang::CXXRecordDecl* rec = typ->getAsCXXRecordDecl()) {
+        assert(!(rec->isGenericLambda() && !rec->isLambda()) &&
+               "Any C++14 generic lambda is also a conventional C++11 lambda");
+        return rec->isLambda();
       }
     }
   }
@@ -1413,8 +1435,8 @@ bool FramacVisitor::is_lambda_call(const clang::CallExpr* call) {
 }
 
 exp_node FramacVisitor::makeLambdaCallExpression(
-  const clang::CallExpr* call, bool* shouldDelay, list* receiver,
-  FramaCIRGenAction::ExpressionGuard& guard) {
+    const clang::CallExpr* call, bool* shouldDelay, list* receiver,
+    FramaCIRGenAction::ExpressionGuard& guard) {
   list arguments = NULL;
   clang::CallExpr::const_arg_iterator beg = call->arg_begin();
   clang::CallExpr::const_arg_iterator it = call->arg_end();
@@ -1425,7 +1447,12 @@ exp_node FramacVisitor::makeLambdaCallExpression(
     expression arg = makeLocExpression(*it, shouldDelay, receiver);
     arguments = cons_container(arg, arguments);
   }
-  exp_node result = exp_node_Lambda_call(lambda_obj, arguments);
+
+  const auto* cxx_call_op = llvm::cast<clang::CXXOperatorCallExpr>(call);
+  uint64_t calleeAddr = pointerToInt(cxx_call_op->getDirectCallee());
+  assert(calleeAddr < (1ull << 63) && "Must fit in OCaml's signed int64");
+
+  exp_node result = exp_node_Lambda_call(lambda_obj, arguments, calleeAddr);
   return
     convert_result(guard, call->getCallReturnType(*_context), result, call);
 }
@@ -3527,7 +3554,7 @@ exp_node FramacVisitor::makeExpression(
       }
     case clang::Stmt::LambdaExprClass: {
       auto lam = static_cast<const clang::LambdaExpr*>(expr);
-      return guard.setAssignResult(make_lambda_expr(lam), expr);
+      return guard.setAssignResult(makeLambdaExpr(lam), expr);
     }
     case clang::Stmt::AddrLabelExprClass:
     case clang::Stmt::DesignatedInitExprClass:

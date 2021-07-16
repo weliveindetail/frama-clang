@@ -664,6 +664,7 @@ public:
   bool lvalHasRefType(clang::Expr const* expr) const;
 
   bool is_lambda(clang::RecordDecl const* record) const;
+  bool is_generic_lambda(const clang::RecordDecl* rec) const;
 
   /*capture*/ list make_capture_list(
     clang::CXXRecordDecl::capture_const_range captures) const;
@@ -671,6 +672,10 @@ public:
   typ make_lambda_type(
     clang::SourceLocation const& loc, clang::RecordDecl const* record,
     VirtualDeclRegistration* declRegistration=NULL) const;
+
+  typ make_generic_lambda_type(
+      clang::SourceLocation const& loc, clang::RecordDecl const* record,
+      VirtualDeclRegistration* declRegistration = nullptr) const;
 
   typ makeBuiltinType(
     clang::SourceLocation const& loc, clang::BuiltinType const* typ) const;

@@ -168,7 +168,7 @@ type typ =
       (* body.ckind should be CUnion *)
   | Named { name: qualified_name; is_extern_c_name : bool; } (* typedef *)
   | Lambda {
-      proto : signature;
+      proto: signature list;
       closure: capture list;
     } (* a lambda object of the given signature.
          Note that normally each anonymous lambda object should give rise
@@ -264,6 +264,10 @@ type reference_or_pointer_kind =
   | RPKDynamicReference { origin_type : qual_type; pvmt : expression; }
 ;;
 
+type lambda_overload_instance =
+  { return_type: qual_type; arg_decls: arg_decl list; id: int64; impl: statement list; }
+;;
+
 type exp_node =
   | Constant { cst: compilation_constant; }
   | String { cst: string; }
@@ -308,7 +312,7 @@ type exp_node =
                    fun_pointer: expression;
                    arguments: expression list;
                  } (* function or method or virtual method pointer *)
-  | Lambda_call { callee: expression; arguments: expression list; }
+  | Lambda_call { callee: expression; arguments: expression list; id: int64; }
      (* call of a lambda object. *)
   | Temporary
     { temp_name: string;
@@ -330,10 +334,8 @@ type exp_node =
   | Throw { sub: expression option; }
   | GnuBody { body: statement list; }
   | LambdaExpr {
-       lam_rt: qual_type;
-       lam_args: arg_decl list;
-       lam_closure: capture list;
-       lam_body: statement list;
+      overloads: lambda_overload_instance list;
+      captures: capture list;
     }
 ;;
 
