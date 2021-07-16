@@ -203,10 +203,14 @@ let rec mangle_cc_type = function
   | Named (name,is_extern_c_name) ->
     if is_extern_c_name then name.decl_name
     else mangle_name_optt name TStandard
-  | Lambda (proto,cap) ->
+  | Lambda (protos,cap) ->
     (* NB: we depart from standard mangling rules here, in order to have
        a contextless mangling, whereas Itanium ABI mangles according to
        the number of lambda classes found in each function. *)
+    let proto = (match protos with
+      | p :: _ -> p
+      | [] -> Frama_Clang_option.not_yet_implemented
+          "Initializer list without Compound initialization") in
     "Ul" ^ mangle_parameter proto.parameter ^ "EUc" ^ mangle_captures cap ^ "E_"
   (* not translated yet
      | ArrayType(t,(DYN_SIZE | NO_SIZE)) ->

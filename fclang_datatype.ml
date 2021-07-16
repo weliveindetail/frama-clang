@@ -183,13 +183,7 @@ and pretty_type fmt typ =
       -> Format.fprintf fmt "union %a"
          pretty_qualified_name (name, tc)
   | Named (qname, _) -> pretty_qualified_name fmt (qname, TStandard)
-  | Lambda (proto, cap) ->
-    let pp_sep fmt () = Format.pp_print_string fmt ", " in
-    Format.fprintf fmt "lambda %a [%a]-> %a"
-      (Format.pp_print_list ~pp_sep pretty_qual_type)
-      proto.parameter
-      (Format.pp_print_list ~pp_sep pretty_capture) cap
-      pretty_qual_type proto.result
+  | Lambda (protos, cap) -> pretty_generic_lambda fmt protos cap
 
 and pretty_capture fmt cap =
   match cap with
@@ -208,6 +202,19 @@ and pretty_qual_type fmt { qualifier = specs; plain_type = typ} =
   Format.fprintf fmt "%a (%a)"
     (Pretty_utils.pp_list ~sep:" " pretty_specifier) specs
     pretty_type typ
+and pretty_lambda fmt proto cap =
+  let pp_sep fmt () = Format.pp_print_string fmt ", " in
+  Format.fprintf fmt "lambda %a [%a]-> %a"
+    (Format.pp_print_list ~pp_sep pretty_qual_type)
+    proto.parameter
+    (Format.pp_print_list ~pp_sep pretty_capture) cap
+    pretty_qual_type proto.result
+and pretty_generic_lambda fmt protos cap =
+  match protos with
+  | [] -> ()
+  | p :: ps ->
+    pretty_lambda fmt p cap;
+    pretty_generic_lambda fmt ps cap
 
 module Template_parameter =
   Datatype.Make_with_collections(

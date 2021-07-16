@@ -577,6 +577,33 @@ exp_node FramacVisitor::make_initializer_list(
 }
 
 exp_node FramacVisitor::make_lambda_expr(const clang::LambdaExpr* lam) {
+  if (const clang::FunctionTemplateDecl* meths =
+          lam->getDependentCallOperator()) {
+    for (const clang::FunctionDecl *meth : meths->specializations()) {
+      qual_type lam_rt =
+        makeDefaultExternalNameType(
+          meth->getReturnTypeSourceRange().getBegin(),
+          meth->getReturnType());
+
+      /* arg_decl */ list lam_args = NULL;
+      auto args = meth->parameters();
+      for (auto it = args.rbegin(); it < args.rend(); it++) {
+        std::string name = (*it)->getNameAsString();
+        qual_type arg_type =
+          makeDefaultExternalNameType(
+            (*it)->getLocation(), (*it)->getOriginalType());
+        location l = makeLocation((*it)->getSourceRange());
+        lam_args =
+          cons_container(arg_decl_cons(arg_type, copy_string(name), l),lam_args);
+      }
+      /* closure */ list lam_closure =
+        _clangUtils->make_capture_list(lam->captures());
+      /* statement */ list lam_body =
+        makeCodeBlock(meth->getBody(), meth->getDeclContext(), meth);
+      return exp_node_LambdaExpr(lam_rt, lam_args, lam_closure, lam_body);
+    }
+  }
+
   const clang::CXXMethodDecl* lam_meth = lam->getCallOperator();
   qual_type lam_rt =
     makeDefaultExternalNameType(

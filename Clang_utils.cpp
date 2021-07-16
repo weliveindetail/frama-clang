@@ -164,10 +164,11 @@ compare_typ(typ t1, typ t2) {
         result = compare_qualified_name(t1->cons_typ.Named.name,
             t2->cons_typ.Named.name);
         break;
-      case LAMBDA:
-        result =
-          compare_signature(
-            t1->cons_typ.Lambda.proto, t2->cons_typ.Lambda.proto);
+      case LAMBDA: {
+        auto get_signature = [](typ t) {
+          return (signature)t->cons_typ.Lambda.proto->element.container;
+        };
+        result = compare_signature(get_signature(t1), get_signature(t2));
         if (result==0) {
           /* capture */ list l1 = t1->cons_typ.Lambda.closure;
           /* capture */ list l2 = t2->cons_typ.Lambda.closure;
@@ -184,6 +185,7 @@ compare_typ(typ t1, typ t2) {
           }
         }
         break;
+      }
       default:
         break;
     }
@@ -1410,6 +1412,11 @@ bool Clang_utils::is_lambda(const clang::RecordDecl* rec) const {
   return cxx_rec && cxx_rec->isLambda();
 }
 
+bool Clang_utils::is_generic_lambda(const clang::RecordDecl* rec) const {
+  auto *cxx_rec = llvm::dyn_cast<const clang::CXXRecordDecl>(rec);
+  return cxx_rec && cxx_rec->isGenericLambda();
+}
+
 /* capture */ list Clang_utils::make_capture_list(
   clang::CXXRecordDecl::capture_const_range captures) const {
   list lam_closure = NULL;
@@ -1450,9 +1457,25 @@ typ Clang_utils::make_lambda_type(
 {
   auto cxx_rec = llvm::dyn_cast<const clang::CXXRecordDecl>(record);
   auto oper = cxx_rec->getLambdaCallOperator();
-  auto sig = makeSignature(*oper);
+  auto sig = cons_container(makeSignature(*oper), nullptr);
   auto cap = make_capture_list(cxx_rec->captures());
   return typ_Lambda(sig,cap);
+}
+
+typ Clang_utils::make_generic_lambda_type(
+    clang::SourceLocation const& loc, clang::RecordDecl const* record,
+    VirtualDeclRegistration* declRegistration) const
+{
+  auto *cxx_rec = llvm::dyn_cast<const clang::CXXRecordDecl>(record);
+  clang::FunctionTemplateDecl *oper = cxx_rec->getDependentLambdaCallOperator();
+  list sigs = nullptr;
+
+  for (const clang::FunctionDecl *function : oper->specializations())
+    sigs = cons_container(makeSignature(*function), sigs);
+
+  assert(sigs && "Will unused generic lambdas appear in the AST? Possible.");
+  auto *cap = make_capture_list(cxx_rec->captures());
+  return typ_Lambda(sigs, cap);
 }
 
 typ
@@ -1649,6 +1672,8 @@ Clang_utils::makePlainType(
         const clang::RecordType*
           recordType = static_cast<clang::RecordType const*>(type);
         const clang::RecordDecl* record = recordType->getDecl();
+        if (is_generic_lambda(record))
+          return make_generic_lambda_type(loc,record,declRegistration);
         if (is_lambda(record))
           return make_lambda_type(loc,record,declRegistration);
         if (declRegistration && declRegistration->doesRegisterDecl())

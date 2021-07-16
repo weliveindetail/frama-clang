@@ -168,7 +168,7 @@ type typ =
       (* body.ckind should be CUnion *)
   | Named { name: qualified_name; is_extern_c_name : bool; } (* typedef *)
   | Lambda {
-      proto : signature;
+      proto : signature list;
       closure: capture list;
     } (* a lambda object of the given signature.
          Note that normally each anonymous lambda object should give rise
