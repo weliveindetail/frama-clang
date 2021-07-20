@@ -576,55 +576,44 @@ exp_node FramacVisitor::make_initializer_list(
   return exp_node_InitializerList(elt_type_trans, init);
 }
 
-exp_node FramacVisitor::make_lambda_expr(const clang::LambdaExpr* lam) {
-  if (const clang::FunctionTemplateDecl* meths =
-          lam->getDependentCallOperator()) {
-    for (const clang::FunctionDecl *meth : meths->specializations()) {
-      qual_type lam_rt =
-        makeDefaultExternalNameType(
+arg_decl FramacVisitor::makeArgDecl(clang::ParmVarDecl &param) {
+  qual_type arg_type =
+    makeDefaultExternalNameType(
+      param.getLocation(), param.getOriginalType());
+  const char *name = copy_string(param.getNameAsString());
+  location loc = makeLocation(param.getSourceRange());
+  return arg_decl_cons(arg_type, name, loc);
+}
+
+lambda_expr_instance
+FramacVisitor::makeLambdaExprInstance(const clang::FunctionDecl *meth) {
+  qual_type result =
+      makeDefaultExternalNameType(
           meth->getReturnTypeSourceRange().getBegin(),
           meth->getReturnType());
+  list arg_decls = nullptr;
+  llvm::ArrayRef<clang::ParmVarDecl *> params = meth->parameters();
+  for (auto it = params.rbegin(); it < params.rend(); it++)
+    arg_decls = cons_container(makeArgDecl(**it), arg_decls);
+  list body_statements =
+      makeCodeBlock(meth->getBody(), meth->getDeclContext(), meth);
+  return lambda_expr_instance_cons(result, arg_decls, body_statements);
+}
 
-      /* arg_decl */ list lam_args = NULL;
-      auto args = meth->parameters();
-      for (auto it = args.rbegin(); it < args.rend(); it++) {
-        std::string name = (*it)->getNameAsString();
-        qual_type arg_type =
-          makeDefaultExternalNameType(
-            (*it)->getLocation(), (*it)->getOriginalType());
-        location l = makeLocation((*it)->getSourceRange());
-        lam_args =
-          cons_container(arg_decl_cons(arg_type, copy_string(name), l),lam_args);
-      }
-      /* closure */ list lam_closure =
-        _clangUtils->make_capture_list(lam->captures());
-      /* statement */ list lam_body =
-        makeCodeBlock(meth->getBody(), meth->getDeclContext(), meth);
-      return exp_node_LambdaExpr(lam_rt, lam_args, lam_closure, lam_body);
-    }
+exp_node FramacVisitor::makeLambdaExpr(const clang::LambdaExpr* lam) {
+  list insts = nullptr;
+  if (const auto* generic_lambda = lam->getDependentCallOperator()) {
+    // C++14 generic lambdas can have multiple instantiations.
+    for (const clang::FunctionDecl *inst : generic_lambda->specializations())
+      insts = cons_container(makeLambdaExprInstance(inst), insts);
   }
-
-  const clang::CXXMethodDecl* lam_meth = lam->getCallOperator();
-  qual_type lam_rt =
-    makeDefaultExternalNameType(
-      lam_meth->getReturnTypeSourceRange().getBegin(),
-      lam_meth->getReturnType());
-  /* arg_decl */ list lam_args = NULL;
-  auto args = lam_meth->parameters();
-  for (auto it = args.rbegin(); it < args.rend(); it++) {
-    std::string name = (*it)->getNameAsString();
-    qual_type arg_type =
-      makeDefaultExternalNameType(
-        (*it)->getLocation(), (*it)->getOriginalType());
-    location l = makeLocation((*it)->getSourceRange());
-    lam_args =
-      cons_container(arg_decl_cons(arg_type, copy_string(name), l),lam_args);
+  else {
+    // Plain C++11 lambdas have a single signature and body.
+    const clang::FunctionDecl* plain_lambda = lam->getCallOperator();
+    insts = cons_container(makeLambdaExprInstance(plain_lambda), insts);
   }
-  /* closure */ list lam_closure =
-    _clangUtils->make_capture_list(lam->captures());
-  /* statement */ list lam_body =
-    makeCodeBlock(lam_meth->getBody(), lam_meth->getDeclContext(), lam_meth);
-  return exp_node_LambdaExpr(lam_rt, lam_args, lam_closure, lam_body);
+  list captures = _clangUtils->make_capture_list(lam->captures());
+  return exp_node_LambdaExpr(insts, captures);
 }
 
 expression
@@ -3554,7 +3543,7 @@ exp_node FramacVisitor::makeExpression(
       }
     case clang::Stmt::LambdaExprClass: {
       auto lam = static_cast<const clang::LambdaExpr*>(expr);
-      return guard.setAssignResult(make_lambda_expr(lam), expr);
+      return guard.setAssignResult(makeLambdaExpr(lam), expr);
     }
     case clang::Stmt::AddrLabelExprClass:
     case clang::Stmt::DesignatedInitExprClass:
