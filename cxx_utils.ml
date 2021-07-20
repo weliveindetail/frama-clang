@@ -408,10 +408,6 @@ let force_ptr_to_const p =
     { p with plain_type = Pointer (PDataPointer t) }
   | _ -> p
 
-let make_lambda_type result args closure =
-  let parameter = List.map (fun x -> x.arg_type) args in
-  Lambda ([{ result; parameter; variadic = false }], closure)
-
 let plain_obj_ptr t = Pointer (PDataPointer t)
 
 let plain_obj_lvref t = LVReference (PDataPointer t)

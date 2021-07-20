@@ -73,9 +73,6 @@ val const_qual_type: qual_type -> qual_type
  *)
 val force_ptr_to_const: qual_type -> qual_type
 
-(** creates a lambda type with the given signature and captured ids. *)
-val make_lambda_type: qual_type -> arg_decl list -> capture list -> typ
-
 (** given an object type, returns an unqualified pointer type to the object. *)
 val obj_ptr: qual_type -> qual_type
 

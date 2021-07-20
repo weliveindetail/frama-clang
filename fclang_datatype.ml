@@ -183,14 +183,7 @@ and pretty_type fmt typ =
       -> Format.fprintf fmt "union %a"
          pretty_qualified_name (name, tc)
   | Named (qname, _) -> pretty_qualified_name fmt (qname, TStandard)
-  | Lambda (protos, cap) -> pretty_generic_lambda fmt protos cap
-
-and pretty_capture fmt cap =
-  match cap with
-  | Cap_id (s,typ,is_ref) ->
-    Format.fprintf fmt "%a %s%s"
-      pretty_qual_type typ (if is_ref then "&" else "=") s
-  | Cap_this is_ref -> Format.fprintf fmt "%sthis" (if is_ref then "&" else "=")
+  | Lambda (sigs, caps) -> pretty_generic_lambda fmt sigs caps
 
 and pretty_specifier fmt spec =
   match spec with
@@ -202,19 +195,25 @@ and pretty_qual_type fmt { qualifier = specs; plain_type = typ} =
   Format.fprintf fmt "%a (%a)"
     (Pretty_utils.pp_list ~sep:" " pretty_specifier) specs
     pretty_type typ
-and pretty_lambda fmt proto cap =
+
+and pretty_capture fmt cap =
+  match cap with
+  | Cap_id (s,typ,is_ref) ->
+    Format.fprintf fmt "%a %s%s"
+      pretty_qual_type typ (if is_ref then "&" else "=") s
+  | Cap_this is_ref -> Format.fprintf fmt "%sthis" (if is_ref then "&" else "=")
+and pretty_lambda fmt result params cap =
   let pp_sep fmt () = Format.pp_print_string fmt ", " in
   Format.fprintf fmt "lambda %a [%a]-> %a"
-    (Format.pp_print_list ~pp_sep pretty_qual_type)
-    proto.parameter
+    (Format.pp_print_list ~pp_sep pretty_qual_type) params
     (Format.pp_print_list ~pp_sep pretty_capture) cap
-    pretty_qual_type proto.result
-and pretty_generic_lambda fmt protos cap =
-  match protos with
+    pretty_qual_type result
+and pretty_generic_lambda fmt signatures caps =
+  match signatures with
   | [] -> ()
-  | p :: ps ->
-    pretty_lambda fmt p cap;
-    pretty_generic_lambda fmt ps cap
+  | s::sigs ->
+    pretty_lambda fmt s.result s.parameter caps;
+    pretty_generic_lambda fmt sigs caps
 
 module Template_parameter =
   Datatype.Make_with_collections(
