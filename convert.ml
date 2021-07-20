@@ -28,13 +28,15 @@ let fresh_names s =
   let nb = ref (-1) in
   fun () ->
     incr nb;
-    if !nb = 0 then s else s ^ "_" ^ string_of_int !nb
+    s ^ "_" ^ string_of_int !nb
 
 let lambda_def_name = "__fc_lambda_def"
 
 let lambda_apply_name = "__fc_lambda_apply"
 
-let new_lambda_def_name = fresh_names lambda_def_name
+let unique_lambda_def_name = fresh_names lambda_def_name
+
+let unique_lambda_apply_name = fresh_names lambda_apply_name
 
 let make_lambda_cons_name s1 = s1 ^ "_cons"
 
@@ -1345,8 +1347,9 @@ and convert_expr_node ?(drop_temp=false) env aux e does_remove_virtual =
           convert_list_expr env aux args does_remove_virtual
         in
         let args = mk_addrof env callee :: args in
+        let apply_name = select_overload lambda args in
         env, aux,
-        CALL(mk_expr_l loc (MEMBEROF (callee, lambda_apply_name)), args, [])
+        CALL(mk_expr_l loc (MEMBEROF (callee, apply_name)), args, [])
       | Static_call(name, signature, kind, args, t, is_extern_c) ->
         let cname =
           if is_extern_c then name.decl_name
@@ -1732,6 +1735,12 @@ and convert_expr_node ?(drop_temp=false) env aux e does_remove_virtual =
   in
   env, aux, mk_expr env node
 
+(* Bad hack! TODO: Figure out how to access the correct overload! *)
+and select_overload lambda_expr args =
+  let _unused = lambda_expr in
+  let _unused = args in
+  lambda_apply_name ^ "_0"
+
 and convert_lambda_instatiations env lam_name lam_decl closure_type insts closure aux =
   match insts with
   | [] -> (env, aux)
@@ -1744,11 +1753,12 @@ and convert_lambda_instatiations env lam_name lam_decl closure_type insts closur
                         insts closure aux
 
 and convert_lambda_single_instance env lam_name lam_decl closure_type inst closure aux =
+  let apply_name = unique_lambda_apply_name () in
   let arg_types = (List.map (fun x -> x.arg_type) inst.arg_decls) in
-  let type_def = convert_lambda_type env closure_type inst.return_type arg_types closure in
+  let type_def = convert_lambda_type env closure_type inst.return_type arg_types apply_name closure in
   let env = Convert_env.add_c_global env type_def in
   let cons_def =
-    convert_lambda_constructor env closure_type inst.return_type arg_types closure
+    convert_lambda_constructor env closure_type inst.return_type arg_types apply_name closure
   in
   let env = Convert_env.add_c_global env cons_def in
   let env = Convert_env.add_closure_info env closure in
@@ -1764,7 +1774,7 @@ and convert_lambda_single_instance env lam_name lam_decl closure_type inst closu
   let aux = add_local_aux_def_init aux lam_decl lam_init in
   env, aux
 
-and convert_lambda_type env lam_type result params closures =
+and convert_lambda_type env lam_type result params apply_name closures =
   let name = Mangling.mangle_cc_type lam_type in
   let loc = Convert_env.get_loc env in
   let field_of_capture cap =
@@ -1783,11 +1793,11 @@ and convert_lambda_type env lam_type result params closures =
   in
   let rt, decl = convert_specifiers env fptr false in
   let fptr_field =
-    FIELD (rt, [(lambda_apply_name, decl JUSTBASE, [], loc),None]) in
+    FIELD (rt, [(apply_name, decl JUSTBASE, [], loc),None]) in
   ONLYTYPEDEF (
     [SpecType (Tstruct(name, Some (fptr_field :: fields),[]))],loc)
 
-and convert_lambda_constructor env lam_type result params closures  =
+and convert_lambda_constructor env lam_type result params apply_name closures  =
   let loc = Convert_env.get_loc env in
   let cloc = Convert_env.get_clang_loc env in
   let lambda_name = Mangling.mangle_cc_type lam_type in
@@ -1824,7 +1834,7 @@ and convert_lambda_constructor env lam_type result params closures  =
   let body =
     make_computation env
       (mk_assign env
-         (mk_expr env (make_closure_access env lambda_apply_name false))
+         (mk_expr env (make_closure_access env apply_name false))
          (mk_var env "__fc_func"))
     :: body
   in
@@ -1875,7 +1885,7 @@ and make_assign_cap env cap =
 
 and convert_lambda_body env lam_type lam_inst =
   let loc = Convert_env.get_loc env in
-  let name = new_lambda_def_name () in
+  let name = unique_lambda_def_name () in
   let lam_ptr_type =
     Cxx_utils.(force_ptr_to_const (obj_ptr (unqual_type lam_type)))
   in
