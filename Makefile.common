@@ -33,7 +33,7 @@ endif
 CXX_HEADERS= algorithm array atomic bitset cassert cerrno climits	\
 clocale cstdarg cstdbool cstddef cstdio cstdint cstdlib cstring ctime	\
 cwchar exception functional initializer_list ios iosfwd iostream	\
-istream iterator locale memory new ostream stdexcepts streambuf		\
+istream iterator locale memory new ostream ratio stdexcepts streambuf	\
 string system_error type_traits typeinfo utility cxxabi.h		\
 __fc_define_char_traits_char __fc_define_fpos				\
 __fc_define_ios_base_seekdir __fc_define_mbstate_t			\
