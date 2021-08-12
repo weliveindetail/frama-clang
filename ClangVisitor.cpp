@@ -1414,14 +1414,13 @@ void FramacVisitor::ensureBuiltinDeclaration(
 }
 
 bool FramacVisitor::is_lambda_call(const clang::CallExpr* call) {
-  if (call->getStmtClass() == clang::Stmt::CXXOperatorCallExprClass) {
-    const clang::CXXOperatorCallExpr* op =
-      llvm::dyn_cast<clang::CXXOperatorCallExpr>(call);
-    if (op->getOperator() == clang::OO_Call) {
-      if (call->getNumArgs() > 0) {
-        clang::QualType typ = call->getArg(0)->getType();
-        const clang::CXXRecordDecl* rec = typ->getAsCXXRecordDecl();
-        return (rec && rec->isLambda());
+  if (const auto* op = llvm::dyn_cast<clang::CXXOperatorCallExpr>(call)) {
+    if (op->getOperator() == clang::OO_Call && call->getNumArgs() > 0) {
+      clang::QualType typ = call->getArg(0)->getType();
+      if (const clang::CXXRecordDecl* rec = typ->getAsCXXRecordDecl()) {
+        assert((rec->isGenericLambda() && !rec->isLambda() == false) &&
+               "Any C++14 generic lambda is also a conventional C++11 lambda");
+        return rec->isLambda();
       }
     }
   }
@@ -1431,6 +1430,38 @@ bool FramacVisitor::is_lambda_call(const clang::CallExpr* call) {
 exp_node FramacVisitor::makeLambdaCallExpression(
   const clang::CallExpr* call, bool* shouldDelay, list* receiver,
   FramaCIRGenAction::ExpressionGuard& guard) {
+
+  const auto* op_call = llvm::dyn_cast<clang::CXXOperatorCallExpr>(call);
+  op_call->dump();
+
+  if (const auto *arg0 = llvm::dyn_cast<clang::DeclRefExpr>(op_call->getArg(0))) {
+    arg0->dump();
+
+    const clang::ValueDecl *val = arg0->getDecl();
+    val->dump();
+
+    const auto *method = llvm::dyn_cast<clang::CXXMethodDecl>(val);
+    method->dump();
+  }
+
+  if (const clang::FunctionDecl *callee = op_call->getDirectCallee()) {
+    callee->dump();
+  }
+
+  const clang::CXXRecordDecl* rec =
+      op_call->getArg(0)->getType()->getAsCXXRecordDecl();
+
+  if (rec->isGenericLambda()) {
+    const auto &templateParams = *rec->getGenericLambdaTemplateParameterList();
+    for (const clang::NamedDecl *decl : templateParams) {
+      decl->dump();
+    }
+    clang::FunctionTemplateDecl *templateDecl = rec->getDependentLambdaCallOperator();
+    templateDecl->dump();
+    clang::CXXMethodDecl *methodDecl = rec->getLambdaCallOperator();
+    methodDecl->dump();
+  }
+
   list arguments = NULL;
   clang::CallExpr::const_arg_iterator beg = call->arg_begin();
   clang::CallExpr::const_arg_iterator it = call->arg_end();
