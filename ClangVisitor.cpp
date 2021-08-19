@@ -585,20 +585,6 @@ arg_decl FramacVisitor::makeArgDecl(clang::ParmVarDecl &param) {
   return arg_decl_cons(arg_type, name, loc);
 }
 
-template <typename T>
-static size_t findOrCreateID(std::vector<T> &IDs, const T item) {
-  auto it = std::find(IDs.begin(), IDs.end(), item);
-  if (it != IDs.end())
-    return std::distance(IDs.begin(), it);
-  IDs.push_back(item);
-  return IDs.size() - 1;
-}
-
-static uint64_t pointerToID(const void *ptr) {
-  static std::vector<const void *> GlobalDeterministicIDs;
-  return findOrCreateID(GlobalDeterministicIDs, ptr);
-}
-
 lambda_overload_instance
 FramacVisitor::makeLambdaExprInstance(const clang::FunctionDecl *meth) {
   qual_type result =
@@ -611,9 +597,8 @@ FramacVisitor::makeLambdaExprInstance(const clang::FunctionDecl *meth) {
     arg_decls = cons_container(makeArgDecl(**it), arg_decls);
   list body_statements =
       makeCodeBlock(meth->getBody(), meth->getDeclContext(), meth);
-  uint64_t addr = pointerToID(meth);
-  assert(addr < (1ull << 63) && "Must fit in OCaml's signed int64");
-  return lambda_overload_instance_cons(result, arg_decls, addr, body_statements);
+  int64_t id = Clang_utils::pointerToID(meth);
+  return lambda_overload_instance_cons(result, arg_decls, id, body_statements);
 }
 
 exp_node FramacVisitor::makeLambdaExpr(const clang::LambdaExpr* lam) {
@@ -1458,10 +1443,8 @@ exp_node FramacVisitor::makeLambdaCallExpression(
   }
 
   const auto* cxx_call_op = llvm::cast<clang::CXXOperatorCallExpr>(call);
-  uint64_t calleeAddr = pointerToID(cxx_call_op->getDirectCallee());
-  assert(calleeAddr < (1ull << 63) && "Must fit in OCaml's signed int64");
-
-  exp_node result = exp_node_Lambda_call(lambda_obj, arguments, calleeAddr);
+  int64_t lambda_id = Clang_utils::pointerToID(cxx_call_op->getDirectCallee());
+  exp_node result = exp_node_Lambda_call(lambda_obj, arguments, lambda_id);
   return
     convert_result(guard, call->getCallReturnType(*_context), result, call);
 }

@@ -183,8 +183,11 @@ and pretty_type fmt typ =
       -> Format.fprintf fmt "union %a"
          pretty_qualified_name (name, tc)
   | Named (qname, _) -> pretty_qualified_name fmt (qname, TStandard)
-  | Lambda (sigs, caps) -> pretty_generic_lambda fmt sigs caps
+  | Lambda (sigs, caps, _) -> pretty_generic_lambda fmt sigs caps
 
+(* The lambda unique ID is the smallest of its overload IDs. We can determine
+   it during codegen and don't need to pass it throught the intermediate AST.
+   For completeness, however, we might want to do it at some point. *)
 and pretty_generic_lambda fmt signatures captures =
   let pretty_capture fmt cap =
     match cap with
@@ -199,7 +202,7 @@ and pretty_generic_lambda fmt signatures captures =
     Format.fprintf fmt "lambda %a [%a]-> %a"
       (Format.pp_print_list ~pp_sep pretty_capture) captures
       (Format.pp_print_list ~pp_sep pretty_qual_type) lam.parameter
-      pretty_qual_type lam.result
+      (pretty_qual_type) lam.result
   in
   List.iter pretty_lambda signatures
 

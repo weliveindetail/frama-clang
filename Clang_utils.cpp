@@ -27,6 +27,8 @@
 #include <clang/AST/Type.h>
 #include <llvm/Support/Casting.h>
 
+#include <limits>
+
 extern "C" {
 
 void free_type(qual_type obj) {
@@ -665,6 +667,20 @@ qual_type Intermediate_ast::makeStructType(qualified_name struct_name) {
   return qual_type_cons(NULL, typ_Struct(struct_name, tkind_TStandard()));
 }
 
+template <typename T>
+static size_t findOrCreateID(std::vector<T> &IDs, const T item) {
+  auto it = std::find(IDs.begin(), IDs.end(), item);
+  if (it != IDs.end())
+    return std::distance(IDs.begin(), it);
+  IDs.push_back(item);
+  return IDs.size() - 1;
+}
+
+// static
+int64_t Clang_utils::pointerToID(const void *ptr) {
+  static std::vector<const void *> GlobalDeterministicIDs;
+  return findOrCreateID(GlobalDeterministicIDs, ptr);
+}
 
 location
 Clang_utils::makeLocation(clang::SourceRange const& locs) const
@@ -1455,11 +1471,11 @@ typ Clang_utils::make_lambda_type(
     clang::SourceLocation const& loc, clang::RecordDecl const* record,
     VirtualDeclRegistration* declRegistration) const
 {
-  auto cxx_rec = llvm::dyn_cast<const clang::CXXRecordDecl>(record);
-  auto oper = cxx_rec->getLambdaCallOperator();
-  auto sig = cons_container(makeSignature(*oper), nullptr);
-  auto cap = make_capture_list(cxx_rec->captures());
-  return typ_Lambda(sig,cap);
+  auto *cxx_rec = llvm::dyn_cast<const clang::CXXRecordDecl>(record);
+  auto *meth = cxx_rec->getLambdaCallOperator();
+  auto *sig = cons_container(makeSignature(*meth), nullptr);
+  auto *cap = make_capture_list(cxx_rec->captures());
+  return typ_Lambda(sig, cap, pointerToID(meth));
 }
 
 typ Clang_utils::make_generic_lambda_type(
@@ -1470,12 +1486,18 @@ typ Clang_utils::make_generic_lambda_type(
   clang::FunctionTemplateDecl *oper = cxx_rec->getDependentLambdaCallOperator();
   list sigs = nullptr;
 
-  for (const clang::FunctionDecl *function : oper->specializations())
-    sigs = cons_container(makeSignature(*function), sigs);
+  constexpr auto uint64_max = std::numeric_limits<int64_t>::max();
+  int64_t min_overload_id = uint64_max;
 
-  assert(sigs && "Will unused generic lambdas appear in the AST? Possible.");
+  for (const clang::FunctionDecl *function : oper->specializations()) {
+    min_overload_id = std::min(min_overload_id, pointerToID(function));
+    sigs = cons_container(makeSignature(*function), sigs);
+  }
+
+  assert(sigs != nullptr && min_overload_id < uint64_max &&
+         "Will unused generic lambdas appear in the AST? Possible.");
   auto *cap = make_capture_list(cxx_rec->captures());
-  return typ_Lambda(sigs, cap);
+  return typ_Lambda(sigs, cap, min_overload_id);
 }
 
 typ

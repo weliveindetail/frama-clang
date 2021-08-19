@@ -170,13 +170,8 @@ type typ =
   | Lambda {
       proto: signature list;
       closure: capture list;
-    } (* a lambda object of the given signature.
-         Note that normally each anonymous lambda object should give rise
-         to a different class. With this representation, we won't distinguish
-         between two lambda types with exactly the same signature and the
-         same list of captured identifiers (which would end up in two
-         structurally equal classes anyway)
-       *)
+      id: int64;
+    }
 ;;
 
 type specifier =

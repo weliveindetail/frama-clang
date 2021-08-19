@@ -203,14 +203,11 @@ let rec mangle_cc_type = function
   | Named (name,is_extern_c_name) ->
     if is_extern_c_name then name.decl_name
     else mangle_name_optt name TStandard
-  | Lambda (signatures,cap) ->
-    (* NB: we depart from standard mangling rules here, in order to have
-       a contextless mangling, whereas Itanium ABI mangles according to
-       the number of lambda classes found in each function. *)
-    let rec mangle_all = function
-      | [] -> ""
-      | s::sigs -> mangle_parameter s.parameter ^ mangle_all sigs in
-    "Ul" ^ mangle_all signatures ^ "EUc" ^ mangle_captures cap ^ "E_"
+  | Lambda (_, _, id) ->
+    (* NB: Itanium ABI mangling would create function-local unique identifiers,
+       but we need to make them global and still avoid collisions. We diverge
+       from the standard here and thus use the reserved __fc_ prefix. *)
+    "__fc_lam" ^ Int64.to_string id
   (* not translated yet
      | ArrayType(t,(DYN_SIZE | NO_SIZE)) ->
       "A_" ^ mangle_cc_type t *)
@@ -229,15 +226,6 @@ and mangle_pkind kw = function
       Frama_Clang_option.not_yet_implemented "Mangling of pointer to member"
 
 and mangle_parameter l = String.concat "" (List.map mangle_cc_qual_type l)
-
-and mangle_captures l = String.concat "" (List.map mangle_capture l)
-
-and mangle_capture = function
-  | Cap_id (s,typ,is_ref) ->
-    mangle_plain_var s ^ (if is_ref then "R" else "") ^ mangle_cc_qual_type typ
-  | Cap_this is_ref -> "4this" ^ (if is_ref then "R" else "") ^ "v"
-    (* TODO: better reprensentation for this, but this will probably prevent
-       any context-free mangling. *)
 
 and mangle_cc_qual_type t =
   add_cv_qual t.qualifier ^ mangle_cc_type t.plain_type

@@ -665,6 +665,7 @@ public:
 
   bool is_lambda(clang::RecordDecl const* record) const;
   bool is_generic_lambda(const clang::RecordDecl* rec) const;
+  static int64_t pointerToID(const void *ptr);
 
   /*capture*/ list make_capture_list(
     clang::CXXRecordDecl::capture_const_range captures) const;

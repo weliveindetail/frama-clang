@@ -3,7 +3,7 @@ OPT: @MACHDEP@ -deps -cpp-extra-args="-std=c++14" -print
 */
 
 int test_cxx11_lambda(int cap, int i) {
-  auto lam1 = [cap] (long val) { return cap - val; };
+  auto lam1 = [cap] (int val) { return cap - val; };
   return lam1(i);
 }
 
