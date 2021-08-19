@@ -130,8 +130,8 @@ struct reverse_iterator<int*>;
 struct reverse_iterator<int*>;
 struct UlN3std15iterator_traitsIPiEE10value_typeEUc4predN3stdE8equal_toIiE3it1PiE_;
 struct UlN3std15iterator_traitsIPiEE10value_typeEUc4predN3stdE8equal_toIiE3it1PiE_ {
-   _Bool (*__fc_lambda_apply)(struct UlN3std15iterator_traitsIPiEE10value_typeEUc4predN3stdE8equal_toIiE3it1PiE_ const *,
-                              value_type ) ;
+   _Bool (*__fc_lambda_overload_0)(struct UlN3std15iterator_traitsIPiEE10value_typeEUc4predN3stdE8equal_toIiE3it1PiE_ const *,
+                                   value_type ) ;
    struct equal_to<int> pred ;
    int *it1 ;
 };
@@ -2796,8 +2796,8 @@ difference_type count_if<int*,std,iterator_traits<int*>>(int *first,
   int **it = & first;
   while (*it < last) {
     _Bool tmp;
-    tmp = (*(pred.__fc_lambda_apply))((struct UlN3std15iterator_traitsIPiEE10value_typeEUc4predN3stdE8equal_toIiE3it1PiE_ const *)(& pred),
-                                      *(*it));
+    tmp = (*(pred.__fc_lambda_overload_0))((struct UlN3std15iterator_traitsIPiEE10value_typeEUc4predN3stdE8equal_toIiE3it1PiE_ const *)(& pred),
+                                           *(*it));
     if (tmp) c ++;
     (*it) ++;
   }
@@ -2922,21 +2922,28 @@ _Bool is_permutation<int*,int*>(int *first1, int *last1, int *first2)
   return_label: return __retres;
 }
 
-void UlN3std15iterator_traitsIPiEE10value_typeEUc4predN3stdE8equal_toIiE3it1PiE__cons
+void UlN3std15iterator_traitsIPiEE10value_typeEUc4predN3stdE8equal_toIiE3it1PiE__init_captures
 (struct UlN3std15iterator_traitsIPiEE10value_typeEUc4predN3stdE8equal_toIiE3it1PiE_ const *__fc_closure,
- _Bool (*__fc_func)(struct UlN3std15iterator_traitsIPiEE10value_typeEUc4predN3stdE8equal_toIiE3it1PiE_ const *,
-                    value_type ),
  struct equal_to<int> pred, int *it1)
 {
-  __fc_closure->__fc_lambda_apply = __fc_func;
   equal_to<int>::Ctor(& __fc_closure->pred,
                       (struct equal_to<int> const *)(& pred));
   __fc_closure->it1 = it1;
   return;
 }
 
-_Bool __fc_lambda_def(struct UlN3std15iterator_traitsIPiEE10value_typeEUc4predN3stdE8equal_toIiE3it1PiE_ const *__fc_closure,
-                      value_type x)
+void UlN3std15iterator_traitsIPiEE10value_typeEUc4predN3stdE8equal_toIiE3it1PiE__init_0
+(struct UlN3std15iterator_traitsIPiEE10value_typeEUc4predN3stdE8equal_toIiE3it1PiE_ const *__fc_closure,
+ _Bool (*__fc_func)(struct UlN3std15iterator_traitsIPiEE10value_typeEUc4predN3stdE8equal_toIiE3it1PiE_ const *,
+                    value_type ))
+{
+  __fc_closure->__fc_lambda_overload_0 = __fc_func;
+  return;
+}
+
+_Bool UlN3std15iterator_traitsIPiEE10value_typeEUc4predN3stdE8equal_toIiE3it1PiE__body_0
+(struct UlN3std15iterator_traitsIPiEE10value_typeEUc4predN3stdE8equal_toIiE3it1PiE_ const *__fc_closure,
+ value_type x)
 {
   _Bool tmp;
   tmp = operator()(& __fc_closure->pred._frama_c__ZN3stdE12__bool_binopIiN3stdE10__equal_toE,
@@ -2955,12 +2962,15 @@ _Bool is_permutation<int*,int*,std::equal_to<int>>(int *first1, int *last1,
     while (it1 < last1) {
       {
         struct UlN3std15iterator_traitsIPiEE10value_typeEUc4predN3stdE8equal_toIiE3it1PiE_ upred;
-        struct UlN3std15iterator_traitsIPiEE10value_typeEUc4predN3stdE8equal_toIiE3it1PiE_ const __fc_lam;
+        struct UlN3std15iterator_traitsIPiEE10value_typeEUc4predN3stdE8equal_toIiE3it1PiE_ const __fc_lambda_tmp;
         difference_type tmp;
         difference_type tmp_0;
-        UlN3std15iterator_traitsIPiEE10value_typeEUc4predN3stdE8equal_toIiE3it1PiE__cons
-        (& __fc_lam,& __fc_lambda_def,pred,it1);
-        upred = __fc_lam;
+        UlN3std15iterator_traitsIPiEE10value_typeEUc4predN3stdE8equal_toIiE3it1PiE__init_captures
+        (& __fc_lambda_tmp,pred,it1);
+        UlN3std15iterator_traitsIPiEE10value_typeEUc4predN3stdE8equal_toIiE3it1PiE__init_0
+        (& __fc_lambda_tmp,
+         & UlN3std15iterator_traitsIPiEE10value_typeEUc4predN3stdE8equal_toIiE3it1PiE__body_0);
+        upred = __fc_lambda_tmp;
         tmp = count_if<int*,std,iterator_traits<int*>>(first1,last1,upred);
         tmp_0 = count_if<int*,std,iterator_traits<int*>>(first2,last2,upred);
         if (tmp != tmp_0) {
