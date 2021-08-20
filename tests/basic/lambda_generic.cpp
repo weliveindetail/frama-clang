@@ -12,6 +12,8 @@ int test_cxx14_single_inst(int cap, int i) {
   return lam2(i);
 }
 
+extern int test_cxx14_multi_inst(int cap, int i, float f);
+/*
 int test_cxx14_multi_inst(int cap, int i, float f) {
   auto lam3 = [cap](auto val) { return cap - val; };
   int addend = 1;
@@ -19,6 +21,7 @@ int test_cxx14_multi_inst(int cap, int i, float f) {
     addend = 0;
   return lam3(i) + addend;
 }
+*/
 
 // We know argc will be 1, but the compiler doesn't know it.
 int main(int argc, char *argv[]) {

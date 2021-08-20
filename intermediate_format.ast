@@ -170,6 +170,7 @@ type typ =
   | Lambda {
       proto: signature list;
       closure: capture list;
+      func: pkind;
       id: int64;
     }
 ;;
@@ -329,6 +330,7 @@ type exp_node =
   | Throw { sub: expression option; }
   | GnuBody { body: statement list; }
   | LambdaExpr {
+      owner_fn: pkind;
       overloads: lambda_overload_instance list;
       captures: capture list;
     }

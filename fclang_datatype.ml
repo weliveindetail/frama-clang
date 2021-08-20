@@ -183,7 +183,7 @@ and pretty_type fmt typ =
       -> Format.fprintf fmt "union %a"
          pretty_qualified_name (name, tc)
   | Named (qname, _) -> pretty_qualified_name fmt (qname, TStandard)
-  | Lambda (sigs, caps, _) -> pretty_generic_lambda fmt sigs caps
+  | Lambda (sigs, caps, _, _) -> pretty_generic_lambda fmt sigs caps
 
 (* The lambda unique ID is the smallest of its overload IDs. We can determine
    it during codegen and don't need to pass it throught the intermediate AST.

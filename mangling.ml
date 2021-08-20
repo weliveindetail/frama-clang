@@ -203,11 +203,11 @@ let rec mangle_cc_type = function
   | Named (name,is_extern_c_name) ->
     if is_extern_c_name then name.decl_name
     else mangle_name_optt name TStandard
-  | Lambda (_, _, id) ->
+  | Lambda (_, _, func, id) ->
     (* NB: Itanium ABI mangling would create function-local unique identifiers,
        but we need to make them global and still avoid collisions. We diverge
        from the standard here and thus use the reserved __fc_ prefix. *)
-    "__fc_lam" ^ Int64.to_string id
+    (mangle_pkind "F" func) ^ "_" ^ Int64.to_string id
   (* not translated yet
      | ArrayType(t,(DYN_SIZE | NO_SIZE)) ->
       "A_" ^ mangle_cc_type t *)

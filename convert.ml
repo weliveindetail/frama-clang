@@ -1710,14 +1710,14 @@ and convert_expr_node ?(drop_temp=false) env aux e does_remove_virtual =
       | InitializerList _ ->
         Frama_Clang_option.not_yet_implemented
           "Initializer list without Compound initialization"
-      | LambdaExpr(overloads, closures) ->
+      | LambdaExpr(owner_fn, overloads, closures) ->
         let make_signature ovl =
           let params = List.map (fun arg -> arg.arg_type) ovl.arg_decls in
           mk_signature ovl.return_type params
         in
         let signatures = List.map make_signature overloads in
         let lam_id = find_min_item (List.map (fun ovl -> ovl.id) overloads) in
-        let lam_type = Lambda (signatures, closures, lam_id) in
+        let lam_type = Lambda (signatures, closures, owner_fn, lam_id) in
         let lam_name = Convert_env.temp_name env "__fc_lambda_tmp" in
         let (env, aux) =
           create_lambda env aux lam_name lam_type overloads closures in
