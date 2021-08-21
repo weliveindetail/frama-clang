@@ -1713,7 +1713,7 @@ and convert_expr_node ?(drop_temp=false) env aux e does_remove_virtual =
           mk_signature ovl.return_type params
         in
         let signatures = List.map make_signature overloads in
-        let lam_type = Lambda (signatures, closures) in
+        let lam_type = Lambda (signatures, closures, "") in
         let lam_name = Convert_env.temp_name env "__fc_lambda_tmp" in
         let (env, aux) =
           create_lambda env aux lam_name lam_type overloads closures in

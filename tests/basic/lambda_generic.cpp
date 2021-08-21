@@ -9,7 +9,8 @@ int test_cxx11_lambda(int cap, int i) {
 
 int test_cxx14_single_inst(int cap, int i) {
   auto lam2 = [cap](auto val) { return cap - val; };
-  return lam2(i);
+  auto lam2b = [cap](auto val) { return cap - val; };
+  return lam2(i) + lam2b(i);
 }
 
 int test_cxx14_multi_inst(int cap, int i, float f) {

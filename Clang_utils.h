@@ -814,6 +814,13 @@ public:
 #endif
   }
 
+  using LamInstances_t = std::vector<const clang::CXXRecordDecl *>;
+  using LamScopes_t = std::map<const clang::DeclContext *, LamInstances_t>;
+  mutable LamScopes_t TrackLambdasByScope;
+  mutable std::vector<std::string> LambdaNames;
+  unsigned get_lambda_id(const clang::CXXRecordDecl *inst) const;
+  std::string get_lambda_name(const clang::FunctionDecl *inst) const;
+  std::string get_lambda_name(const clang::FunctionTemplateDecl *inst) const;
 };
 
 class ForwardList;

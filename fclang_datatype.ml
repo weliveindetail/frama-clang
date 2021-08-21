@@ -183,9 +183,9 @@ and pretty_type fmt typ =
       -> Format.fprintf fmt "union %a"
          pretty_qualified_name (name, tc)
   | Named (qname, _) -> pretty_qualified_name fmt (qname, TStandard)
-  | Lambda (sigs, caps) -> pretty_generic_lambda fmt sigs caps
+  | Lambda (sigs, caps, mangled) -> pretty_generic_lambda fmt sigs caps mangled
 
-and pretty_generic_lambda fmt signatures captures =
+and pretty_generic_lambda fmt signatures captures mangled =
   let pretty_capture fmt cap =
     match cap with
     | Cap_id (s,typ,is_ref) ->
@@ -196,7 +196,8 @@ and pretty_generic_lambda fmt signatures captures =
   in
   let pretty_lambda lam =
     let pp_sep fmt () = Format.pp_print_string fmt ", " in
-    Format.fprintf fmt "lambda %a [%a]-> %a"
+    Format.fprintf fmt "lambda %s %a [%a]-> %a"
+      mangled
       (Format.pp_print_list ~pp_sep pretty_capture) captures
       (Format.pp_print_list ~pp_sep pretty_qual_type) lam.parameter
       pretty_qual_type lam.result

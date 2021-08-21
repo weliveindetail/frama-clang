@@ -170,6 +170,7 @@ type typ =
   | Lambda {
       proto: signature list;
       closure: capture list;
+      mangled: string;
     } (* a lambda object of the given signature.
          Note that normally each anonymous lambda object should give rise
          to a different class. With this representation, we won't distinguish

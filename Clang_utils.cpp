@@ -24,8 +24,20 @@
 
 #include "Clang_utils.h"
 #include "ClangVisitor.h"
-#include <clang/AST/Type.h>
+#include "clang/AST/DeclBase.h"
+#include "clang/AST/DeclCXX.h"
+
+#include <clang/AST/ASTContext.h>
+#include <clang/AST/Mangle.h>
+#include <clang/Basic/Diagnostic.h>
+#include <clang/Basic/DiagnosticDriver.h>
+#include <clang/Basic/DiagnosticFrontend.h>
+#include <clang/Basic/DiagnosticIDs.h>
+#include <clang/Frontend/TextDiagnosticPrinter.h>
+
 #include <llvm/Support/Casting.h>
+#include <llvm/Support/FormatVariadic.h>
+#include <llvm/Support/raw_ostream.h>
 
 extern "C" {
 
@@ -1451,6 +1463,49 @@ bool Clang_utils::is_generic_lambda(const clang::RecordDecl* rec) const {
   return lam_closure;
 }
 
+// Clang generates rich diagnostics for failures. For now we render them into
+// strings and dump them via stderr. Thus, one global static instance is fine.
+//clang::DiagnosticsEngine &Clang_utils::get_diagnostics_engine() {
+//  static std::unique_ptr<clang::DiagnosticsEngine> global_inst = nullptr;
+//  if (!global_inst)
+//    global_inst = std::make_unique<clang::DiagnosticsEngine>(
+//        new clang::DiagnosticIDs, new clang::DiagnosticOptions,
+//        new clang::TextDiagnosticPrinter(llvm::errs(),
+//                                         new clang::DiagnosticOptions));
+//  return *global_inst;
+//}
+
+unsigned Clang_utils::get_lambda_id(const clang::CXXRecordDecl *inst) const {
+  const clang::DeclContext *scope = inst->getDeclContext();
+  auto it = TrackLambdasByScope.find(scope);
+  if (it == TrackLambdasByScope.end()) {
+    TrackLambdasByScope.insert(std::make_pair(scope, LamInstances_t{inst}));
+    return 0; // first lambda in this scope
+  }
+  LamInstances_t &insts = it->second;
+  for (unsigned i = 0; i < insts.size(); ++i)
+    if (inst == insts[i])
+      return i; // known lambda in this scope
+  insts.push_back(inst);
+  return insts.size() - 1; // new lambda in this scope
+}
+
+std::string
+Clang_utils::get_lambda_name(const clang::FunctionDecl *inst) const {
+  clang::ASTNameGenerator mangler(inst->getASTContext());
+  std::string first_name = mangler.getName(inst);
+  size_t sep_pos = first_name.find('$');
+  assert(sep_pos != std::string::npos &&
+         "Lambda mangling always employs a dollar separator");
+  return first_name.substr(0, sep_pos);
+}
+
+std::string
+Clang_utils::get_lambda_name(const clang::FunctionTemplateDecl *inst) const {
+  const clang::FunctionDecl *first_overload = *inst->spec_begin();
+  return get_lambda_name(first_overload);
+}
+
 typ Clang_utils::make_lambda_type(
     clang::SourceLocation const& loc, clang::RecordDecl const* record,
     VirtualDeclRegistration* declRegistration) const
@@ -1459,7 +1514,12 @@ typ Clang_utils::make_lambda_type(
   auto oper = cxx_rec->getLambdaCallOperator();
   auto sig = cons_container(makeSignature(*oper), nullptr);
   auto cap = make_capture_list(cxx_rec->captures());
-  return typ_Lambda(sig,cap);
+
+  unsigned id = get_lambda_id(cxx_rec);
+  std::string base_name = get_lambda_name(oper);
+  LambdaNames.push_back(llvm::formatv("{0}_{1}", base_name, id));
+
+  return typ_Lambda(sig, cap, LambdaNames.back().c_str());
 }
 
 typ Clang_utils::make_generic_lambda_type(
@@ -1468,14 +1528,18 @@ typ Clang_utils::make_generic_lambda_type(
 {
   auto *cxx_rec = llvm::dyn_cast<const clang::CXXRecordDecl>(record);
   clang::FunctionTemplateDecl *oper = cxx_rec->getDependentLambdaCallOperator();
-  list sigs = nullptr;
 
+  unsigned id = get_lambda_id(cxx_rec);
+  std::string base_name = get_lambda_name(oper);
+  LambdaNames.push_back(llvm::formatv("{0}_{1}", base_name, id));
+
+  list sigs = nullptr;
   for (const clang::FunctionDecl *function : oper->specializations())
     sigs = cons_container(makeSignature(*function), sigs);
 
   assert(sigs && "Will unused generic lambdas appear in the AST? Possible.");
   auto *cap = make_capture_list(cxx_rec->captures());
-  return typ_Lambda(sigs, cap);
+  return typ_Lambda(sigs, cap, LambdaNames.back().c_str());
 }
 
 typ
